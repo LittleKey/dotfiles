@@ -1,0 +1,6 @@
+[submodule "k-vim"]
+	path = k-vim
+	url = https://github.com/littlekey/k-vim.git
+[submodule "k-tmux"]
+	path = k-tmux
+	url = https://github.com/littlekey/k-tmux.git
