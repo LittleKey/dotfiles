@@ -1,0 +1,43 @@
+# common
+alias showHintsLeftHand hint ASDFQWERT
+dlias showNormalHint hint QWERTASDFGZXCVYUIOPHJKLBNM
+
+alias hyper ctrl;cmd
+
+alias full move screenOriginX;screenOriginY screenSizeX;screenSizeY
+alias lefthalf move screenOriginX;screenOriginY screenSizeX/2;screenSizeY
+alias righthalf move screenOriginX+screenSizeX/2;screenOriginY screenSizeX/2;screenSizeY
+
+# VIM style layout
+alias hyper ctrl;cmd
+bind h:${hyper} ${lefthalf}
+bind j:${hyper} push bottom bar-resize:screenSizeY/2
+bind k:${hyper} push top bar-resize:screenSizeY/2
+bind l:${hyper} ${righthalf}
+
+bind f:${hyper} ${showHintsLeftHand}
+
+bind u:${hyper} undo
+
+# WSAD style move
+alias hyper ctrl;cmd;alt
+bind d:${hyper} nudge +1% +0
+bind a:${hyper} nudge -1% +0
+bind w:${hyper} nudge +0 -1%
+bind s:${hyper} nudge +0 +1%
+
+# Operator Resize
+alias hyper ctrl;cmd
+bind left:${hyper} resize -1% +0
+bind right:${hyper} resize +1% +0
+bind up:${hyper} resize +0 -1%
+bind down:${hyper} resize +0 +1%
+
+bind `:${hyper} ${full}
+
+# Arrow focus
+alias hyper ctrl;cmd
+# bind left:${hyper} focus left
+# bind down:${hyper} focus down
+# bind up:${hyper} focus up
+# bind right:${hyper} focus right
