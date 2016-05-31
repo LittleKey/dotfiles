@@ -1,0 +1,22 @@
+[user]
+    name = LittleKey
+    email = LittleKeyRain@gmail.com
+[core]
+    autocrlf = input
+    safecrlf = false
+    editor = vim
+[alias]
+    co = checkout
+    ci = commit
+    st = status
+    br = branch
+    hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+    type = cat-file
+    dump = cat-file
+    soup = push origin --all
+    sm = submodule
+    bl = blame
+    rel = rev-list --all --pretty=format:\"%ad | %s%d [%an]\" --date=short
+[color]
+    ui = true
+    always = true

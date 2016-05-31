@@ -3,7 +3,7 @@
 CURRENT_DIR=`pwd`
 
 # link slate config file
-ln -f ${CURRENT_DIR}/.slate ${HOME}/.slate
+ln -f ${CURRENT_DIR}/slate ${HOME}/.slate
 
 # link tmux config file
 if [ -e ${CURRENT_DIR}/k-tmux/tmux.conf ];
@@ -11,6 +11,14 @@ then
     ln -f ${CURRENT_DIR}/k-tmux/tmux.conf ${HOME}/.tmux.conf
 else
     echo '[WARNING] t-mux config file is not exists.'
+fi
+
+# link git config file
+if [ -e ${CURRENT_DIR}/gitconfig ];
+then
+    ln -f ${CURRENT_DIR}/gitconfig ${HOME}/.gitconfig
+else
+    echo '[WARNING] git config file is not exists.'
 fi
 
 # install k-vim
