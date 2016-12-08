@@ -6,11 +6,11 @@ CURRENT_DIR=`pwd`
 ln -f ${CURRENT_DIR}/slate ${HOME}/.slate
 
 # link tmux config file
-if [ -e ${CURRENT_DIR}/k-tmux/tmux.conf ];
+if [ -e ${CURRENT_DIR}/k-tmux/install.sh ];
 then
-    ln -f ${CURRENT_DIR}/k-tmux/tmux.conf ${HOME}/.tmux.conf
+    sh -x ${CURRENT_DIR}/k-tmux/install.sh
 else
-    echo '[WARNING] t-mux config file is not exists.'
+    echo '[WARNING] t-mux install script is not exists.'
 fi
 
 # link git config file
