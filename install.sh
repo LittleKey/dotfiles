@@ -2,6 +2,12 @@
 
 CURRENT_DIR=`pwd`
 
+# append zshrc config
+if [ -e ${CURRENT_DIR}/zshrc ];
+then
+    cat zshrc >> ${HOME}/.zshrc
+fi
+
 # link slate config file
 ln -f ${CURRENT_DIR}/slate ${HOME}/.slate
 
