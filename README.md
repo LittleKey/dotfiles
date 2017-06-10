@@ -7,4 +7,4 @@ inculde *slate* *tmux* *vim* config file.
 
 execute
 
-`git clone https://github.com/littlekey/dotfiles && git submodule update --init --recursive && ./install.sh`
+`git clone https://github.com/littlekey/dotfiles && cd dotfiles && git submodule update --init --recursive && ./install.sh`
