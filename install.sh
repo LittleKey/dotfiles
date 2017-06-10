@@ -28,4 +28,4 @@ else
 fi
 
 # install k-vim
-cd ${CURRENT_DIR}/k-vim && sh -x install.sh
+(cd ${CURRENT_DIR}/k-vim || exit) && sh -x install.sh
