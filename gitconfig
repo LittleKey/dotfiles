@@ -1,13 +1,14 @@
 [user]
     name = LittleKey
     email = LittleKeyRain@gmail.com
+    signingkey = E5D76098FB2AD9AE
 [core]
     autocrlf = input
     safecrlf = false
     editor = vim
 [alias]
     co = checkout
-    ci = commit
+    ci = commit -S
     st = status
     br = branch
     hist = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
@@ -20,3 +21,13 @@
 [color]
     ui = true
     always = true
+[merge]
+    tool = idea
+[mergetool "idea"]
+   cmd = idea merge $(cd $(dirname "$LOCAL") && pwd)/$(basename "$LOCAL") $(cd $(dirname "$REMOTE") && pwd)/$(basename "$REMOTE") $(cd $(dirname "$BASE") && pwd)/$(basename "$BASE") $(cd $(dirname "$MERGED") && pwd)/$(basename "$MERGED")
+   trustExitCode = true
+[diff]
+   tool = idea
+[difftool "idea"]
+   cmd = idea diff $(cd $(dirname "$LOCAL") && pwd)/$(basename "$LOCAL") $(cd $(dirname "$REMOTE") && pwd)/$(basename "$REMOTE")
+
