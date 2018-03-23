@@ -22,6 +22,9 @@ fi
 # link git config file
 if [ -e ${CURRENT_DIR}/gitconfig ];
 then
+    if [ "$(uname -s)" == "Darwin" ]; then
+      brew install diff-so-fancy
+    fi
     ln -f ${CURRENT_DIR}/gitconfig ${HOME}/.gitconfig
 else
     echo '[WARNING] git config file is not exists.'
