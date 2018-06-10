@@ -1,7 +1,7 @@
 [user]
     name = LittleKey
     email = LittleKeyRain@gmail.com
-    signingkey = E5D76098FB2AD9AE
+    signingkey = A116C6FDC7751B86
 [core]
     autocrlf = input
     safecrlf = false
