@@ -13,3 +13,4 @@ alias FLAKE8_IGNORE_FLAG='E225,W503,H405,H306,H301,H201,H404,H101'
 tmux new-session -A -s basic
 export GPG_TTY=$(tty)
 export ENV=test
+ZSH_THEME="agnoster";export DEFAULT_USER=littlekey
