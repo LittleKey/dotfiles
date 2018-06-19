@@ -1,8 +1,12 @@
 [submodule "k-vim"]
 	path = k-vim
 	url = https://github.com/littlekey/k-vim.git
-  branch = master
+	branch = master
 [submodule "k-tmux"]
 	path = k-tmux
 	url = https://github.com/littlekey/k-tmux.git
-  branch = master
+	branch = master
+[submodule "powerlevel9k"]
+	path = powerlevel9k
+	url = git@github.com:littlekey/powerlevel9k.git
+	branch = master
