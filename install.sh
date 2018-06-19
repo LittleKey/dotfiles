@@ -6,6 +6,11 @@ CURRENT_DIR=`pwd`
 if [ -e ${CURRENT_DIR}/zshrc ];
 then
     cat zshrc >> ${HOME}/.zshrc
+    if [ -e ${CURRENT_DIR}/powerlevel9k/powerlevel9k.zsh-theme ];
+    then
+      # link zsh custom theme
+      ln -sf ${CURRENT_DIR}/powerlevel9k ${HOME}/.oh-my-zsh/custom/themes/powerlevel9k
+    fi
 fi
 
 # link slate config file
