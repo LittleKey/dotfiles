@@ -16,7 +16,7 @@ export ENV=test
 
 ZSH_THEME="powerlevel9k/powerlevel9k"
 export POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(pyenv dir dir_writable vcs)
-export POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(background_jobs command_execution_time status)
+export POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(background_jobs command_execution_time)
 export POWERLEVEL9K_DIR_SHOW_WRITABLE=true
 export POWERLEVEL9K_VCS_HG_HOOKS=()  # disable hg hook
 export POWERLEVEL9K_VCS_SVN_HOOKS=()  # disable svn hook
