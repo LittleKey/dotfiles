@@ -15,8 +15,6 @@ bind j:${hyper} push bottom bar-resize:screenSizeY/2
 bind k:${hyper} push top bar-resize:screenSizeY/2
 bind l:${hyper} ${righthalf}
 
-bind f:${hyper} ${showHintsLeftHand}
-
 bind u:${hyper} undo
 
 # WSAD style move
@@ -25,6 +23,8 @@ bind d:${hyper} nudge +1% +0
 bind a:${hyper} nudge -1% +0
 bind w:${hyper} nudge +0 -1%
 bind s:${hyper} nudge +0 +1%
+
+bind f:${hyper} ${showHintsLeftHand}
 
 # Operator Resize
 alias hyper ctrl;cmd
