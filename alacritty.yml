@@ -84,19 +84,19 @@ font:
   normal:
     family: Source Code Pro for Powerline
     # The `style` can be specified to pick a specific face.
-    # style: Regular
+    style: Regular
 
   # Italic font face
-  # bold:
-    # family: Menlo
+  bold:
+    family: Source Code Pro for Powerline
     # The `style` can be specified to pick a specific face.
-    # style: Bold
+    style: Bold
 
   # Italic font face
-  # italic:
-    # family: Menlo
+  italic:
+    family: Source Code Pro for Powerline
     # The `style` can be specified to pick a specific face.
-    # style: Italic
+    style: Italic
 
   # Point size
   size: 14.0
