@@ -47,6 +47,8 @@ window:
   #     - buttonless: Title bar, transparent background and title bar buttons
   #     - transparent: Title bar, transparent background, but no title bar buttons
   decorations: full
+  # Initialize in fullscreen mode
+  # fullscreen: true
 
 scrolling:
   # Maximum number of lines in the scrollback buffer.
