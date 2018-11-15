@@ -9,7 +9,7 @@ eval "$(pyenv virtualenv-init -)"
 
 export TERM=xterm-256color
 
-alias FLAKE8_IGNORE_FLAG='E225,W503,H405,H306,H301,H201,H404,H101'
+alias FLAKE8_IGNORE_FLAG='E225,W503,H405,H306,H301,H201,H404,H101,E203'
 tmux new-session -A -s basic
 export GPG_TTY=$(tty)
 export ENV=test
