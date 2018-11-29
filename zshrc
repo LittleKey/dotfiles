@@ -7,7 +7,7 @@ eval "$(pyenv virtualenv-init -)"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-export TERM=xterm-256color
+export TERM=screen-256color
 
 alias FLAKE8_IGNORE_FLAG='E225,W503,H405,H306,H301,H201,H404,H101,E203'
 tmux new-session -A -s basic
