@@ -21,4 +21,7 @@ export POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(background_jobs command_execution_tim
 export POWERLEVEL9K_DIR_SHOW_WRITABLE=true
 export POWERLEVEL9K_VCS_HG_HOOKS=()  # disable hg hook
 export POWERLEVEL9K_VCS_SVN_HOOKS=()  # disable svn hook
+export POWERLEVEL9K_SHORTEN_DIR_LENGTH=1
+export POWERLEVEL9K_SHORTEN_DELIMITER=""
+export POWERLEVEL9K_SHORTEN_STRATEGY="truncate_from_right"
 eval "$(jump shell)"
