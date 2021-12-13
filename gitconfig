@@ -1,52 +1,62 @@
 [user]
-    name = LittleKey
-    email = LittleKeyRain@gmail.com
-    signingkey = A116C6FDC7751B86
+  name = LittleKey
+  email = LittleKeyRain@gmail.com
+  signingkey = 0C03DF62FF4F118C
 [core]
-    autocrlf = input
-    safecrlf = false
-    editor = vim
-    pager = diff-so-fancy | less --tabs=4 -RFX
+  autocrlf = input
+  safecrlf = false
+  editor = vim
+    pager = delta --theme='base16'
+[interactive]
+    diffFilter = delta --color-only
 [alias]
-    co = checkout
-    ci = commit -S
-    st = status
-    br = branch
-    hist = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
-    type = cat-file
-    dump = cat-file
-    soup = push origin --all
-    sm = submodule
-    bl = blame
-    rel = rev-list --all --pretty=format:\"%ad | %s%d [%an]\" --date=short
+  co = checkout
+  ci = commit
+  st = status
+  br = branch
+  hist = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+  type = cat-file
+  dump = cat-file
+  soup = push origin --all
+  sm = submodule
+  bl = blame
+  rel = rev-list --all --pretty=format:\"%ad | %s%d [%an]\" --date=short
 [color]
-    ui = true
-    always = true
+  ui = true
+  always = true
 [color "diff-highlight"]
-    oldNormal = red bold
-    oldHighlight = red bold 52
-    newNormal = green bold
-    newHighlight = green bold 22
+  oldNormal = red bold
+  oldHighlight = red bold 52
+  newNormal = green bold
+  newHighlight = green bold 22
 [color "diff"]
-    meta = yellow
-    grag = magenta bold
-    commit = yellow bold
-    old = red bold
-    new = green bold
-    whitespace = red reverse
+  meta = yellow
+  grag = magenta bold
+  commit = yellow bold
+  old = red bold
+  new = green bold
+  whitespace = red reverse
 [merge]
-    tool = idea
+  tool = idea
 [mergetool "idea"]
-    cmd = idea merge $(cd $(dirname "$LOCAL") && pwd)/$(basename "$LOCAL") $(cd $(dirname "$REMOTE") && pwd)/$(basename "$REMOTE") $(cd $(dirname "$BASE") && pwd)/$(basename "$BASE") $(cd $(dirname "$MERGED") && pwd)/$(basename "$MERGED")
-    trustExitCode = true
+  cmd = idea merge $(cd $(dirname "$LOCAL") && pwd)/$(basename "$LOCAL") $(cd $(dirname "$REMOTE") && pwd)/$(basename "$REMOTE") $(cd $(dirname "$BASE") && pwd)/$(basename "$BASE") $(cd $(dirname "$MERGED") && pwd)/$(basename "$MERGED")
+  trustExitCode = true
 [diff]
-    tool = idea
+  tool = idea
 [difftool "idea"]
-    cmd = idea diff $(cd $(dirname "$LOCAL") && pwd)/$(basename "$LOCAL") $(cd $(dirname "$REMOTE") && pwd)/$(basename "$REMOTE")
+  cmd = idea diff $(cd $(dirname "$LOCAL") && pwd)/$(basename "$LOCAL") $(cd $(dirname "$REMOTE") && pwd)/$(basename "$REMOTE")
 [gpg]
-    program = /usr/local/bin/gpg
+	program = /usr/local/bin/gpg
 [commit]
-    gpgsign = true
+	gpgsign = false
 [tag]
-    forceSignAnnotated = true
-
+  forceSignAnnotated = true
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+[url "git@code.yogorobot.io:"]
+	insteadOf = https://code.yogorobot.io/
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
