@@ -127,7 +127,7 @@ font:
   #
   # Thin strokes are suitable for retina displays, but for non-retina screens
   # it is recommended to set `use_thin_strokes` to `false`
-  use_thin_strokes: true
+  #use_thin_strokes: true
 
 # Display the time it takes to redraw each frame.
 render_timer: false
@@ -298,7 +298,7 @@ live_config_reload: true
 # Entries in `shell.args` are passed unmodified as arguments to the shell.
 #
 shell:
- program: /usr/local/bin/zsh
+ program: /opt/homebrew/bin/zsh
  args:
    - --login
 
