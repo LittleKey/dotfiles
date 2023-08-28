@@ -6,7 +6,7 @@
   autocrlf = input
   safecrlf = false
   editor = vim
-    pager = delta --theme='base16'
+  pager = delta
 [interactive]
     diffFilter = delta --color-only
 [alias]
@@ -51,10 +51,18 @@
 	gpgsign = false
 [tag]
   forceSignAnnotated = true
-[url "git@github.com:"]
+[url "ssh://github.com/"]
 	insteadOf = https://github.com/
-[url "git@code.yogorobot.io:"]
+[url "ssh://github.com/"]
+	insteadOf = git@github.com:
+[url "ssh://code.yogorobot.io/"]
 	insteadOf = https://code.yogorobot.io/
+[url "ssh://code.yogorobot.io/"]
+	insteadOf = git@code.yogorobot.io:
+[url "ssh://gitlab.yogorobot.com/"]
+    insteadOf = https://gitlab.yogorobot.com/
+[url "ssh://gitlab.yogorobot.com/"]
+    insteadOf = git@gitlab.yogorobot.com:
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
