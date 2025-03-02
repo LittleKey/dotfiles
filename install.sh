@@ -15,6 +15,12 @@ then
     ln -f ${CURRENT_DIR}/ghostty.conf ${HOME}/.config/ghostty/config
 fi
 
+# link starship
+if [ -e ${CURRENT_DIR}/starship.toml ];
+then
+    ln -f ${CURRENT_DIR}/starship.toml ${HOME}/.config/starship.toml
+fi
+
 # link slate config file
 ln -f ${CURRENT_DIR}/slate ${HOME}/.slate
 
