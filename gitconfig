@@ -1,7 +1,7 @@
 [user]
   name = LittleKey
   email = LittleKeyRain@gmail.com
-  signingkey = 0C03DF62FF4F118C
+	signingkey = E767116E476651502F2928A9662A5292BE74C6B3
 [core]
   autocrlf = input
   safecrlf = false
@@ -21,21 +21,6 @@
   sm = submodule
   bl = blame
   rel = rev-list --all --pretty=format:\"%ad | %s%d [%an]\" --date=short
-[color]
-  ui = true
-  always = true
-[color "diff-highlight"]
-  oldNormal = red bold
-  oldHighlight = red bold 52
-  newNormal = green bold
-  newHighlight = green bold 22
-[color "diff"]
-  meta = yellow
-  grag = magenta bold
-  commit = yellow bold
-  old = red bold
-  new = green bold
-  whitespace = red reverse
 [merge]
   tool = idea
 [mergetool "idea"]
@@ -45,10 +30,8 @@
   tool = idea
 [difftool "idea"]
   cmd = idea diff $(cd $(dirname "$LOCAL") && pwd)/$(basename "$LOCAL") $(cd $(dirname "$REMOTE") && pwd)/$(basename "$REMOTE")
-[gpg]
-	program = /usr/local/bin/gpg
 [commit]
-	gpgsign = false
+	gpgsign = true
 [tag]
   forceSignAnnotated = true
 [url "ssh://github.com/"]
@@ -68,3 +51,37 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+[color "diff-highlight"]
+  oldNormal = red bold
+  oldHighlight = red bold
+  newNormal = green bold
+  newHighlight = green bold
+[color "diff"]
+  meta = yellow bold
+  frag = magenta bold
+  commit = yellow bold
+  old = red bold
+  new = green bold
+
+[color "status"]
+  added = green bold
+  changed = yellow bold
+  untracked = magenta bold
+  branch = blue bold
+  nobranch = red bold
+
+[color "branch"]
+  current = green bold
+  local = blue bold
+  remote = magenta bold
+
+[color "interactive"]
+  header = blue bold
+  error = red bold
+  prompt = cyan bold
+  help = magenta bold
+
+[color "ui"]
+  # Use 'auto' for terminal colors, or 'always' to force colors.
+  # If you are using a light terminal theme, you may want to remove this line.
+  # color = auto

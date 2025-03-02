@@ -6,11 +6,6 @@ CURRENT_DIR=`pwd`
 if [ -e ${CURRENT_DIR}/zshrc ];
 then
     cat zshrc >> ${HOME}/.zshrc
-    if [ -e ${CURRENT_DIR}/powerlevel9k/powerlevel9k.zsh-theme ];
-    then
-      # link zsh custom theme
-      ln -sf ${CURRENT_DIR}/powerlevel9k ${HOME}/.oh-my-zsh/custom/themes/powerlevel9k
-    fi
 fi
 
 # link slate config file
@@ -28,19 +23,11 @@ fi
 if [ -e ${CURRENT_DIR}/gitconfig ];
 then
     if [ "$(uname -s)" == "Darwin" ]; then
-      brew install diff-so-fancy
+      brew install git-delta
     fi
     ln -f ${CURRENT_DIR}/gitconfig ${HOME}/.gitconfig
 else
     echo '[WARNING] git config file is not exists.'
-fi
-
-# link flake8 config file
-if [ -e ${CURRENT_DIR}/flake8 ];
-then
-    ln -f ${CURRENT_DIR}/flake8 ${HOME}/.flake8
-else
-    echo '[WARNING] flake8 config file is not exists.'
 fi
 
 # install k-vim
