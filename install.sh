@@ -8,6 +8,13 @@ then
     cat zshrc >> ${HOME}/.zshrc
 fi
 
+# link ghostty config
+if [ -e ${CURRENT_DIR}/ghostty ];
+then
+    mkdir -p ${HOME}/.config/ghostty
+    ln -f ${CURRENT_DIR}/ghostty.conf ${HOME}/.config/ghostty/config
+fi
+
 # link slate config file
 ln -f ${CURRENT_DIR}/slate ${HOME}/.slate
 
