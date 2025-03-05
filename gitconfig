@@ -22,7 +22,11 @@
   sm = submodule
   bl = blame
   rel = rev-list --all --pretty=format:\"%ad | %s%d [%an]\" --date=short
+[delta]
+  navigate = true  # use n and N to move between diff sections
+  light = true      # or light = true, or omit for auto-detection
 [merge]
+  conflictstyle = zdiff3
   tool = idea
 [mergetool "idea"]
   cmd = idea merge $(cd $(dirname "$LOCAL") && pwd)/$(basename "$LOCAL") $(cd $(dirname "$REMOTE") && pwd)/$(basename "$REMOTE") $(cd $(dirname "$BASE") && pwd)/$(basename "$BASE") $(cd $(dirname "$MERGED") && pwd)/$(basename "$MERGED")
