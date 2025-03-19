@@ -20,16 +20,7 @@ $jobs\n  \
 [󱞪](fg:iris) \
 """
 
-palette = "rose-pine-dawn"
-
-[palettes.rose-pine-dawn]
-overlay = '#f2e9e1'
-love = '#b4637a'
-gold = '#ea9d34'
-rose = '#d7827e'
-pine = '#286983'
-foam = '#56949f'
-iris = '#907aa9'
+palette = "catppuccin-latte"
 
 [directory]
 format = "[](fg:overlay)[ $path ]($style)[](fg:overlay) "

@@ -22,9 +22,6 @@
   sm = submodule
   bl = blame
   rel = rev-list --all --pretty=format:\"%ad | %s%d [%an]\" --date=short
-[delta]
-  navigate = true  # use n and N to move between diff sections
-  light = true      # or light = true, or omit for auto-detection
 [merge]
   conflictstyle = zdiff3
   tool = idea
@@ -56,37 +53,16 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
-[color "diff-highlight"]
-  oldNormal = red bold
-  oldHighlight = red bold
-  newNormal = green bold
-  newHighlight = green bold
-[color "diff"]
-  meta = yellow bold
-  frag = magenta bold
-  commit = yellow bold
-  old = red bold
-  new = green bold
-
-[color "status"]
-  added = green bold
-  changed = yellow bold
-  untracked = magenta bold
-  branch = blue bold
-  nobranch = red bold
-
-[color "branch"]
-  current = green bold
-  local = blue bold
-  remote = magenta bold
-
-[color "interactive"]
-  header = blue bold
-  error = red bold
-  prompt = cyan bold
-  help = magenta bold
 
 [color "ui"]
   # Use 'auto' for terminal colors, or 'always' to force colors.
   # If you are using a light terminal theme, you may want to remove this line.
   # color = auto
+
+[include]
+	path = /Users/littlekey/github/catppuccin/delta/catppuccin.gitconfig
+
+[delta]
+	features = catppuccin-latte
+    navigate = true  # use n and N to move between diff sections
+    light = true      # or light = true, or omit for auto-detection
