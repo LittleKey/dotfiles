@@ -36,10 +36,6 @@
 	gpgsign = true
 [tag]
   forceSignAnnotated = true
-[url "ssh://github.com/"]
-	insteadOf = https://github.com/
-[url "ssh://github.com/"]
-	insteadOf = git@github.com:
 [url "ssh://code.yogorobot.io/"]
 	insteadOf = https://code.yogorobot.io/
 [url "ssh://code.yogorobot.io/"]
@@ -65,4 +61,4 @@
 [delta]
 	features = catppuccin-latte
     navigate = true  # use n and N to move between diff sections
-    light = true      # or light = true, or omit for auto-detection
+    light = light
