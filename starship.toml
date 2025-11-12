@@ -22,8 +22,8 @@ $jobs\n  \
 [󱞪](fg:iris) \
 """
 
-# palette = "catppuccin-latte"
-palette = "catppuccin-mocha"
+palette = "catppuccin-latte"
+# palette = "catppuccin-mocha"
 
 [character]
 # Note the use of Catppuccin color 'peach'
