@@ -112,7 +112,7 @@
       ],
       "mcps": [],
       "description": "Use for bounded creation or editing of product and engineering documents after the target, scope, protected content, confirmed facts, and acceptance criteria are known.",
-      "orchestratorPrompt": "For bounded local or cloud document creation or editing, dispatch document-writer after specifying target, scope, locator, protected content, confirmed facts, and acceptance criteria. After it writes and rereads, always dispatch oracle to review. Return Critical or Important findings to the same document-writer, then use the same oracle for rereview before claiming completion.",
+      "orchestratorPrompt": "For bounded local or cloud document creation or editing, dispatch document-writer after specifying target, scope, locator, protected content, confirmed facts, and acceptance criteria. After it writes and rereads, always dispatch oracle to review. Include the writer's `<artifact>` path and matching `ORACLE_REVIEW_EVIDENCE` manifest in every Oracle review dispatch. Return Critical or Important findings to the same document-writer, then use the same oracle for rereview before claiming completion.",
       "permission": {
         "task": "deny",
         "question": "deny",
