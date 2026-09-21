@@ -4,7 +4,7 @@
   "presets": {
     "newapi": {
       "orchestrator": {
-        "model": "kimi-k3",
+        "model": "deepseek-flash",
         "variant": "max",
         "skills": [
           "*",

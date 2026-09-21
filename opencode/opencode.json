@@ -1,0 +1,588 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "compaction": {
+    "auto": false
+  },
+  "model": "newapi/deepseek-v4-flash",
+  "default_agent": "orchestrator",
+  "permission": {
+    "external_directory": {
+      "/tmp/**": "allow",
+      "~/ip-check/**": "allow",
+      "~/github/**": "allow",
+      "~/.config/opencode/**": "allow",
+      "~/.config/openchamber/**": "allow",
+      "~/.cache/**": "allow",
+      "~/.agents/**": "allow",
+      "~/.local/share/opencode/**": "allow"
+    }
+  },
+  "plugin": [
+    "opencode-vibeguard@latest",
+    "opencode-acp@latest",
+    "oh-my-opencode-slim@latest",
+    "opencode-auto-readme@git+https://github.com/LittleKey/opencode-auto-readme.git",
+    "@dietrichgebert/ponytail@4.10.0"
+  ],
+  "provider": {
+    "newapi": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "newapi",
+      "options": {
+        "baseURL": "http://10.126.126.10:3000/v1"
+      },
+      "models": {
+        "gpt-5.6-luna": {
+          "name": "GPT-5.6 Luna",
+          "limit": {
+            "context": 1050000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "capabilities": {
+            "tool_calling": true,
+            "reasoning": true,
+            "vision": true
+          },
+          "pricing": {
+            "input": 0,
+            "output": 0
+          },
+          "reasoning": true,
+          "variants": {
+            "none": {
+              "reasoningEffort": "none"
+            },
+            "low": {
+              "reasoningEffort": "low"
+            },
+            "medium": {
+              "reasoningEffort": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh"
+            },
+            "max": {
+              "reasoningEffort": "max"
+            }
+          }
+        },
+        "gpt-5.6-terra": {
+          "name": "GPT-5.6 Terra",
+          "limit": {
+            "context": 1050000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "capabilities": {
+            "tool_calling": true,
+            "reasoning": true,
+            "vision": true
+          },
+          "pricing": {
+            "input": 0,
+            "output": 0
+          },
+          "reasoning": true,
+          "variants": {
+            "none": {
+              "reasoningEffort": "none"
+            },
+            "low": {
+              "reasoningEffort": "low"
+            },
+            "medium": {
+              "reasoningEffort": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh"
+            },
+            "max": {
+              "reasoningEffort": "max"
+            }
+          }
+        },
+        "gpt-5.6-sol": {
+          "name": "GPT-5.6 Sol",
+          "limit": {
+            "context": 1050000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "capabilities": {
+            "tool_calling": true,
+            "reasoning": true,
+            "vision": true
+          },
+          "pricing": {
+            "input": 0,
+            "output": 0
+          },
+          "reasoning": true,
+          "variants": {
+            "none": {
+              "reasoningEffort": "none"
+            },
+            "low": {
+              "reasoningEffort": "low"
+            },
+            "medium": {
+              "reasoningEffort": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh"
+            },
+            "max": {
+              "reasoningEffort": "max"
+            }
+          }
+        },
+        "gpt-6-astra": {
+          "name": "GPT-6 Astra",
+          "limit": {
+            "context": 1050000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "capabilities": {
+            "tool_calling": true,
+            "reasoning": true,
+            "vision": true
+          },
+          "pricing": {
+            "input": 0,
+            "output": 0
+          },
+          "reasoning": true,
+          "variants": {
+            "low": {
+              "reasoningEffort": "low"
+            },
+            "medium": {
+              "reasoningEffort": "medium"
+            },
+            "high": {
+              "reasoningEffort": "high"
+            },
+            "xhigh": {
+              "reasoningEffort": "xhigh"
+            },
+            "max": {
+              "reasoningEffort": "max"
+            }
+          }
+        },
+        "deepseek-flash": {
+          "name": "DeepSeek-V4.1 Flash",
+          "limit": {
+            "context": 1024000,
+            "output": 384000
+          },
+          "capabilities": {
+            "tool_calling": true,
+            "reasoning": true,
+            "vision": false
+          },
+          "pricing": {
+            "input": 0,
+            "output": 0
+          },
+          "reasoning": true,
+          "variants": {
+            "none": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "low": {
+              "thinking": {
+                "type": "enabled"
+              },
+              "reasoningEffort": "low"
+            },
+            "high": {
+              "thinking": {
+                "type": "enabled"
+              },
+              "reasoningEffort": "high"
+            },
+            "max": {
+              "thinking": {
+                "type": "enabled"
+              },
+              "reasoningEffort": "max"
+            },
+            "medium": {
+              "disabled": true
+            }
+          }
+        },
+        "deepseek-v4-flash": {
+          "name": "DeepSeek-V4 Flash",
+          "limit": {
+            "context": 1024000,
+            "output": 384000
+          },
+          "capabilities": {
+            "tool_calling": true,
+            "reasoning": true,
+            "vision": false
+          },
+          "pricing": {
+            "input": 0,
+            "output": 0
+          },
+          "reasoning": true,
+          "variants": {
+            "none": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "low": {
+              "thinking": {
+                "type": "enabled"
+              },
+              "reasoningEffort": "low"
+            },
+            "high": {
+              "thinking": {
+                "type": "enabled"
+              },
+              "reasoningEffort": "high"
+            },
+            "max": {
+              "thinking": {
+                "type": "enabled"
+              },
+              "reasoningEffort": "max"
+            },
+            "medium": {
+              "disabled": true
+            }
+          }
+        },
+        "deepseek-v4-pro": {
+          "name": "DeepSeek-V4 Pro",
+          "limit": {
+            "context": 1024000,
+            "output": 384000
+          },
+          "capabilities": {
+            "tool_calling": true,
+            "reasoning": true,
+            "vision": false
+          },
+          "pricing": {
+            "input": 0,
+            "output": 0
+          },
+          "reasoning": true,
+          "variants": {
+            "none": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "low": {
+              "thinking": {
+                "type": "enabled"
+              },
+              "reasoningEffort": "low"
+            },
+            "high": {
+              "thinking": {
+                "type": "enabled"
+              },
+              "reasoningEffort": "high"
+            },
+            "max": {
+              "thinking": {
+                "type": "enabled"
+              },
+              "reasoningEffort": "max"
+            },
+            "medium": {
+              "disabled": true
+            }
+          }
+        },
+        "glm-5.3": {
+          "name": "GLM-5.3",
+          "limit": {
+            "context": 1048576,
+            "output": 128000
+          },
+          "capabilities": {
+            "tool_calling": true,
+            "reasoning": true,
+            "vision": false
+          },
+          "pricing": {
+            "input": 0,
+            "output": 0
+          },
+          "reasoning": true,
+          "variants": {
+            "low": {
+              "thinking": {
+                "type": "enabled"
+              },
+              "reasoningEffort": "low"
+            },
+            "high": {
+              "thinking": {
+                "type": "enabled"
+              },
+              "reasoningEffort": "high"
+            },
+            "max": {
+              "thinking": {
+                "type": "enabled"
+              },
+              "reasoningEffort": "max"
+            }
+          }
+        },
+        "glm-5.3-flash": {
+          "name": "GLM-5.3-Flash",
+          "limit": {
+            "context": 1048576,
+            "output": 128000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "capabilities": {
+            "tool_calling": true,
+            "reasoning": true,
+            "vision": true
+          },
+          "pricing": {
+            "input": 0,
+            "output": 0
+          },
+          "reasoning": true,
+          "variants": {
+            "low": {
+              "thinking": {
+                "type": "enabled"
+              },
+              "reasoningEffort": "low"
+            },
+            "high": {
+              "thinking": {
+                "type": "enabled"
+              },
+              "reasoningEffort": "high"
+            },
+            "max": {
+              "thinking": {
+                "type": "enabled"
+              },
+              "reasoningEffort": "max"
+            }
+          }
+        },
+        "kimi-k2.7": {
+          "name": "Kimi-K2.7",
+          "limit": {
+            "context": 256000,
+            "output": 32000
+          },
+          "capabilities": {
+            "tool_calling": true,
+            "reasoning": false,
+            "vision": false
+          },
+          "pricing": {
+            "input": 0,
+            "output": 0
+          }
+        },
+        "kimi-k3": {
+          "name": "Kimi-K3",
+          "limit": {
+            "context": 1000000,
+            "output": 32000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "capabilities": {
+            "tool_calling": true,
+            "reasoning": true,
+            "vision": true
+          },
+          "pricing": {
+            "input": 0,
+            "output": 0
+          },
+          "reasoning": true,
+          "variants": {
+            "low": {
+              "reasoningEffort": "low"
+            },
+            "high": {
+              "reasoningEffort": "high"
+            },
+            "max": {
+              "reasoningEffort": "max"
+            }
+          }
+        },
+        "MiniMax-M3": {
+          "name": "MiniMax-M3",
+          "limit": {
+            "context": 512000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "capabilities": {
+            "tool_calling": true,
+            "reasoning": true,
+            "vision": true
+          },
+          "pricing": {
+            "input": 0,
+            "output": 0
+          },
+          "reasoning": true,
+          "variants": {
+            "none": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "thinking": {
+              "thinking": {
+                "type": "adaptive"
+              },
+              "reasoning_split": true
+            }
+          }
+        },
+        "mimo-v2.5-pro": {
+          "name": "Mimo-V2.5 Pro",
+          "limit": {
+            "context": 1000000,
+            "output": 128000
+          },
+          "capabilities": {
+            "tool_calling": true,
+            "reasoning": true,
+            "vision": false
+          },
+          "pricing": {
+            "input": 0,
+            "output": 0
+          },
+          "reasoning": true,
+          "variants": {
+            "none": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "thinking": {
+              "thinking": {
+                "type": "enabled"
+              }
+            },
+            "low": {
+              "disabled": true
+            },
+            "medium": {
+              "disabled": true
+            },
+            "high": {
+              "disabled": true
+            }
+          }
+        },
+        "mimo-v2.5": {
+          "name": "Mimo-V2.5",
+          "limit": {
+            "context": 1000000,
+            "output": 128000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "capabilities": {
+            "tool_calling": true,
+            "reasoning": true,
+            "vision": true
+          },
+          "pricing": {
+            "input": 0,
+            "output": 0
+          },
+          "reasoning": true,
+          "variants": {
+            "none": {
+              "thinking": {
+                "type": "disabled"
+              }
+            },
+            "thinking": {
+              "thinking": {
+                "type": "enabled"
+              }
+            },
+            "low": {
+              "disabled": true
+            },
+            "medium": {
+              "disabled": true
+            },
+            "high": {
+              "disabled": true
+            }
+          }
+        }
+      }
+    }
+  },
+  "agent": {
+    "build": {
+      "disable": false
+    },
+    "plan": {
+      "disable": true
+    },
+    "explore": {
+      "disable": true
+    },
+    "general": {
+      "disable": true
+    }
+  }
+}
