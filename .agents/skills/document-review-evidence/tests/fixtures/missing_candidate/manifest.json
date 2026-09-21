@@ -1,0 +1,83 @@
+{
+  "schema": "oracle-review-evidence/manifest",
+  "version": 1,
+  "invocation": {
+    "dispatchId": "dispatch-fixture-007",
+    "invokedBy": "parent-orchestrator",
+    "invokedAt": "2026-09-19T00:00:00Z"
+  },
+  "reviewContract": {
+    "suppliedBy": "parent",
+    "scope": "Sections A-C of the candidate document",
+    "criteria": [
+      "Claims are supported by artifact content",
+      "No protected content exposed"
+    ],
+    "protectedContent": "Section C marker text",
+    "documentType": "PRD",
+    "audience": "internal product and engineering reviewers",
+    "overlay": {
+      "overlays": [
+        "product-engineering",
+        "external-audience"
+      ]
+    }
+  },
+  "selectedScope": "Sections A-C of the candidate document",
+  "writerScanRecords": [
+    {
+      "description": "Writer reports a full scan of revision r7; recorded as a claim, structurally only",
+      "locator": "whole document"
+    }
+  ],
+  "artifacts": [
+    {
+      "role": "snapshot",
+      "path": "snapshot.md",
+      "sha256": "86ff9af0559ff523e49a664c175011c206f3893e52013d97b8f97617c6674571",
+      "source": "docs/prd-fixture.md",
+      "revision": "r7",
+      "retrievedAt": "2026-09-19T00:00:00Z",
+      "referenceMap": {
+        "whole document": "86ff9af0559ff523e49a664c175011c206f3893e52013d97b8f97617c6674571",
+        "Section A": "f4d73343e14d2b1d9e30ae06c0f8d41fc042bbe4239baee58d3c37f2bbe33b04",
+        "Section B": "1d05d070261bb530c33ad16e910784fbfb7481f5695d104c6e9fa94aafb19ec2",
+        "Section C": "6f108f3867eceeeb031eed7f4459991c0fae0d76955643704690225ba4dbbed6"
+      },
+      "omissions": []
+    },
+    {
+      "role": "base",
+      "path": "base.md",
+      "sha256": "806d82265bed07bfeea80b7c01873f2e520d043e181044a91462ed6f708238ab",
+      "source": "docs/prd-fixture.md",
+      "revision": "r6",
+      "retrievedAt": "2026-09-19T00:00:00Z",
+      "referenceMap": {
+        "whole document": "806d82265bed07bfeea80b7c01873f2e520d043e181044a91462ed6f708238ab",
+        "Section A": "f4d73343e14d2b1d9e30ae06c0f8d41fc042bbe4239baee58d3c37f2bbe33b04",
+        "Section B": "1d05d070261bb530c33ad16e910784fbfb7481f5695d104c6e9fa94aafb19ec2"
+      },
+      "omissions": []
+    }
+  ],
+  "comparisons": [
+    {
+      "claim": "Candidate r7 matches base r6 for Section A (artifact-form scoped baseline)",
+      "baseRevision": "r6",
+      "baseline": {
+        "artifact": "base.md"
+      }
+    },
+    {
+      "claim": "Candidate r7 Section A content is unchanged from base r6 (located pair proof)",
+      "baseRevision": "r6",
+      "baseline": {
+        "candidateLocator": "Section A",
+        "candidateSha256": "f4d73343e14d2b1d9e30ae06c0f8d41fc042bbe4239baee58d3c37f2bbe33b04",
+        "baselineLocator": "Section A",
+        "baselineSha256": "f4d73343e14d2b1d9e30ae06c0f8d41fc042bbe4239baee58d3c37f2bbe33b04"
+      }
+    }
+  ]
+}

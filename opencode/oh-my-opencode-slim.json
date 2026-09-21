@@ -1,0 +1,204 @@
+{
+  "$schema": "https://unpkg.com/oh-my-opencode-slim@latest/oh-my-opencode-slim.schema.json",
+  "preset": "newapi",
+  "presets": {
+    "newapi": {
+      "orchestrator": {
+        "model": "kimi-k3",
+        "variant": "max",
+        "skills": [
+          "*",
+          "!document-review-evidence",
+          "!use-modern-go",
+          "!humanizer",
+          "!lark-approval",
+          "!lark-apps",
+          "!lark-attendance",
+          "!lark-base",
+          "!lark-calendar",
+          "!lark-contact",
+          "!lark-doc",
+          "!lark-drive",
+          "!lark-event",
+          "!lark-im",
+          "!lark-mail",
+          "!lark-markdown",
+          "!lark-meeting",
+          "!lark-minutes",
+          "!lark-note",
+          "!lark-okr",
+          "!lark-openapi-explorer",
+          "!lark-shared",
+          "!lark-sheets",
+          "!lark-skill-maker",
+          "!lark-slides",
+          "!lark-task",
+          "!lark-vc",
+          "!lark-vc-agent",
+          "!lark-whiteboard",
+          "!lark-wiki",
+          "!lark-workflow-meeting-summary",
+          "!lark-workflow-standup-report"
+        ],
+        "mcps": ["gh_grep"]
+      },
+      "oracle": {
+        "model": "openai/gpt-6-astra",
+        "variant": "xhigh",
+        "skills": [
+          "simplify",
+          "find-code-simplifications",
+          "document-review-evidence"
+        ],
+        "mcps": []
+      },
+      "librarian": {
+        "model": "openai/gpt-5.6-luna",
+        "variant": "high",
+        "skills": [],
+        "mcps": ["context7", "gh_grep"]
+      },
+      "explorer": {
+        "model": "newapi/glm-5.3-flash",
+        "variant": "max",
+        "skills": [],
+        "mcps": []
+      },
+      "designer": {
+        "model": "newapi/kimi-k2.7",
+        "variant": "thinking",
+        "skills": [],
+        "mcps": []
+      },
+      "fixer": {
+        "model": "newapi/glm-5.3-flash",
+        "variant": "max",
+        "skills": ["ponytail", "use-modern-go"],
+        "mcps": []
+      },
+      "observer": {
+        "model": "newapi/glm-5.3-flash",
+        "variant": "max",
+        "skills": [],
+        "mcps": []
+      },
+      "council": {
+        "model": "openai/gpt-5.6-sol",
+        "variant": "xhigh",
+        "skills": [],
+        "mcps": []
+      }
+    }
+  },
+  "agents": {
+    "document-writer": {
+      "model": "newapi/glm-5.3-flash",
+      "variant": "max",
+      "skills": [
+        "writing-plans",
+        "maintaining-product-engineering-docs",
+        "domain-modeling",
+        "humanizer",
+        "lark-doc",
+        "lark-markdown",
+        "lark-sheets",
+        "lark-base",
+        "lark-slides",
+        "lark-drive",
+        "lark-wiki",
+        "lark-whiteboard",
+        "lark-shared",
+        "yogo-products"
+      ],
+      "mcps": [],
+      "description": "Use for bounded creation or editing of product and engineering documents after the target, scope, protected content, confirmed facts, and acceptance criteria are known.",
+      "orchestratorPrompt": "For bounded local or cloud document creation or editing, dispatch document-writer after specifying target, scope, locator, protected content, confirmed facts, and acceptance criteria. After it writes and rereads, always dispatch oracle to review. Return Critical or Important findings to the same document-writer, then use the same oracle for rereview before claiming completion.",
+      "permission": {
+        "task": "deny",
+        "question": "deny",
+        "webfetch": "deny",
+        "websearch": "deny",
+        "gh_grep_*": "deny",
+        "context7_*": "deny"
+      }
+    },
+    "lark-operator": {
+      "model": "newapi/glm-5.3",
+      "variant": "max",
+      "skills": [
+        "lark-approval",
+        "lark-apps",
+        "lark-attendance",
+        "lark-base",
+        "lark-calendar",
+        "lark-contact",
+        "lark-doc",
+        "lark-drive",
+        "lark-event",
+        "lark-im",
+        "lark-mail",
+        "lark-markdown",
+        "lark-meeting",
+        "lark-okr",
+        "lark-openapi-explorer",
+        "lark-shared",
+        "lark-sheets",
+        "lark-skill-maker",
+        "lark-slides",
+        "lark-task",
+        "lark-whiteboard",
+        "lark-wiki",
+        "lark-workflow-meeting-summary",
+        "lark-workflow-standup-report",
+        "designing-work-loops",
+        "lark-worklog",
+        "managing-lark-project-folder",
+        "yogo-products"
+      ],
+      "mcps": [],
+      "description": "Use for all Feishu/Lark reads and operations except creating or editing formal product and engineering document content, which belongs to document-writer.",
+      "orchestratorPrompt": "Delegate every independent Feishu/Lark read or operation to lark-operator. Route formal product or engineering document body creation and editing to document-writer; Writer may read its target and reread after writing. For high-risk or external actions, require explicit user authorization and Oracle review before execution; return Critical or Important findings to the same lark-operator and use the same Oracle for rereview. Run listeners only in the background with timeout, max-events, and an explicit termination condition. Do not invoke lark-* Skills directly.",
+      "permission": {
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "deny",
+        "write": "deny",
+        "apply_patch": "deny",
+        "ast_grep_replace": "deny",
+        "task": "deny",
+        "question": "deny",
+        "webfetch": "deny",
+        "websearch": "deny",
+        "gh_grep_*": "deny",
+        "context7_*": "deny"
+      }
+    }
+  },
+  "council": {
+    "default_preset": "default",
+
+    "presets": {
+      "default": {
+        "kimi-k3": { "model": "newapi/kimi-k3", "variant": "max" },
+        "glm-5.3": { "model": "newapi/glm-5.3", "variant": "max" },
+        "gpt-6-astra": { "model": "openai/gpt-6-astra", "variant": "xhigh" },
+        "gpt-5.6-sol": { "model": "openai/gpt-5.6-sol", "variant": "xhigh" },
+        "gpt-6-astra (relay)": {
+          "model": "newapi/gpt-6-astra",
+          "variant": "xhigh"
+        },
+        "gpt-5.6-sol (relay)": {
+          "model": "newapi/gpt-5.6-sol",
+          "variant": "xhigh"
+        },
+        "deepseek-v4-pro": {
+          "model": "newapi/deepseek-v4-pro",
+          "variant": "high"
+        }
+      }
+    }
+  },
+  "disabled_agents": []
+}

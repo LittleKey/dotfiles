@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "oracle-review-evidence/manifest.schema.json",
+  "title": "ORACLE_REVIEW_EVIDENCE manifest",
+  "description": "Evidence manifest for formal document reviews. Mechanical enforcement is scripts/validate_manifest.py (stdlib-only, normative); it verifies structure, candidate binding (exactly one candidate snapshot artifact required), baseline-reference binding (same candidate source identity + declared baseRevision), local artifact accessibility, whole-file SHA-256, and located pair-hash equality via artifact reference maps. Scoped pair hashes are never compared to whole-file hashes. It never claims freshness, semantic coverage, or suitability — those remain parent/Oracle judgments. Declared selectedScope and writerScanRecords are structurally validated only; no evidence-level or full-scan verification is encoded.",
+  "type": "object",
+  "required": ["schema", "version", "invocation", "reviewContract", "selectedScope", "writerScanRecords", "artifacts"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "oracle-review-evidence/manifest" },
+    "version": { "const": 1, "type": "integer" },
+    "invocation": {
+      "description": "Manifest-only invocation metadata (who dispatched this review and when).",
+      "type": "object",
+      "required": ["dispatchId", "invokedBy", "invokedAt"],
+      "additionalProperties": false,
+      "properties": {
+        "dispatchId": { "type": "string", "minLength": 1 },
+        "invokedBy": { "type": "string", "minLength": 1 },
+        "invokedAt": { "type": "string", "minLength": 1 }
+      }
+    },
+    "reviewContract": {
+      "description": "Parent-owned review contract. Scope, criteria, or protected content asserted only inside an artifact is NOT confirmation.",
+      "type": "object",
+      "required": ["suppliedBy", "scope", "criteria", "protectedContent", "documentType", "audience", "overlay", "candidate"],
+      "additionalProperties": false,
+      "properties": {
+        "suppliedBy": { "const": "parent" },
+        "scope": { "type": "string", "minLength": 1 },
+        "criteria": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "protectedContent": {
+          "description": "Protected-content declaration; use the string \"none\" when nothing is protected.",
+          "type": "string",
+          "minLength": 1
+        },
+        "documentType": {
+          "description": "Parent-confirmed document type (e.g. PRD, technical solution, architecture/interface design, delivery document, ADR).",
+          "type": "string",
+          "minLength": 1
+        },
+        "audience": {
+          "description": "Parent-confirmed intended audience of the document.",
+          "type": "string",
+          "minLength": 1
+        },
+        "overlay": {
+          "description": "Overlay metadata. Exactly one distinct representation must be present: either explicit generic/no-overlay ({\"generic\": true}) or one or more explicit named overlays (\"overlays\": [...]). Absent, both, or neither prevents criteria selection and is invalid/insufficient evidence. Normative XOR check lives in the validator.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "generic": {
+              "description": "Explicitly declare no overlay applies.",
+              "type": "boolean"
+            },
+            "overlays": {
+              "description": "One or more explicitly named overlays to load on top of core criteria.",
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "enum": ["product-engineering", "external-audience"] }
+            }
+          }
+        },
+        "candidate": {
+          "description": "Parent-declared candidate document identity; binding against the observed snapshot artifact is enforced by the validator.",
+          "type": "object",
+          "required": ["source", "revision", "fingerprint"],
+          "additionalProperties": false,
+          "properties": {
+            "source": { "type": "string", "minLength": 1 },
+            "revision": { "type": "string", "minLength": 1 },
+            "fingerprint": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+          }
+        }
+      }
+    },
+    "selectedScope": {
+      "description": "Declared selected scope for this review. Structurally validated only; semantic sufficiency is Oracle's judgment.",
+      "type": "string",
+      "minLength": 1
+    },
+    "writerScanRecords": {
+      "description": "Writer-reported scan records. Claims, not coverage proof — structurally validated only; sufficiency is left to Oracle.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["description"],
+        "additionalProperties": false,
+        "properties": {
+          "description": { "type": "string", "minLength": 1 },
+          "locator": { "type": "string" }
+        }
+      }
+    },
+    "artifacts": {
+      "description": "Declared evidence artifacts. Exactly one artifact with role=snapshot (the candidate snapshot) is required; manifests with only role=base artifacts are invalid (enforced by the validator).",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["role", "path", "sha256", "source", "revision", "retrievedAt", "referenceMap", "omissions"],
+        "additionalProperties": false,
+        "properties": {
+          "role": { "enum": ["snapshot", "base"] },
+          "path": {
+            "description": "Local path relative to this manifest.",
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "description": "Whole-file SHA-256 of the local artifact file.",
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "source": { "type": "string", "minLength": 1 },
+          "revision": { "type": "string", "minLength": 1 },
+          "retrievedAt": { "type": "string", "minLength": 1 },
+          "referenceMap": {
+            "description": "Reference map: locator string -> SHA-256 of exactly that located content (e.g. a section, or \"whole document\"). Pair-form comparison hashes are verified against these maps, never against whole-file hashes.",
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+          },
+          "omissions": {
+            "description": "Declared omissions (may be empty; omissions must be declared, not silent).",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["description"],
+              "additionalProperties": false,
+              "properties": {
+                "description": { "type": "string", "minLength": 1 },
+                "locator": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "comparisons": {
+      "description": "Optional declared comparison claims. Each must name its baseRevision and be backed by a baseline: a scoped role=base artifact (bound by the validator to the same candidate source identity and the declared baseRevision), or a precisely located candidate/base hash pair whose locators resolve in the relevant artifacts' reference maps and whose paired content hashes are equal.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim", "baseRevision", "baseline"],
+        "additionalProperties": false,
+        "properties": {
+          "claim": { "type": "string", "minLength": 1 },
+          "baseRevision": { "type": "string", "minLength": 1 },
+          "baseline": {
+            "oneOf": [
+              {
+                "type": "object",
+                "required": ["artifact"],
+                "additionalProperties": false,
+                "properties": {
+                  "artifact": { "type": "string", "minLength": 1 }
+                }
+              },
+              {
+                "type": "object",
+                "required": ["candidateLocator", "candidateSha256", "baselineLocator", "baselineSha256"],
+                "additionalProperties": false,
+                "properties": {
+                  "candidateLocator": { "type": "string", "minLength": 1 },
+                  "candidateSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+                  "baselineLocator": { "type": "string", "minLength": 1 },
+                  "baselineSha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}
