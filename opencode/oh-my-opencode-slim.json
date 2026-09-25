@@ -1,14 +1,13 @@
 {
-  "$schema": "https://unpkg.com/oh-my-opencode-slim@latest/oh-my-opencode-slim.schema.json",
+  "$schema": "https://unpkg.com/oh-my-opencode-slim@2.2.15/oh-my-opencode-slim.schema.json",
   "preset": "newapi",
   "presets": {
     "newapi": {
       "orchestrator": {
-        "model": "deepseek-flash",
+        "model": "newapi/glm-5.3",
         "variant": "max",
         "skills": [
           "*",
-          "!document-review-evidence",
           "!use-modern-go",
           "!humanizer",
           "!lark-approval",
@@ -38,17 +37,19 @@
           "!lark-whiteboard",
           "!lark-wiki",
           "!lark-workflow-meeting-summary",
-          "!lark-workflow-standup-report"
+          "!lark-workflow-standup-report",
+          "!lark-worklog",
+          "!managing-lark-project-folder"
         ],
-        "mcps": ["gh_grep"]
+        "mcps": [
+          "gh_grep"
+        ]
       },
       "oracle": {
         "model": "openai/gpt-6-astra",
         "variant": "xhigh",
         "skills": [
-          "simplify",
-          "find-code-simplifications",
-          "document-review-evidence"
+          "find-code-simplifications"
         ],
         "mcps": []
       },
@@ -56,13 +57,22 @@
         "model": "openai/gpt-5.6-luna",
         "variant": "high",
         "skills": [],
-        "mcps": ["context7", "gh_grep"]
+        "mcps": [
+          "context7",
+          "gh_grep"
+        ],
+        "permission": {
+          "edit": "deny"
+        }
       },
       "explorer": {
         "model": "newapi/glm-5.3-flash",
         "variant": "max",
         "skills": [],
-        "mcps": []
+        "mcps": [],
+        "permission": {
+          "edit": "deny"
+        }
       },
       "designer": {
         "model": "newapi/kimi-k2.7",
@@ -73,14 +83,20 @@
       "fixer": {
         "model": "newapi/glm-5.3-flash",
         "variant": "max",
-        "skills": ["ponytail", "use-modern-go"],
+        "skills": [
+          "ponytail",
+          "use-modern-go"
+        ],
         "mcps": []
       },
       "observer": {
         "model": "newapi/glm-5.3-flash",
         "variant": "max",
         "skills": [],
-        "mcps": []
+        "mcps": [],
+        "permission": {
+          "edit": "deny"
+        }
       },
       "council": {
         "model": "openai/gpt-5.6-sol",
@@ -95,7 +111,6 @@
       "model": "newapi/glm-5.3-flash",
       "variant": "max",
       "skills": [
-        "writing-plans",
         "maintaining-product-engineering-docs",
         "domain-modeling",
         "humanizer",
@@ -111,8 +126,8 @@
         "yogo-products"
       ],
       "mcps": [],
-      "description": "Use for bounded creation or editing of product and engineering documents after the target, scope, protected content, confirmed facts, and acceptance criteria are known.",
-      "orchestratorPrompt": "For bounded local or cloud document creation or editing, dispatch document-writer after specifying target, scope, locator, protected content, confirmed facts, and acceptance criteria. After it writes and rereads, always dispatch oracle to review. Include the writer's `<artifact>` path and matching `ORACLE_REVIEW_EVIDENCE` manifest in every Oracle review dispatch. Return Critical or Important findings to the same document-writer, then use the same oracle for rereview before claiming completion.",
+      "description": "Create/edit formal product, technical and management documents, excluding internal agent plans and state.",
+      "orchestratorPrompt": "Use document-writer for formal document creation/body edits; it may read its target and assigned references. Keep internal agent plans and state in the main session.",
       "permission": {
         "task": "deny",
         "question": "deny",
@@ -143,7 +158,6 @@
         "lark-openapi-explorer",
         "lark-shared",
         "lark-sheets",
-        "lark-skill-maker",
         "lark-slides",
         "lark-task",
         "lark-whiteboard",
@@ -156,8 +170,8 @@
         "yogo-products"
       ],
       "mcps": [],
-      "description": "Use for all Feishu/Lark reads and operations except creating or editing formal product and engineering document content, which belongs to document-writer.",
-      "orchestratorPrompt": "Delegate every independent Feishu/Lark read or operation to lark-operator. Route formal product or engineering document body creation and editing to document-writer; Writer may read its target and reread after writing. For high-risk or external actions, require explicit user authorization and Oracle review before execution; return Critical or Important findings to the same lark-operator and use the same Oracle for rereview. Run listeners only in the background with timeout, max-events, and an explicit termination condition. Do not invoke lark-* Skills directly.",
+      "description": "Handle independent Lark reads and platform operations, excluding formal document writing and local file maintenance.",
+      "orchestratorPrompt": "Use lark-operator for independent Lark reads/actions; never run platform skills directly. Give Council seats the same retrieved Lark revision. Route local Lark skill files, including lark-skill-maker work, to fixer; operator supplies platform facts and authorized validation only.",
       "permission": {
         "bash": "allow",
         "read": "allow",
@@ -178,24 +192,23 @@
   },
   "council": {
     "default_preset": "default",
-
     "presets": {
       "default": {
-        "kimi-k3": { "model": "newapi/kimi-k3", "variant": "max" },
-        "glm-5.3": { "model": "newapi/glm-5.3", "variant": "max" },
-        "gpt-6-astra": { "model": "openai/gpt-6-astra", "variant": "xhigh" },
-        "gpt-5.6-sol": { "model": "openai/gpt-5.6-sol", "variant": "xhigh" },
-        "gpt-6-astra (relay)": {
-          "model": "newapi/gpt-6-astra",
-          "variant": "xhigh"
+        "kimi-k3": {
+          "model": "newapi/kimi-k3",
+          "variant": "max"
         },
-        "gpt-5.6-sol (relay)": {
-          "model": "newapi/gpt-5.6-sol",
+        "glm-5.3": {
+          "model": "newapi/glm-5.3",
+          "variant": "max"
+        },
+        "gpt-6-astra": {
+          "model": "openai/gpt-6-astra",
           "variant": "xhigh"
         },
         "deepseek-v4-pro": {
           "model": "newapi/deepseek-v4-pro",
-          "variant": "high"
+          "variant": "max"
         }
       }
     }
