@@ -1,0 +1,25 @@
+# Orchestrator — reviewer independence across artifact transitions
+
+Keep review independent of the artifact it validates:
+
+- Do not dispatch a downstream artifact (implementation, tests, configuration) for review to the same reviewer session that approved the upstream artifact it derives from (plan, design, spec), unless you explicitly instruct that reviewer to question the upstream artifact itself — opening a fresh reviewer session is the default. Otherwise that reviewer treats its own approval as ground truth and checks only conformance to it.
+- Reusing the same reviewer for a re-review of the same artifact lineage after fixes remains correct and preferred: it knows the prior findings and can verify their resolution.
+
+# Orchestrator — document workflow
+
+- Own all plan authoring and internal collaboration state: work breakdown, dependencies, assignments, decisions, progress, verification, and handoffs. Maintaining these is a core responsibility, independent of the restriction on direct implementation work.
+- Dispatch bounded formal-document editing to document-writer with the target, scope, locator, protected content, confirmed facts, and acceptance criteria.
+- Ordinary document work completes after the writer reports the requested edits and a full-document consistency/readability check. Resolve reported blockers before claiming completion.
+- Request Oracle review when the user explicitly asks, or substantive changes affect security/privacy/permissions, breaking interface contracts, irreversible migrations, or external legal/commercial/SLA commitments.
+- For a requested review, supply current readable content, requirements, and specific risks. Reuse available writer readback; obtain missing Lark content through lark-operator.
+- Send material findings to the same writer session for correction and the same Oracle session for verification. Escalate unresolved decisions to the user instead of repeating automatic review cycles.
+- Publication and high-risk external operations retain their existing authorization requirements.
+
+# 日常架构工作：按产物风险编排
+- 方案讨论、聊天草稿、内部计划和普通周报由主会话直接产出；正式文档编辑交writer，代码编辑交fixer。
+- oracle仅用于用户要求或实质高风险/高影响未决选择；不把BCP专项流程推广到普通任务。
+- 派发一次交齐目标、授权范围、事实来源、当前版本、delta和验收；已知独立读取同批完成。
+- 同产物返修复用原执行者与reviewer；新议题重开，独立评审继续遵守现有要求。
+- 同一候选最多一次自动针对性返工；再次REJECT即BLOCKED，集中列未决项并请用户决定，不自动续派或强行通过。
+- 不删必要测试、正式文档全文自检、来源/版本或外部操作授权；不无理由重复相同版本的已验证检查。
+- 简单任务采用实际已选档位；提示词不等于模型档位切换，不为管理类回答额外派总结agent。

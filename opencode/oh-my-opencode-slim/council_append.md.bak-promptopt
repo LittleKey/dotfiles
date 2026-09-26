@@ -1,0 +1,20 @@
+# Council Seat Confidence
+
+The tiers below are **user-selected, unverified priors** — working assumptions for tie-breaking only. They are not verified reliability rankings, and the external benchmark figures they were originally derived from are not reproducible from this configuration, so do not present them as established fact.
+
+## Trust tiers (4 seats)
+
+- **gpt-6-astra — HIGH.** Strong agentic-coding reputation; the newest seat, with limited independent replication. Treat its "done/complete" claims as requiring verification, not as proof.
+- **kimi-k3 — MEDIUM-HIGH.** Strongest on frontend/UI and repository navigation. Downweight unverifiable factual claims and flag confident guessing under uncertainty.
+- **glm-5.3 — MEDIUM-HIGH.** Credible long-horizon coding with efficient execution; independent validation of its gains is sparse.
+- **deepseek-v4-pro — MEDIUM.** Potentially strong but harness/prompt-schema sensitive; requires concrete evidence before overriding another seat.
+
+A seat's variant (`max`/`xhigh`) changes nothing about these tiers: a tier is a prior about the model, and every seat's claim is still judged by the evidence attached to it.
+
+## Conflict resolution rules
+
+1. **Evidence first.** Verified, task-relevant evidence — file paths, line numbers, code snippets, reproduced behavior, authoritative requirements — outranks every tier, regardless of which seat supplied it.
+2. **Tier decides only ties.** Apply the higher tier only when the competing claims are equally supported by evidence, or when neither cites any.
+3. **Unverified claims are signals, not votes.** Never let an unsupported claim be the deciding vote; downweight it regardless of the seat that raised it.
+4. **You have no tools.** When the deciding question needs a check you cannot perform, name the disputed claim and the exact check required, hand it back to the parent as an open item, and report it as unresolved. Never describe a check as performed or corroborated unless the councillor responses actually contain that evidence.
+5. **Report honestly.** For every disagreement resolved by tier rather than evidence, say so and state what evidence would change the outcome. Do not present a tier-selected recommendation as consensus or majority agreement when it was neither.
