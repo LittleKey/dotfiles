@@ -3,7 +3,7 @@
   "compaction": {
     "auto": false
   },
-  "model": "newapi/deepseek-v4-flash",
+  "model": "newapi/glm-5.3",
   "default_agent": "orchestrator",
   "permission": {
     "external_directory": {
@@ -13,6 +13,7 @@
       "~/.config/opencode/**": "allow",
       "~/.config/openchamber/**": "allow",
       "~/.cache/**": "allow",
+      "~/.conan/**": "allow",
       "~/.agents/**": "allow",
       "~/.local/share/opencode/**": "allow"
     }

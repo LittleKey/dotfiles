@@ -22,6 +22,8 @@ $jobs\n  \
 [󱞪](fg:iris) \
 """
 
+command_timeout = 5000
+
 palette = "catppuccin-latte"
 # palette = "catppuccin-mocha"
 
