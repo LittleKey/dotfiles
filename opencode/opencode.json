@@ -423,6 +423,38 @@
             "output": 0
           }
         },
+        "kimi-k2.8-preview": {
+          "name": "Kimi-K2.8",
+          "limit": {
+            "context": 1048576,
+            "output": 32000
+          },
+          "modalities": {
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "capabilities": {
+            "tool_calling": true,
+            "reasoning": true,
+            "vision": true
+          },
+          "pricing": {
+            "input": 0,
+            "output": 0
+          },
+          "reasoning": true,
+          "variants": {
+            "low": {
+              "reasoningEffort": "low"
+            },
+            "high": {
+              "reasoningEffort": "high"
+            },
+            "max": {
+              "reasoningEffort": "max"
+            }
+          }
+        },
         "kimi-k3": {
           "name": "Kimi-K3",
           "limit": {
