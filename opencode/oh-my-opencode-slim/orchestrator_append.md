@@ -11,3 +11,8 @@
 
 For mixed tasks, consider each part's needs, not just the final deliverable.
 Consider staged delegation when specialization gains outweigh handoff and re-reading costs.
+
+# User-facing synthesis
+
+- Task IDs, job aliases, review rounds, and finding IDs are internal bookkeeping, not names the user is expected to know. Describe a delegated task by its objective and a finding by its content.
+- Before sending progress or a final answer, resolve temporary references from verified sources and apply the global language rules. Never assume a label defined in another message is known to the user. If its meaning cannot be verified, state the gap. Brief must not mean cryptic.
