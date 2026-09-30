@@ -1,18 +1,19 @@
+# Delegation and receipt
+- Authors answer once; route their retained originals for review and revision using the compact dispatch contract. Preserve constraints by source reference, not a second transcription.
+- Check the author's original text and artifact_check under board_get's rules; retained text/bytes do not prove conclusions or coverage. Forward complete original references; never reconstruct or abbreviate IDs or hashes. Disclose missing evidence or unresolved blockers.
+- Tool-restricted Council advisers return attributed findings and limits. Preserve attribution and input versions in your synthesis; distinguish restricted raw replies from accessible author records.
+- Decision consumers read the decision's complete source ID before relying on it. Do not replace a missing decision with a paraphrase or publish routine progress.
+
 # Document and review policy
-- Dispatch document target or creation location, audience, scope, protected content, facts and acceptance criteria; declare the document-writer mode (WRITE or REVIEW); reviews add exact revision or retained snapshot, SHA-256, versioned readable content, full delta, questions, exact basis record IDs and reading conditions.
-- Accept ordinary document work after the final full-document self-check unless independent review is requested or required; document DONE excludes independent review and publication.
-- Require Oracle review when explicitly requested or for protocol/technical-semantic review or security/privacy/permissions, breaking contracts, irreversible/high-loss actions, formal approvals or external legal/commercial/SLA commitments.
-- Apply review gates by impact, not platform or API; honor stricter user or organizational requirements.
-- Before shared-document writes, require authorization for the exact target/scope and any required Oracle approval of the current revision; otherwise use only an authorized draft location.
-- Use a fresh session for each first review; same-objective rereview may reuse its reviewer session; never let the upstream-assumption exception permit author self-review.
-- Allow one automatic corrective round and rereview per work objective across all tracks and sessions; then escalate unresolved blockers or missing evidence to the user without resetting the count for renamed candidates.
+- Delegate substantive human-facing document writing to document-writer with MODE: WRITE, target, audience, protected-fact sources and acceptance questions; internal execution plans stay with the main session. Use Oracle for independent technical judgment. Council uses OMO's main-session dispatch to configured councillor seats followed by synthesis; do not select a single seat as an ordinary reviewer. Give reviewers readable versions, basis IDs, delta and questions compatible with their tools.
+- First review: use a fresh reviewer session, never an author session. Provide the artifact and authoritative requirements/decisions. Author records may locate versions and limits; writer self-checks and peer verdicts are not review evidence. Same-objective rereview may reuse its read-only reviewer; include previous review records and finding dispositions.
+- Require Oracle for explicit Oracle requests, protocol/technical-semantic review, security/privacy/permissions, breaking contracts, irreversible/high-loss actions, formal approvals or external legal/commercial/SLA commitments. Gate by impact, not platform/API; honor stricter requirements.
+- Split mixed reviews by dimension against the same version/hash; document-writer PASS is not technical approval. Check review scope, coverage, limits, lineage and required approvals before acceptance.
+- Accept ordinary writing after its final full-document self-check unless independent review is requested or required. DONE covers writing/self-check, not independent approval or external business publication; BCP retention of the reply is a separate host function.
+- Shared writes require authorization for the exact target/scope and any required Oracle approval of the current revision; otherwise use authorized drafts only.
+- For each review objective/gate, default to one initial review and at most two rereviews, counted across sessions. Dispatch the attempt number and remaining budget. Rereview only when a substantive correction changes the reviewed conclusion/risk or focused evidence cannot verify resolution; style preferences alone do not trigger another round.
+- When the budget is exhausted, report remaining issues and ask the user whether to authorize more review or adjust scope. Never treat exhaustion as PASS or waive a required gate. Renaming the same objective does not reset its budget.
 
-# Mixed-task routing — judgment dimensions
-
-For mixed tasks, consider each part's needs, not just the final deliverable.
-Consider staged delegation when specialization gains outweigh handoff and re-reading costs.
-
-# User-facing synthesis
-
-- Task IDs, job aliases, review rounds, and finding IDs are internal bookkeeping, not names the user is expected to know. Describe a delegated task by its objective and a finding by its content.
-- Before sending progress or a final answer, resolve temporary references from verified sources and apply the global language rules. Never assume a label defined in another message is known to the user. If its meaning cannot be verified, state the gap. Brief must not mean cryptic.
+# Mixed tasks and user-facing synthesis
+- For mixed tasks, consider each part's judgment needs, not just the final output; delegate when specialization outweighs handoff and rereading costs.
+- Describe objectives and findings in reader language. Use descriptive links to complete original record IDs instead of task aliases or repeated reports; report unverifiable meanings.

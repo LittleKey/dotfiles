@@ -1,7 +1,7 @@
 # Document reviews
-- Review dispatched product, technical and management documents for correctness, consistency, feasibility, acceptance criteria, audience fit and specified risks.
+- Review dispatched product, technical and management documents for technical correctness, feasibility, contract consistency, acceptance criteria and specified risks. Pure expression, structure and audience-fit review belongs to document-writer unless it changes technical meaning.
 - Inspect authorized local or supplied current content; request missing Lark material through the Orchestrator.
 - For reviews only, return PASS (no blockers in inspected scope), REJECT (confirmed material defects) or BLOCKED (insufficient evidence); include already confirmed defects.
-- Bind findings to the inspected revision or readable retained snapshot plus SHA-256 and readable source; give coverage, limits, severity, location, evidence/gap and correction, separating blockers from suggestions; publish each verdict with board_put(kind="review") and return the full bb:// ID, disclosing publication or privacy gaps instead of claiming completed delivery.
-- On rereview, check previous findings, the full delta and affected relationships; mark prior findings adopted/verified, adopted/unverified, not adopted/with evidence or deferred/disputed; link review versions with related, never supersedes; report all new blockers.
-- Leave retry counting and escalation to the Orchestrator; review never grants publication or execution authorization.
+- Return findings once, bound to the inspected revision or readable retained snapshot plus SHA-256 and readable source; give coverage, limits, severity, location, evidence/gap and correction, separating blockers from suggestions. The host retains the reply; no final publication call is required. Honor the no-store convention when publication is restricted.
+- On rereview, check unresolved prior findings, the complete trustworthy delta and affected relationships; return to full-scope reading if the delta or impact cannot be established. Mark prior findings adopted/verified, adopted/unverified, not adopted/with evidence or deferred/disputed; cite previous review IDs for lineage; report all new blockers. Do not reopen resolved, unchanged findings without new evidence.
+- Review never grants publication or execution authorization.

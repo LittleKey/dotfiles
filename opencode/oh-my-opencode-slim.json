@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/oh-my-opencode-slim@2.2.15/oh-my-opencode-slim.schema.json",
+  "$schema": "https://unpkg.com/oh-my-opencode-slim@2.2.25/oh-my-opencode-slim.schema.json",
   "preset": "newapi",
   "presets": {
     "newapi": {
@@ -7,43 +7,34 @@
         "model": "newapi/glm-5.3",
         "variant": "max",
         "skills": [
-          "*",
-          "!use-modern-go",
-          "!humanizer",
-          "!lark-approval",
-          "!lark-apps",
-          "!lark-attendance",
-          "!lark-base",
-          "!lark-calendar",
-          "!lark-contact",
-          "!lark-doc",
-          "!lark-drive",
-          "!lark-event",
-          "!lark-im",
-          "!lark-mail",
-          "!lark-markdown",
-          "!lark-meeting",
-          "!lark-minutes",
-          "!lark-note",
-          "!lark-okr",
-          "!lark-openapi-explorer",
-          "!lark-shared",
-          "!lark-sheets",
-          "!lark-skill-maker",
-          "!lark-slides",
-          "!lark-task",
-          "!lark-vc",
-          "!lark-vc-agent",
-          "!lark-whiteboard",
-          "!lark-wiki",
-          "!lark-workflow-meeting-summary",
-          "!lark-workflow-standup-report",
-          "!lark-worklog",
-          "!managing-lark-project-folder"
+          "writing-plans",
+          "executing-plans",
+          "verification-planning",
+          "deepwork",
+          "worktrees",
+          "domain-modeling",
+          "grilling",
+          "grill-with-docs",
+          "to-spec",
+          "handoff",
+          "reflect",
+          "customize-opencode",
+          "oh-my-opencode-slim",
+          "clonedeps",
+          "codemap",
+          "setup-matt-pocock-skills",
+          "eli5",
+          "wait-what"
         ],
         "mcps": [
           "gh_grep"
-        ]
+        ],
+        "permission": {
+          "task": {
+            "*": "allow"
+          },
+          "apply_patch": "allow"
+        }
       },
       "oracle": {
         "model": "openai/gpt-6-astra",
@@ -51,7 +42,14 @@
         "skills": [
           "find-code-simplifications"
         ],
-        "mcps": []
+        "mcps": [],
+        "description": "Independent technical judgment for consequential plans and acceptance reviews; challenge premises before execution and inspect exact-version evidence. Read-only for project artifacts.",
+        "permission": {
+          "edit": "deny",
+          "write": "deny",
+          "apply_patch": "deny",
+          "ast_grep_replace": "deny"
+        }
       },
       "librarian": {
         "model": "openai/gpt-5.6-luna",
@@ -62,32 +60,39 @@
           "gh_grep"
         ],
         "permission": {
-          "edit": "deny"
+          "edit": "deny",
+          "apply_patch": "deny"
         }
       },
       "explorer": {
         "model": "newapi/glm-5.3-flash",
         "variant": "max",
+        "description": "Bounded local code investigation: architecture facts, entry points, call chains, impact and tests. Return reusable findings with original sources, inspected scope/version and limits; isolate disposable discovery.",
         "skills": [],
         "mcps": [],
         "permission": {
-          "edit": "deny"
+          "edit": "deny",
+          "apply_patch": "deny"
         }
       },
       "designer": {
         "model": "newapi/kimi-k2.7",
-        "variant": "thinking",
         "skills": [],
-        "mcps": []
+        "mcps": [],
+        "permission": {
+          "apply_patch": "allow"
+        }
       },
       "fixer": {
         "model": "newapi/glm-5.3-flash",
         "variant": "max",
         "skills": [
-          "ponytail",
           "use-modern-go"
         ],
-        "mcps": []
+        "mcps": [],
+        "permission": {
+          "apply_patch": "allow"
+        }
       },
       "observer": {
         "model": "newapi/glm-5.3-flash",
@@ -95,7 +100,8 @@
         "skills": [],
         "mcps": [],
         "permission": {
-          "edit": "deny"
+          "edit": "deny",
+          "apply_patch": "deny"
         }
       },
       "council": {
@@ -127,7 +133,7 @@
       ],
       "mcps": [],
       "description": "Create/edit formal product, technical and management documents; review expression, structure, consistency and audience fit; exclude internal agent plans/state.",
-      "orchestratorPrompt": "- Use document-writer with MODE: WRITE for formal document creation/body edits and MODE: REVIEW for expression, structure, document-internal consistency, audience fit and readability; keep internal agent plans/state in the main session and independent platform work with lark-operator.\n- Dispatch one mode with target/location, audience, scope, protected content, facts and acceptance criteria; reviews also need exact revision or retained snapshot, SHA-256, readable content, full delta and questions.\n- Provide direct basis records by exact bb:// ID with required/conditional/trace-only reading conditions; recipients must read and verify every record relied on.\n- Start each first review in a new session; never reuse any session that authored a version of the target; same-objective rereview may reuse its read-only reviewer session, otherwise start fresh.\n- Supply the artifact, authoritative requirements/decisions, factual limits and delta, not the writer's DONE/self-check narrative or peer verdicts for the first pass; rereviews receive prior review records and finding dispositions.\n- Route protocol/technical-semantic review to Oracle; require Oracle for explicit Oracle requests or security/privacy/permissions, breaking contracts, irreversible/high-loss effects, formal approvals or external legal/commercial/SLA commitments.\n- Split mixed reviews by dimension against the same version/hash; document-writer PASS never satisfies an Oracle gate or implies technical correctness.\n- Accept ordinary writing after the final full-document self-check unless independent review is requested or required; shared writes still require exact authorization and any required Oracle approval of current content.\n- Require reviewers to publish their own board review records; before acceptance, read them and verify version/hash, scope, coverage, limits, lineage and required approvals; unresolved blockers, evidence gaps or missing publication prevent acceptance.\n- Own one automatic correction and rereview per objective across both tracks; then escalate unresolved blockers or missing evidence to the user; never reset the budget for renamed candidates or new sessions.",
+      "orchestratorPrompt": "- Use document-writer with MODE: WRITE for formal document creation/body edits, or MODE: REVIEW for expression, structure, document-internal consistency, audience fit and readability.\n- Keep internal agent plans/state in the main session and independent platform work with lark-operator. Apply the main-session document/review policy for dispatch and acceptance.",
       "permission": {
         "task": "deny",
         "question": "deny",
@@ -183,7 +189,7 @@
         "ast_grep_replace": "deny",
         "task": "deny",
         "question": "deny",
-        "webfetch": "deny",
+        "webfetch": "allow",
         "websearch": "deny",
         "gh_grep_*": "deny",
         "context7_*": "deny"

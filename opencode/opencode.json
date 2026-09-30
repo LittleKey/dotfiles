@@ -19,11 +19,9 @@
     }
   },
   "plugin": [
-    "opencode-vibeguard@latest",
-    "opencode-acp@latest",
-    "oh-my-opencode-slim@latest",
-    "opencode-auto-readme@git+https://github.com/LittleKey/opencode-auto-readme.git",
-    "@dietrichgebert/ponytail@4.10.0"
+    "file:///home/littlekey/.config/opencode/local-plugins/dist/vibeguard/index.js",
+    "file:///home/littlekey/.config/opencode/local-plugins/dist/acp.js",
+    "file:///home/littlekey/.config/opencode/local-plugins/dist/omo.js"
   ],
   "provider": {
     "newapi": {
