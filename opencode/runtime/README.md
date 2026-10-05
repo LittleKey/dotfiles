@@ -125,6 +125,30 @@ Host floors are `v1 >= 1.18.29`, `v2 >= 2.0.20`; tested versions are
 
 ## Lifecycle
 
+### OpenChamber local-path display compatibility
+
+OpenChamber 1.24.2 checks relative plugin paths against the selected project
+directory, whereas OpenCode resolves them against the config file. For an
+installed v1 profile, the optional maintenance command below converts local
+registrations to absolute paths and removes options-free registrations already
+covered by root-level plugin discovery. It does not delete plugin files or
+restart the host. Staging still uses relocatable relative paths.
+Plain absolute paths are intentional: this client version also classifies
+`file://` URLs as npm package specs.
+
+```bash
+node bin/normalize-plugin-paths.mjs --root /absolute/installed/config/root
+node bin/normalize-plugin-paths.mjs --root /absolute/installed/config/root --apply
+```
+
+The command requires matching installed authority and manifest hashes. It
+backs up private bytes with mode `0600`, preserves unrelated settings, and
+updates the installed hash records. If an owner handover also tracks the live
+manifest as a rollback extra, supply `--handover-state /path/to/APPLIED.json`
+so its existing checkpoint is updated after validation. It does not modify
+the original staged candidate or its rollback baseline. Caught write failures
+restore applied files; cross-file power-loss atomicity is not provided.
+
 1. `pin` records SHA-256 of every source of record (dotfiles prompts, OMO
    config, `AGENTS.md`, live `agents/lark-operator.md`, production
    `opencode.json` as models source, live `skills/` tree) into
