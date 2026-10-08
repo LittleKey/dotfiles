@@ -1,7 +1,4 @@
-# Document reviews
-- Review dispatched product, technical and management documents for technical correctness, feasibility, contract consistency, acceptance criteria and specified risks. Pure expression, structure and audience-fit review belongs to document-writer unless it changes technical meaning.
-- Inspect authorized local or supplied current content; request missing Lark material through the Orchestrator.
-- For reviews only, return PASS (no blockers in inspected scope), REJECT (confirmed material defects) or BLOCKED (insufficient evidence); include already confirmed defects.
-- Return findings once, bound to the inspected revision or readable retained snapshot plus SHA-256 and readable source; give coverage, limits, severity, location, evidence/gap and correction, separating blockers from suggestions. The host retains the reply; no final publication call is required. Honor the no-store convention when publication is restricted.
-- On rereview, check unresolved prior findings, the complete trustworthy delta and affected relationships; return to full-scope reading if the delta or impact cannot be established. Mark prior findings adopted/verified, adopted/unverified, not adopted/with evidence or deferred/disputed; cite previous review IDs for lineage; report all new blockers. Do not reopen resolved, unchanged findings without new evidence.
-- Review never grants publication or execution authorization.
+- Acceptance: PASS (no blockers in inspected scope), REJECT (confirmed material defects) or BLOCKED (insufficient evidence); report confirmed defects despite gaps.
+- Bind findings to the exact inspected revision or snapshot; state coverage, limits, severity, location, evidence or gap. A verdict never grants publication or execution authorization.
+- Defer pure expression, structure and audience-fit findings on formal documents to document-writer unless meaning changes.
+- Re-review: unresolved prior findings plus the trustworthy delta; full reread if the delta is unverifiable. Mark prior findings adopted/verified, adopted/unverified, not adopted or deferred/disputed, citing the prior review.

@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 1,
+  "generator": "integrations/omo-slim/build-skills.mjs",
+  "stockPackage": {
+    "name": "oh-my-opencode-slim",
+    "version": "3.0.1",
+    "dir": "/home/littlekey/.cache/opencode/packages/oh-my-opencode-slim@3.0.1/node_modules/oh-my-opencode-slim",
+    "skillsRel": "src/skills",
+    "verifiedFiles": {
+      "clonedeps/README.md": "b1a701f9459a7c25cdc55178d04844ad707ecaa4d0bf48801e3da42a3c9f46b4",
+      "clonedeps/SKILL.md": "8e7a0ef28cccd2c54a6e091f470d41c6be3a0ef3a0e9414d06912b3a4d845a48",
+      "clonedeps/codemap.md": "25329a65dcafdd4108be1a6b993489a2a2ff91e7561ca1b2fa3b4c064b695fcd",
+      "codemap/README.md": "fab8e2159592b290b5615f2b234082f5c1d4283a538df9f9542afa841c76fa0b",
+      "codemap/SKILL.md": "9f389bcf1a409a3a20d0564fcf284344021eb9576c6b3fd990337c38da41fdbe",
+      "codemap/codemap.md": "eb16c36c04ef8a927b7391565ac5e18c210ac2e3bbff2b803159f9c71cd55f6b",
+      "codemap/scripts/codemap.mjs": "a6e59ec16f7b7e5de185a9cf35933c23e94dfaab3389a99eed66a7ece3c1fdb5",
+      "codemap/scripts/codemap.test.ts": "bd94813c7545a1fe0fa46f2c8967cb7b3d8531b78e7ff313d923cabad996d569",
+      "deepwork/SKILL.md": "0d98fb3402c0c59e018b60de3304caa664c69b0692af2eb6929c7ed54506cfa2",
+      "oh-my-opencode-slim/SKILL.md": "802b1899aeece1431549110fbef112438332aa71394a00bf11397e7be0f5af06",
+      "reflect/SKILL.md": "3e7edc3d65599b3d0ec7ceea768f086be734ce6edcea9cc7a7166986ae227dbb",
+      "simplify/README.md": "30e479208ff37a348388284f434fde6b9ca9cbf704c56f21781b6175021cc7ad",
+      "simplify/SKILL.md": "29e126c20e8310fad21bd0db5fe4225c88538aa8585b1efbc9726a684643cf10",
+      "simplify/codemap.md": "e8659ed4db1cbbf5b814d172db35306c172f88ef24c34abbe8c53ae62cc75281",
+      "verification-planning/SKILL.md": "7d2f4db38901c82a2884284805ebe4105b813933ba5cdca572acfed5b92e83c5",
+      "worktrees/SKILL.md": "09c9b694ff3450e96d078ff687f25dae6238202972fdc62a6769605531bc22f6"
+    }
+  },
+  "inherited": [
+    "clonedeps",
+    "reflect",
+    "simplify",
+    "verification-planning",
+    "worktrees"
+  ],
+  "unregistered": [
+    "loop-engineering"
+  ],
+  "patched": {
+    "codemap": {
+      "patchFile": "/home/littlekey/github/opencode-bcp/integrations/omo-slim/skill-overrides/codemap.json",
+      "note": "codemap: treat codemap.md as a navigation index, not mandatory pre-reading (BCP token-efficiency policy). Stock 3.0.1 keeps its relative scripts/codemap.mjs command paths and the corrected codemap.md fact wording; only this paragraph is local policy.",
+      "ops": [
+        {
+          "id": "repository-map-navigation",
+          "findSha256": "3b456958ac9eaf2c6a92a3a3b8c899b9f82d7f8e629a8e07ed9d45437e79d12b",
+          "replaceSha256": "a9ddfcc402ff3d32b1ea55b4c83215d14b1c158f87dc1f792aec64229386e760"
+        }
+      ]
+    },
+    "deepwork": {
+      "patchFile": "/home/littlekey/github/opencode-bcp/integrations/omo-slim/skill-overrides/deepwork.json",
+      "note": "deepwork: BCP state/commit policy over stock 3.0.1. The stock session-pinned progress file contract (.slim/deepwork/<session-id>.md, enforced by the plugin hook's activation prompt) is kept verbatim; the old global free-named variant was dropped because it contradicts that hook.",
+      "ops": [
+        {
+          "id": "todo-live-status",
+          "findSha256": "1b6694228bc0189e37f16fdf9d0df6331479c1d422ee8cd313e02dd04396635f",
+          "replaceSha256": "6e467312fa89efa51b6ac30e6c9da065ed0ca61848b05c9054a5e36cc0385819"
+        },
+        {
+          "id": "snapshot-handoff-boundaries",
+          "findSha256": "a58e1af1343e7e51c5e474e0c4987a05dd579ca635e0aa9c2d858b523df39dfd",
+          "replaceSha256": "ae24f5717dc27d16a3f14cf25f35aed825289a5fe7c44776648efe3da3f4d82f"
+        },
+        {
+          "id": "oracle-gates-from-risk",
+          "findSha256": "f14f3365d2fb43be3a38264a9df34de35226aa251ae12e148bf327076cc5d1e8",
+          "replaceSha256": "2cbe6eba440c3ddb460a2ecae2aca045fa571b35b4b3d2e1c08546f7b403676a"
+        },
+        {
+          "id": "user-authorized-commits",
+          "findSha256": "f94a3765f7e4e3f02c080fb0ac82698178ad3051a310772ae0ee673de51bcfaa",
+          "replaceSha256": "cc4a81ac249be62e6744b158a2d1d3458bd59d88340655cbb4c7618c4291b4d3"
+        }
+      ]
+    },
+    "oh-my-opencode-slim": {
+      "patchFile": "/home/littlekey/github/opencode-bcp/integrations/omo-slim/skill-overrides/oh-my-opencode-slim.json",
+      "note": "oh-my-opencode-slim: config fact corrections, all verified against the 3.0.1 implementation (dist loader code). Upstream docs understate project-local config/prompt support and claim built-in agents reject inline prompts; the implementation supports both.",
+      "ops": [
+        {
+          "id": "project-local-config-and-prompts",
+          "findSha256": "a8474d939394b5df0a84df60a7baebc2da3abd443da8e6a8fe6f81da57b0933d",
+          "replaceSha256": "5ff8d04bb7fc512972e39976d5873fea40c389dbae53b38a1ef9b5f31cf714e2"
+        },
+        {
+          "id": "prompt-lookup-order",
+          "findSha256": "a0ede1f9bf4fadd475bb12ea2af0fc4103b6a1053420b338143e8ac8c9d7e9a0",
+          "replaceSha256": "cd2b640c35b54a071816115c4b3c2c86a31ca6991ec51f0579d816ddf891c7ca"
+        },
+        {
+          "id": "inline-prompt-schema-boundary",
+          "findSha256": "ff7ed1d29f4513d05c9ae47b07d970d8060c03f0a45856a93fad49049b4a59c2",
+          "replaceSha256": "b10e4c2f8ab6d950f6cd3d77c3583a54f51c02ec0b70061db705cde41771bc99"
+        }
+      ]
+    }
+  },
+  "personal": {
+    "dir": "/home/littlekey/.config/opencode/skills",
+    "skills": [
+      "domain-modeling",
+      "eli5",
+      "executing-plans",
+      "find-code-simplifications",
+      "grill-with-docs",
+      "grilling",
+      "handoff",
+      "humanizer",
+      "setup-matt-pocock-skills",
+      "to-spec",
+      "wait-what",
+      "writing-plans"
+    ],
+    "skipped": [
+      "clonedeps",
+      "codemap",
+      "deepwork",
+      "oh-my-opencode-slim",
+      "reflect",
+      "simplify",
+      "verification-planning",
+      "worktrees"
+    ],
+    "files": {
+      "domain-modeling/ADR-FORMAT.md": "944c92aa790e8fbdc9199640b170979abb8a34ba8d0fe18c2a01a63bce140ca0",
+      "domain-modeling/CONTEXT-FORMAT.md": "17ab16ce783e4d2801ee52fd9acdf550cbf44de65ae76797a93943bbedf22a13",
+      "domain-modeling/SKILL.md": "327a2b50620e2fd70abc6893cd6965e76b20f8d0adb0dc2c8d5eb3845efb643e",
+      "domain-modeling/agents/openai.yaml": "f6bf2aa996c6e6f53fdd0708e18a0d16a56aed8322cca59fedbe3c0d2c75f06b",
+      "eli5/LICENSE": "1126322e2cc8d165adc4c792eeb195717de2bcc7b39be1ce77959d78e87ef685",
+      "eli5/SKILL.md": "a671efd44a818aee7dbe4ea2ec634079401c3f578c08cb634c2b6181ced2dbe9",
+      "executing-plans/SKILL.md": "90fa28c3da44f8af191616baa69b043a739c1afc02dab95d5bac17b330ab06e8",
+      "find-code-simplifications/SKILL.md": "c2c01d88b1498df0f5f7782f8069c02fa2dfce4927228ba614a65b5fd8dd1a89",
+      "find-code-simplifications/agents/openai.yaml": "065b31274e6f89abf10ad2cf1edf12baa79fb1893ef3bbb28c104279d48f282c",
+      "grill-with-docs/SKILL.md": "7de372c13488f1ee96cc11cd8907b56b6809cc93eef776eeddd37de6b6cbe3fe",
+      "grill-with-docs/agents/openai.yaml": "94cd0ab161fb468a836349f5ed482ba58ce8e709a05c57ce533d739dbd35cca9",
+      "grilling/SKILL.md": "10ff989e7498b23b5acb49d5048f11dcd906757d2f79c5cdf8a00001381296f2",
+      "grilling/agents/openai.yaml": "1411d7df7d99b7e621a1ff8283c8133cc2464be63d064e52d8ce169c6800ee9b",
+      "handoff/SKILL.md": "7c62de979fdc7ac32fb5ddb2146156c917f80ee070d30fadc9d40343c4b6ed25",
+      "handoff/agents/openai.yaml": "5c479fd562c691851690e8b18c8501045bef0943c10743d636b2fae26add1d28",
+      "humanizer/.claude-plugin/marketplace.json": "24261fcfead5f536e0a6f0c3fd27fa809c69393217d67d617adb6c83a2715eb7",
+      "humanizer/.claude-plugin/plugin.json": "ce4f3dd0397c9ca71fe9a089dd00cd132436cfeba4513c53cc6c486f537de43c",
+      "humanizer/.github/workflows/validate.yml": "f2d6a8780fb0b3cf6fa7d2ffccd72d0fc8bee29b4e63ea0fd65924712c9055fd",
+      "humanizer/AGENTS.md": "8f5069d68622bc956e2d492f26879d2a06508e2ef16d2e573ab13f7a92a0607a",
+      "humanizer/LICENSE": "4ac4810254ab36d45419141aeb8e69bf50652cfafe5b2dab947d06d44e5cbf96",
+      "humanizer/README.md": "d546538831ce8423587208d4a86dbe2be1f1f63445505d284dc558e6de86dac0",
+      "humanizer/SKILL.md": "e8269e236bed06ed0fe4824c274112e54950b0cb46b0bafe5e1576ef7c9f93d5",
+      "humanizer/agents/openai.yaml": "9d87ff83149a04f86a372948b8ee35fa249de20923867bbc2a49304290aad736",
+      "humanizer/scripts/validate-package.py": "750e5f50561b8a5285bd1a20ed8b127af65b1b25d50e88c2ce5fe8522943c8fd",
+      "setup-matt-pocock-skills/SKILL.md": "2bcd89e97777cdb705914424e39c97d5db524c8eb4eafac8120778a07774f0ec",
+      "setup-matt-pocock-skills/agents/openai.yaml": "9527de0110541c45712319025155aeab8dc7d77c6ed6e5e83271bab1851ab939",
+      "setup-matt-pocock-skills/domain.md": "edc6d6131fdffc4b7135704f5262124fc43355c95f61b7399dc5a4db643e28ca",
+      "setup-matt-pocock-skills/issue-tracker-github.md": "afd6852a80185217bd28aa5cbe456bef1e85be25be7bd1fba382d5b8ee428325",
+      "setup-matt-pocock-skills/issue-tracker-gitlab.md": "ea175f73d193b3f55819c0ed9bbccf6ee0e70ad8f928e3d7607596c53380acd6",
+      "setup-matt-pocock-skills/issue-tracker-local.md": "7dcda20a2eb4bdc89b95d1143423c0691309921cadae3132e6424f371030506e",
+      "setup-matt-pocock-skills/triage-labels.md": "4f53c9b40ce2651e3611aa090eaedbd6dbc9b71ef8c5f7e65eac0d8263190d0d",
+      "to-spec/SKILL.md": "229fff978a0724d00481572e990a1f13182685513eff249cfee9c2f6847741db",
+      "to-spec/agents/openai.yaml": "1c5b4d1e3d8e52287ef19cc2742fdbbfae1914ac75d33af3e4c8174f08cc55bb",
+      "wait-what/SKILL.md": "e3f44e3ccbc0e7b62f20ba70b295fc9c9f4aa3f96c77168faee1c71bacbf4215",
+      "wait-what/agents/openai.yaml": "b41faadf741d51e4ea184148b2d1854d93f947aaf754c7844f70a00f04194999",
+      "writing-plans/SKILL.md": "d9bfa0ab7228941091fc6d131d04e72a63c14d25ba3bf764b9e5283da9fde19a"
+    }
+  },
+  "output": {
+    "skillsDir": ".slim/deepwork/upstream-defaults-20261006/dotfiles/opencode/runtime/generated/skills",
+    "files": {
+      "skills/codemap/README.md": "fab8e2159592b290b5615f2b234082f5c1d4283a538df9f9542afa841c76fa0b",
+      "skills/codemap/SKILL.md": "2ce756e95b392631aa3e3f75d35b43b2e1b6bf95cd72924825ade558bd8c8cf3",
+      "skills/codemap/codemap.md": "eb16c36c04ef8a927b7391565ac5e18c210ac2e3bbff2b803159f9c71cd55f6b",
+      "skills/codemap/scripts/codemap.mjs": "a6e59ec16f7b7e5de185a9cf35933c23e94dfaab3389a99eed66a7ece3c1fdb5",
+      "skills/codemap/scripts/codemap.test.ts": "bd94813c7545a1fe0fa46f2c8967cb7b3d8531b78e7ff313d923cabad996d569",
+      "skills/deepwork/SKILL.md": "f8f6db85fa0f401a53bcbc963bcab1d093b7bc766c563875c2314d85f2b5425d",
+      "skills/domain-modeling/ADR-FORMAT.md": "944c92aa790e8fbdc9199640b170979abb8a34ba8d0fe18c2a01a63bce140ca0",
+      "skills/domain-modeling/CONTEXT-FORMAT.md": "17ab16ce783e4d2801ee52fd9acdf550cbf44de65ae76797a93943bbedf22a13",
+      "skills/domain-modeling/SKILL.md": "327a2b50620e2fd70abc6893cd6965e76b20f8d0adb0dc2c8d5eb3845efb643e",
+      "skills/domain-modeling/agents/openai.yaml": "f6bf2aa996c6e6f53fdd0708e18a0d16a56aed8322cca59fedbe3c0d2c75f06b",
+      "skills/eli5/LICENSE": "1126322e2cc8d165adc4c792eeb195717de2bcc7b39be1ce77959d78e87ef685",
+      "skills/eli5/SKILL.md": "a671efd44a818aee7dbe4ea2ec634079401c3f578c08cb634c2b6181ced2dbe9",
+      "skills/executing-plans/SKILL.md": "90fa28c3da44f8af191616baa69b043a739c1afc02dab95d5bac17b330ab06e8",
+      "skills/find-code-simplifications/SKILL.md": "c2c01d88b1498df0f5f7782f8069c02fa2dfce4927228ba614a65b5fd8dd1a89",
+      "skills/find-code-simplifications/agents/openai.yaml": "065b31274e6f89abf10ad2cf1edf12baa79fb1893ef3bbb28c104279d48f282c",
+      "skills/grill-with-docs/SKILL.md": "7de372c13488f1ee96cc11cd8907b56b6809cc93eef776eeddd37de6b6cbe3fe",
+      "skills/grill-with-docs/agents/openai.yaml": "94cd0ab161fb468a836349f5ed482ba58ce8e709a05c57ce533d739dbd35cca9",
+      "skills/grilling/SKILL.md": "10ff989e7498b23b5acb49d5048f11dcd906757d2f79c5cdf8a00001381296f2",
+      "skills/grilling/agents/openai.yaml": "1411d7df7d99b7e621a1ff8283c8133cc2464be63d064e52d8ce169c6800ee9b",
+      "skills/handoff/SKILL.md": "7c62de979fdc7ac32fb5ddb2146156c917f80ee070d30fadc9d40343c4b6ed25",
+      "skills/handoff/agents/openai.yaml": "5c479fd562c691851690e8b18c8501045bef0943c10743d636b2fae26add1d28",
+      "skills/humanizer/.claude-plugin/marketplace.json": "24261fcfead5f536e0a6f0c3fd27fa809c69393217d67d617adb6c83a2715eb7",
+      "skills/humanizer/.claude-plugin/plugin.json": "ce4f3dd0397c9ca71fe9a089dd00cd132436cfeba4513c53cc6c486f537de43c",
+      "skills/humanizer/.github/workflows/validate.yml": "f2d6a8780fb0b3cf6fa7d2ffccd72d0fc8bee29b4e63ea0fd65924712c9055fd",
+      "skills/humanizer/AGENTS.md": "8f5069d68622bc956e2d492f26879d2a06508e2ef16d2e573ab13f7a92a0607a",
+      "skills/humanizer/LICENSE": "4ac4810254ab36d45419141aeb8e69bf50652cfafe5b2dab947d06d44e5cbf96",
+      "skills/humanizer/README.md": "d546538831ce8423587208d4a86dbe2be1f1f63445505d284dc558e6de86dac0",
+      "skills/humanizer/SKILL.md": "e8269e236bed06ed0fe4824c274112e54950b0cb46b0bafe5e1576ef7c9f93d5",
+      "skills/humanizer/agents/openai.yaml": "9d87ff83149a04f86a372948b8ee35fa249de20923867bbc2a49304290aad736",
+      "skills/humanizer/scripts/validate-package.py": "750e5f50561b8a5285bd1a20ed8b127af65b1b25d50e88c2ce5fe8522943c8fd",
+      "skills/oh-my-opencode-slim/SKILL.md": "e286b4424cb14c5c62b43020fa510206160706686eb127ecd5a2f8247561417f",
+      "skills/setup-matt-pocock-skills/SKILL.md": "2bcd89e97777cdb705914424e39c97d5db524c8eb4eafac8120778a07774f0ec",
+      "skills/setup-matt-pocock-skills/agents/openai.yaml": "9527de0110541c45712319025155aeab8dc7d77c6ed6e5e83271bab1851ab939",
+      "skills/setup-matt-pocock-skills/domain.md": "edc6d6131fdffc4b7135704f5262124fc43355c95f61b7399dc5a4db643e28ca",
+      "skills/setup-matt-pocock-skills/issue-tracker-github.md": "afd6852a80185217bd28aa5cbe456bef1e85be25be7bd1fba382d5b8ee428325",
+      "skills/setup-matt-pocock-skills/issue-tracker-gitlab.md": "ea175f73d193b3f55819c0ed9bbccf6ee0e70ad8f928e3d7607596c53380acd6",
+      "skills/setup-matt-pocock-skills/issue-tracker-local.md": "7dcda20a2eb4bdc89b95d1143423c0691309921cadae3132e6424f371030506e",
+      "skills/setup-matt-pocock-skills/triage-labels.md": "4f53c9b40ce2651e3611aa090eaedbd6dbc9b71ef8c5f7e65eac0d8263190d0d",
+      "skills/to-spec/SKILL.md": "229fff978a0724d00481572e990a1f13182685513eff249cfee9c2f6847741db",
+      "skills/to-spec/agents/openai.yaml": "1c5b4d1e3d8e52287ef19cc2742fdbbfae1914ac75d33af3e4c8174f08cc55bb",
+      "skills/wait-what/SKILL.md": "e3f44e3ccbc0e7b62f20ba70b295fc9c9f4aa3f96c77168faee1c71bacbf4215",
+      "skills/wait-what/agents/openai.yaml": "b41faadf741d51e4ea184148b2d1854d93f947aaf754c7844f70a00f04194999",
+      "skills/writing-plans/SKILL.md": "d9bfa0ab7228941091fc6d131d04e72a63c14d25ba3bf764b9e5283da9fde19a"
+    }
+  }
+}

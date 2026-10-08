@@ -18,9 +18,10 @@
 // flavors.*.stockPlugins — a host-resolved npm spec on v1, host-native on v2;
 // never staged by this lane), OMO 3.0.1 directory artifacts with per-host
 // entries, and the explicit dual-host BCP artifact. Prompt staging excludes
-// private Council replacements and *.bak-promptopt backups and prunes the two
-// private Council requirements from the staged orchestrator_append copy only
-// (lib/prompts.mjs, decision e000070).
+// private Council replacements and *.bak-promptopt backups (decision e000070);
+// since the phase-1 transform retirement every staged prompt copy is
+// byte-identical to its pinned source (lib/prompts.mjs). Skills staging
+// refuses any stock-inherited skill name (STOCK_INHERITED_SKILLS shadow guard).
 //
 // Relocatability: component entry shims import their target RELATIVE to the
 // shim itself (plugins/<name>/index.js → "./dist/server/index.js"), and v1
@@ -51,16 +52,61 @@
 // Values never enter any report, note, or manifest field — only KEY NAMES
 // are recorded for audit — and the manifest pins the file by sha256 only
 // (never its content). The default probe staging keeps scrubbing credentials.
+//
+// v1 stock-skill exposure (compatibility remediation, plan
+// upstream-defaults-20261006 GOAL1): the OMO 3.0.1 plugin artifact does not
+// register its packaged skills in-process on v1 (effective-probe r11: v1 had
+// zero of the stock skills), so the v1 candidate stages each stock skill
+// under skills/<name>/ as a REAL directory of RELATIVE file links into the
+// staged artifact component (plugins/omoPluginV1/server/src/skills/<name>).
+// The candidate duplicates zero bytes, the links resolve inside the config
+// root wherever it lives (relocation-safe), and the host's default
+// <configroot>/skills discovery picks the names up with no config key and no
+// CLI flag. Missing required resources (skill dir or SKILL.md) refuse the
+// stage before anything is committed. The patched
+// codemap/deepwork/oh-my-opencode-slim skills and every user skill stay real
+// staged copies, so patched + personal skills keep their names and content;
+// activation materializes the linked entries as regular artifact-byte copies
+// pinned by the manifest (the same staleness model as every managed file —
+// re-staging refreshes them together with the artifact component). v2 keeps
+// the plugin's in-process registration and stages NO stock-skill links.
 
-import { existsSync, mkdirSync, cpSync, renameSync, rmSync, readdirSync, readFileSync, writeFileSync, statSync } from "node:fs";
-import { join, dirname, basename } from "node:path";
+import { existsSync, mkdirSync, cpSync, renameSync, rmSync, readdirSync, readFileSync, writeFileSync, statSync, symlinkSync } from "node:fs";
+import { join, dirname, basename, relative, sep } from "node:path";
 import { verifyAllInputs, verifyExplicit } from "./inputs.mjs";
 import { renderV2, renderV1, stringifyConfig } from "./render.mjs";
-import { isExcludedPromptFile, transformPromptFile } from "./prompts.mjs";
+import { isExcludedPromptFile } from "./prompts.mjs";
 import { writeStageManifest, STAGE_MANIFEST_REL } from "./manifest.mjs";
 import { launcherEnv } from "./hostenv.mjs";
 import { assertChildEnv } from "./spawn.mjs";
 import { sha256, sha256File } from "./hash.mjs";
+
+// Stock-inherited skills (plan upstream-defaults-20261006): the OMO 3.0.1
+// plugin artifact registers its packaged skills IN-PROCESS from the artifact's
+// own src/skills (CUSTOM_SKILLS registry). A same-named file copy under the
+// candidate skills/ root would SHADOW that registration (the legacy copy
+// mechanism) and drift from the executing plugin code — so staging refuses
+// these names outright. The canonical list lives in
+// integrations/omo-slim/build-skills.mjs (which generates the pinned tree
+// WITHOUT them); the test suites assert both lists stay equal.
+export const STOCK_INHERITED_SKILLS = ["clonedeps", "reflect", "simplify", "verification-planning", "worktrees"];
+
+/**
+ * Pure guard: returns refusal lines for any staged skills path that would
+ * shadow a stock-inherited skill (top-level directory name match).
+ */
+export function refuseStockSkillShadow(relPaths) {
+  const refusals = [];
+  for (const rel of relPaths) {
+    const [top] = rel.split("/");
+    if (STOCK_INHERITED_SKILLS.includes(top)) {
+      refusals.push(
+        `skills/${rel} shadows stock-inherited skill '${top}' — it is registered in-process by the OMO plugin artifact (src/skills); remove the copy instead of shadowing it (never delete the skill to fix discovery)`
+      );
+    }
+  }
+  return refusals;
+}
 
 function listFilesRecursive(dir) {
   const out = [];
@@ -100,6 +146,11 @@ export function stage(opts) {
 
   // 1) pinned inputs — refusal happens before any write
   const inputs = verifyAllInputs(profile);
+  // Shadow guard: a skills input carrying a stock-inherited name would shadow
+  // the plugin artifact's in-process registration. Checked with the other
+  // pinned-input refusals so a bad tree fails before any staging work.
+  const skillShadowRefusals = refuseStockSkillShadow(Object.keys(inputs.skillsDir?.resolved?.files ?? {}));
+  if (skillShadowRefusals.length > 0) throw new StageRefusal(skillShadowRefusals);
 
   // 2) explicit components for this flavor
   const report = [];
@@ -165,7 +216,6 @@ export function stage(opts) {
     const promptDir = join(tmp, "oh-my-opencode-slim");
     mkdirSync(promptDir, { recursive: true });
     const promptExcluded = [];
-    const promptTransformed = [];
     for (const [rel, sha] of Object.entries(inputs.omoPromptDir.resolved.files)) {
       const sourceAbs = join(inputs.omoPromptDir.resolved.path, ...rel.split("/"));
       if (isExcludedPromptFile(rel)) {
@@ -175,18 +225,13 @@ export function stage(opts) {
         promptExcluded.push(rel);
         continue;
       }
+      // Byte-identical copies since the phase-1 transform retirement (plan
+      // upstream-defaults-20261006): prompt content policy lives in the
+      // sources, not in staged-copy anchor surgery.
       const destAbs = join(promptDir, ...rel.split("/"));
       mkdirSync(dirname(destAbs), { recursive: true });
-      const transform = transformPromptFile(rel, flavor);
-      if (transform) {
-        const bytes = transform.apply(readFileSync(sourceAbs, "utf8"));
-        writeFileSync(destAbs, bytes);
-        recordStaged(`oh-my-opencode-slim/${rel}`, inputs.omoPromptDir.resolved.path, sha, destAbs, transform.kind);
-        promptTransformed.push(`${rel} (${transform.kind})`);
-      } else {
-        cpSync(sourceAbs, destAbs);
-        recordStaged(`oh-my-opencode-slim/${rel}`, inputs.omoPromptDir.resolved.path, sha, destAbs);
-      }
+      cpSync(sourceAbs, destAbs);
+      recordStaged(`oh-my-opencode-slim/${rel}`, inputs.omoPromptDir.resolved.path, sha, destAbs);
     }
     mkdirSync(join(tmp, "agents"), { recursive: true });
     cpSync(inputs.larkOperatorPrompt.resolved.path, join(tmp, "agents", "lark-operator.md"));
@@ -258,6 +303,59 @@ export function stage(opts) {
       }
     }
 
+    // GOAL1 (compatibility remediation): expose the artifact's stock skills to
+    // v1 default discovery. Validation happens on the STAGED component layout
+    // (what the host will actually execute), a missing resource refuses the
+    // whole stage, and every link target is inside the candidate (relative →
+    // relocation-safe). v2 skips this entirely (in-process registration).
+    const V1_STOCK_SKILL_COMPONENT = "omoPluginV1";
+    const V1_STOCK_SKILL_ROOT = "server/src/skills";
+    let v1StockSkillNote = null;
+    if (flavor === "v1") {
+      const skillComponent = components[V1_STOCK_SKILL_COMPONENT];
+      if (!skillComponent?.staged) {
+        throw new StageRefusal([
+          `v1 candidate has no staged component '${V1_STOCK_SKILL_COMPONENT}' — the stock skill resources cannot be exposed (required: plugins/${V1_STOCK_SKILL_COMPONENT}/${V1_STOCK_SKILL_ROOT}/<skill>/SKILL.md for ${STOCK_INHERITED_SKILLS.join(", ")})`,
+        ]);
+      }
+      const artifactSkillBase = join(tmp, "plugins", V1_STOCK_SKILL_COMPONENT, ...V1_STOCK_SKILL_ROOT.split("/"));
+      const missing = [];
+      for (const skill of STOCK_INHERITED_SKILLS) {
+        const srcDir = join(artifactSkillBase, skill);
+        if (!existsSync(srcDir) || !statSync(srcDir).isDirectory()) {
+          missing.push(`plugins/${V1_STOCK_SKILL_COMPONENT}/${V1_STOCK_SKILL_ROOT}/${skill}/ — required stock skill resource directory is missing from the staged artifact`);
+          continue;
+        }
+        if (!existsSync(join(srcDir, "SKILL.md"))) {
+          missing.push(`plugins/${V1_STOCK_SKILL_COMPONENT}/${V1_STOCK_SKILL_ROOT}/${skill}/SKILL.md — required stock skill manifest is missing from the staged artifact`);
+        }
+      }
+      if (missing.length > 0) throw new StageRefusal(missing);
+      let linkedFileCount = 0;
+      for (const skill of STOCK_INHERITED_SKILLS) {
+        const srcDir = join(artifactSkillBase, skill);
+        const destDir = join(tmp, "skills", skill);
+        mkdirSync(destDir, { recursive: true });
+        for (const fileAbs of listFilesRecursive(srcDir)) {
+          const rel = relative(srcDir, fileAbs).split(sep).join("/");
+          const linkAbs = join(destDir, ...rel.split("/"));
+          mkdirSync(dirname(linkAbs), { recursive: true });
+          const linkTarget = relative(dirname(linkAbs), fileAbs).split(sep).join("/");
+          symlinkSync(linkTarget, linkAbs);
+          const sha = sha256File(fileAbs);
+          record(`skills/${skill}/${rel}`, `${V1_STOCK_SKILL_COMPONENT}/${V1_STOCK_SKILL_ROOT}/${skill}/${rel}`, sha, {
+            // Read-through identity of the staged entry: identical bytes to
+            // the linked artifact file (sha256File/statSync follow links).
+            sha256: sha256File(linkAbs),
+            mode: stagedMode(linkAbs),
+            link: linkTarget,
+          });
+          linkedFileCount++;
+        }
+      }
+      v1StockSkillNote = `Stock skills (compatibility remediation): ${STOCK_INHERITED_SKILLS.length} stock-inherited skill director(ies) [${STOCK_INHERITED_SKILLS.join(", ")}] staged under skills/ as ${linkedFileCount} relative file link(s) into plugins/${V1_STOCK_SKILL_COMPONENT}/${V1_STOCK_SKILL_ROOT}/ — v1 default skill discovery (<configroot>/skills) exposes the pinned artifact's stock skills with zero duplicated bytes (no config key, no CLI flag). Activation materializes these managed entries as regular artifact-byte copies pinned by the manifest. Patched codemap/deepwork/oh-my-opencode-slim and user skills remain real staged copies; the refuseStockSkillShadow guard still refuses same-name user inputs.`;
+    }
+
     // Stock-plugin overrides from THIS stage's committed layout. A staged
     // component whose pinned profile definition declares replacesPlugin takes
     // over the named npm spec so the cutover candidate cannot drift to a
@@ -306,6 +404,7 @@ export function stage(opts) {
       rendered = renderV1(
         {
           ...renderInputs,
+          omoConfig: inputs.omoConfig,
           stockPlugins: profile.flavors.v1.stockPlugins ?? [],
         },
         (profile.flavors.v1.pluginOrder ?? [])
@@ -354,7 +453,13 @@ export function stage(opts) {
         ...notes,
         "Compression: the configured stock package uses its native self-spawn route. A synthetic v2.0.20 compression/export case preserved all ten source messages byte-for-byte; this does not validate this entire staged profile or every transport.",
         "Spawn boundary: every host child this lane launches goes through lib/spawn.mjs spawnSandboxed — the environment is validated before subprocess creation and a {env, notes} result object passed as an environment is refused (2026-10-01 production-DB incident regression).",
-        `Prompt staging (decision e000070): ${promptExcluded.length} pinned prompt file(s) excluded from the candidate [${promptExcluded.join(", ") || "none"}]; staged-copy transforms: ${promptTransformed.join(", ") || "none"}. Sources are byte-identical; upstream Council guidance stands unmodified.`,
+        `Prompt staging (decision e000070 + phase-1 follow-upstream): ${promptExcluded.length} pinned prompt file(s) excluded from the candidate [${promptExcluded.join(", ") || "none"}]; all other prompt files are staged byte-identical to their pinned sources (staged-copy transforms retired — prompt policy lives in the sources).`,
+        ...(v1StockSkillNote ? [v1StockSkillNote] : []),
+        ...(renderReport.legacyAliasPins?.length > 0
+          ? [
+              `Explorer alias pin (compatibility remediation GOAL2): rendered canonical agent entr(ies) ${renderReport.legacyAliasPins.map((p) => `${p.canonical} (from alias ${p.alias})`).join(", ")} — the pinned OMO plugin resolves a host entry for a canonical agent as hostEntries[name] ?? hostEntries[displayName] ?? hostEntries[legacyAlias] and Object.assigns the FIRST hit, so an unpinned alias name lets the alias entry override the OMO agent's registration (v1: the host drops the OMO agent; v2: the builtin explore draft snapshot, including its system prompt, is pasted over the OMO explorer). The alias entry itself stays verbatim and the stock builtin it names keeps exactly the disable intent the source carries.`,
+            ]
+          : []),
         productionPrivate
           ? `Private production staging: ${preservedCredentialKeys.length} provider credential key(s) PRESERVED BY NAME in opencode.json [${preservedCredentialKeys.join(", ") || "none"}] — key NAMES only, values never enter any record; the config file is written mode 0600 in the candidate, at the live root, and in its activation backup, and the manifest pins it by sha256 only (never its content).`
           : `Credential scrub: ${droppedCredentialKeys.length} provider option key(s) dropped BY NAME from the rendered config [${droppedCredentialKeys.join(", ") || "none"}] — values were never read into any record.`,
@@ -368,6 +473,13 @@ export function stage(opts) {
       components,
       files,
       renderedConfigSha256: sha256(renderedBytes),
+      ...(flavor === "v1" ? {
+        v1PermissionProjection: {
+          source: renderReport.omoPermissionSource,
+          roles: renderReport.omoPermissionRoles,
+          skipped: renderReport.omoPermissionSkipped,
+        },
+      } : {}),
       ...(productionPrivate
         ? {
             privateProduction: {

@@ -91,12 +91,12 @@ this lane:
 - Prompt staging (`lib/prompts.mjs`): Council replacement prompts
   (`council.md`, `council_append.md`) and pre-optimization `*.bak-promptopt`
   files never enter a candidate (decision 2026-09-30: Council returns to
-  upstream OMO behaviour). In the staged `orchestrator_append.md` ONLY, the
-  two Council-specific requirements are removed; every other requirement is
-  retained verbatim. On v2 only, the orchestrator's native task-resume
-  instruction is narrowed to the `sessionID` vocabulary; BCP `session_id`
-  and metadata `task_id` identifiers are never rewritten. Each transform
-  matches exact anchors and refuses on source drift.
+  upstream OMO behaviour). Since the phase-1 follow-upstream
+  (`upstream-defaults-20261006`) all other prompt files stage
+  **byte-identical** to their pinned sources: the old staged-copy Council
+  prune and the v2 `task_id`→`sessionID` translation were **retired** —
+  prompt content policy lives in the sources themselves, and BCP
+  `session_id` / metadata `task_id` identifiers are never rewritten anywhere.
 - `probeHost`'s `--version` call is version detection only (no serve, no
   DB) and intentionally does not use the serve launcher.
 
@@ -151,15 +151,16 @@ restore applied files; cross-file power-loss atomicity is not provided.
 
 1. `pin` records SHA-256 of every source of record (dotfiles prompts, OMO
    config, `AGENTS.md`, live `agents/lark-operator.md`, production
-   `opencode.json` as models source, live `skills/` tree) into
-   `profile.json`.
+   `opencode.json` as models source, the generated `generated/skills/` tree)
+   into `profile.json`.
 2. `stage` verifies all inputs, verifies any explicitly supplied owner
    artifacts (entry hash vs `testedEntrySha256`; a mismatch of an
    `explicit`-required artifact is a refusal, never a silent accept —
    note the OMO artifacts are directory copies whose entry hash records the
-   tested build, so a rebuilt candidate is reported as
-   `staged-differs-from-tested`, not silently accepted), copies
-   inputs into a temp dir (prompt transforms applied as above), renders
+    tested build, so a rebuilt candidate is reported as
+    `staged-differs-from-tested`, not silently accepted), copies
+    inputs into a temp dir (prompt copies byte-identical; exclusions as
+    above), renders
    `opencode.json` for the flavor, writes plugin shims, writes the stage
    manifest **into** the temp dir, then atomically renames it into place.
    A failed stage leaves no output.
@@ -241,11 +242,80 @@ Reports, never silently resolves:
 - `profile.json` — pinned inputs, components, flavor rules, expectations.
 - `assets/agents/lark-operator.md` — snapshot of the live global
   `~/.config/opencode/agents/lark-operator.md` (exists only there today).
+- `generated/skills/` — generated skills tree (build output, pinned by
+  `profile.json`); see "Skills follow upstream" below.
 - `lib/*.mjs` — hash/atomic/inputs/render/prompts/hostenv/spawn/stage/verify/
   activate/manifest/dwbridge (`lib/spawn.mjs` is the one validated spawn
-  boundary; `lib/prompts.mjs` is the anchored prompt-transform layer).
+  boundary; `lib/prompts.mjs` keeps the staging exclusions — the anchored
+  staged-copy transforms were retired in phase 1; `lib/stage.mjs` carries the
+  `STOCK_INHERITED_SKILLS` shadow guard).
 - `bin/oprofile.mjs` — CLI.
-- `test/profile.test.mjs` — unit tests (`node --test test/profile.test.mjs`).
+- `test/profile.test.mjs` — unit tests (`node --test test/profile.test.mjs`). The stock-skill consistency assertion imports the companion `opencode-bcp` repository from `~/github/opencode-bcp`; set `OPROFILE_BCP_ROOT` to use another checkout. Run the complete suite from this directory with `node --test --experimental-test-module-mocks test/*.test.mjs`.
+
+## Skills follow upstream (phase 1, `upstream-defaults-20261006`)
+
+`oh-my-opencode-slim` 3.0.1 registers its packaged skills **in-process** from
+the plugin artifact's own `src/skills/<name>/SKILL.md` (`CUSTOM_SKILLS`
+registry). The staged OMO artifact carries `src/skills/**` verbatim, so stock
+skills need no local copies — a same-named file copy under a skills root only
+**shadows** the in-process registration (the plugin's own legacy-copy warning)
+and drifts from the executing code. Skills are **not appendable** (no host or
+plugin mechanism extends a packaged `SKILL.md`), so the only auditable way to
+carry a local delta is a full file copy of pinned stock bytes + a small
+anchored patch.
+
+Layout:
+
+- **Inherited, never copied** (provided by the artifact's in-process
+  registration): `clonedeps`, `reflect`, `simplify`, `verification-planning`,
+  `worktrees`. Staging refuses any of these names from a skills input
+  (`refuseStockSkillShadow`) — remove a shadowing copy, never delete the skill.
+- **Patched copies** (stock bytes + `integrations/omo-slim/skill-overrides/<name>.json`):
+  `codemap` (navigation-index policy), `deepwork` (Todo-live-status state,
+  user-authorized commits, risk-based Oracle gates; the stock session-pinned
+  `.slim/deepwork/<session-id>.md` contract is kept — the plugin hook embeds
+  it), `oh-my-opencode-slim` (config fact corrections verified against 3.0.1
+  loader code: project-local config/prompts, 4-level prompt lookup,
+  inline `prompt`/`orchestratorPrompt` support).
+- **Personal skills**: copied verbatim from the pinned personal source into
+  the generated tree.
+- `loop-engineering` (packaged but not registered in-process) is excluded
+  everywhere.
+
+Regeneration (deterministic; refuses on version drift, missing/drifted stock
+bytes, or anchor drift; emits `build-manifest.json` provenance):
+
+```bash
+node integrations/omo-slim/build-skills.mjs \
+  --package-dir ~/.cache/opencode/packages/oh-my-opencode-slim@3.0.1/node_modules/oh-my-opencode-slim \
+  --personal-dir ~/.config/opencode/skills \
+  --out-dir dotfiles/opencode/runtime/generated
+```
+
+`runtime/generated/skills/` is the pinned `skillsDir` source; re-run the
+builder, then `oprofile pin`, whenever stock or personal sources change.
+
+### Owner follow-ups (this lane's explicit handover)
+
+1. **Prompt-lane re-pin**: when the prompt lane lands its source
+   deletions/appends under `dotfiles/opencode/oh-my-opencode-slim/`, run
+   `oprofile pin` (the current pins refuse the changed tree — fail-closed by
+   design). The final managed-profile application of the source policy stays
+   an owner step.
+2. **Global shadow cleanup before cutover**: old same-name copies under
+   `~/.config/opencode/skills/` shadow the inherited registrations. The five
+   inherited names are no longer installed by any candidate, so existing
+   unmanaged copies at a live root must be archived/removed by the owner
+   (this lane never deletes unmanaged files); the three patched names are
+   reinstalled as managed files, but a pre-existing **unmanaged** copy at the
+   same path makes activation refuse — archive it first, then activate.
+3. **Host runtime verification**: `verify` counts the staged skill files only;
+   it does NOT assert runtime skill discovery (the in-process v2 registration
+   and any v1 `ctx.skill` behavior are untested on real hosts). Actual
+   availability of the inherited skills on v1/v2 hosts must be confirmed by
+   the owner's real matrix before cutover. If host discovery for a file-copy
+   skill is missing on some host, do NOT delete skills to work around it —
+   report the discovery gap for an upstream/launcher fix.
 
 ## What this lane deliberately does not do
 

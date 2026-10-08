@@ -11,10 +11,10 @@ import { tmpdir, homedir } from "node:os";
 import { join, dirname, relative, sep } from "node:path";
 import { execFileSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { loadProfile, verifyAllInputs, verifyExplicit, RefusalError } from "../lib/inputs.mjs";
-import { stage, StageRefusal } from "../lib/stage.mjs";
+import { stage, StageRefusal, STOCK_INHERITED_SKILLS, refuseStockSkillShadow } from "../lib/stage.mjs";
 import { renderV2, renderV1, frontmatterBody } from "../lib/render.mjs";
 import { launcherEnv } from "../lib/hostenv.mjs";
 import { planActivation, activate, rollback, adopt } from "../lib/activate.mjs";
@@ -22,9 +22,15 @@ import { readStageManifest } from "../lib/manifest.mjs";
 import { checkDw } from "../lib/dwbridge.mjs";
 import { probeHost } from "../bin/oprofile.mjs";
 import { spawnSandboxed, childExit, assertChildEnv, EnvRefused } from "../lib/spawn.mjs";
-import { pruneCouncil, translateV2Resume, transformPromptFile, isExcludedPromptFile } from "../lib/prompts.mjs";
+import { isExcludedPromptFile } from "../lib/prompts.mjs";
 import { sha256File } from "../lib/hash.mjs";
 import { inspectV1PluginSelection } from "../lib/verify.mjs";
+// This integration assertion reads the companion repository, independently of
+// the dotfiles checkout/worktree depth. Override for another checkout layout.
+const bcpRoot = process.env.OPROFILE_BCP_ROOT ?? join(homedir(), "github/opencode-bcp");
+const { STOCK_INHERITED_SKILLS: BUILDER_STOCK_INHERITED_SKILLS } = await import(
+  pathToFileURL(join(bcpRoot, "integrations/omo-slim/build-skills.mjs")).href
+);
 
 const RUNTIME = dirname(dirname(fileURLToPath(import.meta.url))); // .../opencode/runtime
 let S; // sandbox root
@@ -90,12 +96,16 @@ test("v1 loaded selection: canonical symlink aliases match; duplicate or outside
   assert.equal(inspectV1PluginSelection(["file:///missing-owned-plugin.js"], root, profile, staged).ok, false);
 });
 
-test("render v2: personal value preservation — models, exact bodies, mode:all, native agents root only, no credentials", () => {
+test("render v2: personal value preservation — models, exact body, mode:all, native agents root only, no credentials; explorer pin retired (no inline system)", () => {
   const { profile } = loadProfile(join(RUNTIME, "profile.json"));
   const inputs = personalInputs(profile);
+  // the profile no longer pins a full explorer prompt replacement (phase-1
+  // follow-upstream): renderV2 must accept its absence and render NO inline
+  // explorer system — the upstream default + explorer_append.md applies via
+  // the OMO prompt lookup instead of a full-replacement shadow.
+  assert.equal("explorerPrompt" in profile.inputs, false, "profile pins no explorerPrompt input anymore");
   const rendered = renderV2({
     hostConfigSource: inputs.hostConfigSource,
-    explorerPrompt: inputs.explorerPrompt,
     larkOperatorPrompt: inputs.larkOperatorPrompt,
     stockPlugins: profile.flavors.v2.stockPlugins,
   });
@@ -109,11 +119,13 @@ test("render v2: personal value preservation — models, exact bodies, mode:all,
   // explicit personal agents preserved exactly
   assert.equal(rendered.agents["lark-operator"].mode, "all", "lark mode:all preserved (native-v2 retention fixture)");
   assert.equal(rendered.agents["lark-operator"].system, frontmatterBody(readFileSync(inputs.larkOperatorPrompt.resolved.path, "utf8")));
-  assert.equal(rendered.agents.explorer.system, readFileSync(inputs.explorerPrompt.resolved.path, "utf8"), "explorer body byte-exact");
-  assert.equal(Buffer.byteLength(rendered.agents.explorer.system), 1679, "explorer system bytes match the verified fixture");
-  // 3275 = current live body after trim; the owner's verified fixture rendered 3273
-  // (two whitespace bytes) because it was built from an earlier copy of the live file.
   assert.equal(Buffer.byteLength(rendered.agents["lark-operator"].system), 3275, "lark system bytes match the pinned live snapshot");
+  // explorer: no inline system rendered at all when the input is absent
+  // (upstream default + explorer_append.md applies via the OMO prompt
+  // lookup); v2 gets NO canonical pin — the plugin snapshots the draft
+  // before config agents exist, so no rendered entry can prevent the
+  // builtin-explore alias clobber on v2 (blocker, see remediation.test.mjs).
+  assert.equal(rendered.agents.explorer, undefined, "no inline explorer system, no v2 pin");
   // vocabulary: native agents root only, legacy conversions
   assert.equal(rendered.agent, undefined, "no legacy agent root on v2");
   assert.equal(rendered.agents.build.disabled, false);
@@ -145,6 +157,18 @@ test("render v2: personal value preservation — models, exact bodies, mode:all,
   for (const banned of ["auth.json", '"apiKey"', '"accessToken"', '"refreshToken"']) {
     assert.ok(!flat.includes(banned), `rendered config must not contain ${banned}`);
   }
+
+  // the explicit explorerPrompt input REMAINS supported (e.g. a future
+  // deliberate re-pin): an explicit input renders the inline system verbatim
+  const explicitExplorer = join(S, "explicit-explorer.md");
+  writeFileSync(explicitExplorer, "EXPLICIT EXPLORER BODY");
+  const explicit = renderV2({
+    hostConfigSource: inputs.hostConfigSource,
+    explorerPrompt: { resolved: { path: explicitExplorer, sha256: sha256File(explicitExplorer) } },
+    larkOperatorPrompt: inputs.larkOperatorPrompt,
+    stockPlugins: profile.flavors.v2.stockPlugins,
+  });
+  assert.equal(explicit.agents.explorer.system, "EXPLICIT EXPLORER BODY", "an explicitly pinned explorer prompt still renders verbatim");
 });
 
 test("render v1: legacy agent root only, compaction intent, stock spec first, plugin entries RELATIVE to the declaring config", () => {
@@ -364,6 +388,18 @@ function fakeOmoPluginArtifact() {
   return dir;
 }
 
+// Minimal five stock skill resources mirroring the pinned OMO 3.0.1 v1
+// artifact layout (flat dirs with SKILL.md; one extra file on clonedeps).
+// GOAL1 (compatibility remediation): the v1 stage now requires these under
+// plugins/<omoPluginV1>/server/src/skills/ and refuses without them.
+function addStockSkillDirs(artifactDir) {
+  for (const skill of STOCK_INHERITED_SKILLS) {
+    mkdirSync(join(artifactDir, "server", "src", "skills", skill), { recursive: true });
+    writeFileSync(join(artifactDir, "server", "src", "skills", skill, "SKILL.md"), `---\nname: ${skill}\ndescription: fake stock skill fixture\n---\nbody\n`);
+  }
+  writeFileSync(join(artifactDir, "server", "src", "skills", "clonedeps", "codemap.md"), "fake codemap resource\n");
+}
+
 test("stage v2 (fake plugin artifact): full candidate + manifest; refusal when required artifact missing", () => {
   const { profile, profilePath, profileSha256 } = loadProfile(join(RUNTIME, "profile.json"));
   const host = { flavor: "v2", version: "2.0.20", executable: "test://exe", runtimeTested: "2.0.20", minCompatible: "2.0.20" };
@@ -379,32 +415,33 @@ test("stage v2 (fake plugin artifact): full candidate + manifest; refusal when r
 
   // supplied artifact → success
   const result = stage({ flavor: "v2", profile, profilePath, profileSha256, host, outDir, explicit: { omoPlugin: fakeOmoPluginArtifact() } });
+  const inputs = personalInputs(profile);
   const cand = result.candidateDir;
   assert.ok(Object.isFrozen(result.env), "stage env must be read-only for workers");
   assert.ok(Object.isFrozen(result.notes), "stage notes must be read-only for workers");
   assert.ok(existsSync(join(cand, "opencode.json")));
   assert.ok(existsSync(join(cand, "AGENTS.md")));
   assert.ok(existsSync(join(cand, "oh-my-opencode-slim.json")));
-  assert.ok(existsSync(join(cand, "oh-my-opencode-slim", "explorer.md")));
+  // 2026-10-06 owner repin: the full explorer prompt is retired from the
+  // sources — upstream default + explorer_append.md applies (no inline copy)
+  assert.ok(!existsSync(join(cand, "oh-my-opencode-slim", "explorer.md")), "explorer.md is not staged (source deleted; upstream lookup applies)");
+  assert.ok(existsSync(join(cand, "oh-my-opencode-slim", "explorer_append.md")), "explorer_append.md is staged byte-identically");
   assert.ok(existsSync(join(cand, "agents", "lark-operator.md")));
   assert.ok(existsSync(join(cand, "skills")));
   // Council-replacement prompts and pre-optimization .bak files are never staged
   for (const excluded of ["council.md", "council_append.md", "council_append.md.bak-promptopt", "document-writer.md.bak-promptopt", "lark-operator.md.bak-promptopt", "oracle_append.md.bak-promptopt", "orchestrator_append.md.bak-promptopt"]) {
     assert.ok(!existsSync(join(cand, "oh-my-opencode-slim", excluded)), `${excluded} must never enter a candidate`);
   }
-  // orchestrator_append.md is staged with the Council requirements pruned; the
-  // rest of the file survives byte-for-byte around the removed lines
+  // Byte-identical prompt staging (phase-1 transform retirement): staged
+  // copies equal their pinned sources exactly — prompt policy lives in the
+  // sources, never in staged-copy anchor surgery.
+  const promptSrcPath = join(inputs.omoPromptDir.resolved.path, "orchestrator_append.md");
   const appendStaged = readFileSync(join(cand, "oh-my-opencode-slim", "orchestrator_append.md"), "utf8");
-  assert.ok(!appendStaged.includes("Council advisers"), "Council adviser requirement pruned from the staged append");
-  assert.ok(!appendStaged.includes("Council uses OMO"), "Council scheduling requirement pruned from the staged append");
-  assert.ok(appendStaged.includes("Use Oracle for independent technical judgment."), "non-Council requirements retained");
-  assert.ok(appendStaged.includes("Give reviewers readable versions"), "non-Council requirements retained");
-  // native task-resume vocabulary is narrowed to sessionID on v2 ONLY in that
-  // instruction — BCP session_id naming is untouched
-  const orchestratorV2 = readFileSync(join(cand, "oh-my-opencode-slim", "orchestrator.md"), "utf8");
-  assert.ok(orchestratorV2.includes("pass its sessionID explicitly"), "v2 orchestrator prompt uses the native sessionID vocabulary");
-  assert.ok(!orchestratorV2.includes("pass its task_id explicitly"), "old task_id phrasing must not survive on v2");
-  assert.ok(orchestratorV2.includes("task_revive"), "OMO tool guidance stays untouched");
+  assert.equal(appendStaged, readFileSync(promptSrcPath, "utf8"), "orchestrator_append.md stages byte-identical to the pinned source (whatever Council policy the source carries — staging never mutates it)");
+  // 2026-10-06 owner repin: upstream orchestrator.md is deleted from the
+  // sources — the plugin's prompt lookup applies it in-process on v2.
+  assert.ok(!existsSync(join(inputs.omoPromptDir.resolved.path, "orchestrator.md")), "orchestrator.md is deleted from the pinned sources");
+  assert.ok(!existsSync(join(cand, "oh-my-opencode-slim", "orchestrator.md")), "orchestrator.md is not staged (upstream lookup applies)");
   assert.equal(result.components.omoPlugin.status, "staged-differs-from-tested", "fake artifact recorded honestly against the tested reference");
   assert.equal(result.components.bcpPlugin.status, "absent-explicit", "privacy lane component explicitly absent, never fabricated");
   // v2 entry shim imports RELATIVELY (relocatable candidate)
@@ -414,11 +451,10 @@ test("stage v2 (fake plugin artifact): full candidate + manifest; refusal when r
   assert.equal(manifest.flavor, "v2");
   assert.ok(manifest.files.length > 20, "manifest lists every staged file");
   const promptRec = manifest.files.find((f) => f.path === "oh-my-opencode-slim/orchestrator_append.md");
-  assert.equal(promptRec.transform, "council-prune", "the prompt transform is recorded as a manifest field, not hidden");
+  assert.equal(promptRec.transform, undefined, "prompt copies carry no transform — they are byte-identical");
   assert.equal(promptRec.sha256, sha256File(join(cand, "oh-my-opencode-slim", "orchestrator_append.md")), "staged bytes are hashed, not just the source");
-  const resumeRec = manifest.files.find((f) => f.path === "oh-my-opencode-slim/orchestrator.md");
-  assert.equal(resumeRec.transform, "v2-sessionID-resume", "the vocabulary narrowing is recorded");
-  assert.ok(JSON.stringify(manifest.notes).includes("council.md"), "the manifest records the prompt exclusions");
+  assert.equal(promptRec.sourceSha256, sha256File(promptSrcPath), "staged bytes equal the pinned source bytes");
+  assert.ok(JSON.stringify(manifest.notes).includes("bak-promptopt"), "the manifest records the prompt exclusions (Council replacements are gone from the source; pre-optimization backups remain excluded)");
   const renderedSha = sha256File(join(cand, "opencode.json"));
   assert.equal(manifest.renderedConfigSha256, renderedSha);
   // no /tmp paths anywhere; absolute file URLs only in GENERATED files
@@ -474,6 +510,7 @@ test("stage v1 composition: vibeguard directory entry is NOT shimmed (no self-re
   mkdirSync(join(omoV1Dir, "index", "dist"), { recursive: true });
   writeFileSync(join(omoV1Dir, "index", "omo-delivery.mjs"), "export const delivery = true;\n");
   writeFileSync(join(omoV1Dir, "index", "dist", "index.js"), 'import { delivery } from "../omo-delivery.mjs";\nexport default { id: "oh-my-opencode-slim", delivery };\n');
+  addStockSkillDirs(omoV1Dir);
 
   const bcpFile = join(S, "fake-blackboard-v1.ts");
   writeFileSync(bcpFile, "export default {};\n");
@@ -515,12 +552,15 @@ test("stage v1 composition: vibeguard directory entry is NOT shimmed (no self-re
   assert.ok(!JSON.stringify(rendered).includes("file://"), "no absolute file URLs baked into the v1 config");
   assert.equal(rendered.compaction.auto, false, "compaction.auto=false rendered on v1 (stock engine single route, no ACP)");
 
-  // v1 prompt vocabulary: orchestrator.md keeps the task_id phrasing; append is pruned
-  const orchestratorV1 = readFileSync(join(cand, "oh-my-opencode-slim", "orchestrator.md"), "utf8");
-  assert.ok(orchestratorV1.includes("pass its task_id explicitly"), "v1 orchestrator prompt keeps the v1 task vocabulary");
-  assert.ok(!orchestratorV1.includes("pass its sessionID explicitly"), "no v2 sessionID rewrite leaks into a v1 candidate");
+  // v1 prompt staging is byte-identical too (no v1-specific rewrite existed
+  // or remains): sources pass through untouched on both flavors.
+  // 2026-10-06 owner repin: the upstream orchestrator.md was deleted from the
+  // pinned sources — the plugin's prompt lookup applies it in-process, and
+  // only appends + document-writer.md travel with the candidate.
+  const v1Inputs = personalInputs(profile);
+  assert.ok(!existsSync(join(cand, "oh-my-opencode-slim", "orchestrator.md")), "orchestrator.md is not staged (source deleted; upstream lookup applies)");
   const appendV1 = readFileSync(join(cand, "oh-my-opencode-slim", "orchestrator_append.md"), "utf8");
-  assert.ok(!appendV1.includes("Council advisers") && !appendV1.includes("Council uses OMO"), "Council requirements pruned on v1 too");
+  assert.equal(appendV1, readFileSync(join(v1Inputs.omoPromptDir.resolved.path, "orchestrator_append.md"), "utf8"), "v1 append stages byte-identical (Council prune retired)");
   assert.ok(!existsSync(join(cand, "oh-my-opencode-slim", "council.md")));
 
   // manifest: relPaths recorded for verification, staged bytes hashed
@@ -871,39 +911,104 @@ test("assertChildEnv: explicit DB/config redirects are validated as strictly as 
   assert.doesNotThrow(() => assertChildEnv(sandboxEnv({ OPENCODE_CONFIG_DIR: join(S, "candidate") })));
 });
 
-test("prompts: Council pruning and v2 sessionID narrowing are exact-anchor transforms that refuse on drift", () => {
+test("prompts: exclusions stay; staged copies byte-identical; anchor transforms are retired (no prune, no task_id translation)", () => {
   const { profile } = loadProfile(join(RUNTIME, "profile.json"));
   const inputs = personalInputs(profile);
   const promptDir = inputs.omoPromptDir.resolved.path;
-  const appendSrc = readFileSync(join(promptDir, "orchestrator_append.md"), "utf8");
-  const pruned = pruneCouncil(appendSrc);
-  assert.ok(!pruned.includes("Council advisers") && !pruned.includes("Council uses OMO"), "both Council requirements removed");
-  assert.ok(pruned.includes("Use Oracle for independent technical judgment. Give reviewers readable versions"), "the spliced sentence reads cleanly");
-  assert.ok(pruned.includes("Delegate substantive human-facing document writing"), "non-Council lines survive untouched");
-  assert.throws(() => pruneCouncil(pruned), /anchor/, "re-pruning drifted text refuses instead of passing silently");
-  assert.throws(() => pruneCouncil(appendSrc.replace("Council uses OMO", "moved")), /anchor/, "a half-matching source refuses");
 
-  const orchSrc = readFileSync(join(promptDir, "orchestrator.md"), "utf8");
-  const v2 = translateV2Resume(orchSrc);
-  assert.ok(v2.includes("pass its sessionID explicitly"), "only the native task-resume instruction changes");
-  assert.ok(!v2.includes("pass its task_id explicitly"));
-  assert.ok(v2.includes("task_revive"), "OMO tool guidance is not touched by the vocabulary narrowing");
-  assert.ok(v2.includes("session_id") === orchSrc.includes("session_id"), "BCP session_id mentions (if any) are never rewritten");
-  assert.throws(() => translateV2Resume(orchSrc.replace("pass its task_id explicitly", "drifted")), /anchor/);
-
-  // transform mapping: append pruned on both flavors; orchestrator.md narrowed on v2 only
-  assert.equal(transformPromptFile("oh-my-opencode-slim/orchestrator_append.md", "v1").kind, "council-prune");
-  assert.equal(transformPromptFile("oh-my-opencode-slim/orchestrator_append.md", "v2").kind, "council-prune");
-  assert.equal(transformPromptFile("oh-my-opencode-slim/orchestrator.md", "v1"), null, "no v2 vocabulary rewrite on a v1 candidate");
-  assert.equal(transformPromptFile("oh-my-opencode-slim/orchestrator.md", "v2").kind, "v2-sessionID-resume");
-  assert.equal(transformPromptFile("oh-my-opencode-slim/explorer.md", "v2"), null, "unrelated prompts are staged verbatim");
-
-  // exclusions: Council replacements and pre-optimization backups
+  // exclusions: Council replacements and pre-optimization backups are still
+  // never staged (decision e000070 staging hygiene)
   assert.ok(isExcludedPromptFile("council.md"));
   assert.ok(isExcludedPromptFile("council_append.md"));
   assert.ok(isExcludedPromptFile("orchestrator_append.md.bak-promptopt"));
   assert.ok(!isExcludedPromptFile("orchestrator_append.md"));
   assert.ok(!isExcludedPromptFile("explorer.md"));
+
+  // the retired anchors are gone from the staging vocabulary entirely:
+  // BCP session_id / task_id identifiers and metadata fields are never
+  // rewritten anywhere, and the old staged-copy transforms no longer exist.
+  // 2026-10-06 owner repin (plan upstream-defaults-20261006): the full
+  // upstream prompt files (orchestrator.md, explorer.md, …) were DELETED from
+  // the pinned sources — the OMO plugin's own prompt lookup applies upstream
+  // defaults + the staged appends, so only appends + document-writer.md
+  // remain in the prompt lane.
+  assert.ok(!existsSync(join(promptDir, "orchestrator.md")), "upstream orchestrator.md is deleted from the pinned sources (upstream lookup applies)");
+  assert.ok(!existsSync(join(promptDir, "explorer.md")), "the full explorer prompt pin is retired in the sources (explorer_append.md applies)");
+  const appendSrc = readFileSync(join(promptDir, "orchestrator_append.md"), "utf8");
+  assert.ok(appendSrc.length > 0);
+});
+
+test("skills follow upstream: generated tree consistency, no stock-inherited shadows, guard refuses them", () => {
+  const { profile } = loadProfile(join(RUNTIME, "profile.json"));
+  // 1) the pinned generated tree resolves cleanly (fresh pins from the build
+  //    manifest match the tree on disk — fail-closed if either drifts)
+  const inputs = personalInputs(profile);
+  const generatedTop = new Set(Object.keys(inputs.skillsDir.resolved.files).map((rel) => rel.split("/")[0]));
+  assert.ok(generatedTop.has("codemap") && generatedTop.has("deepwork") && generatedTop.has("oh-my-opencode-slim"), "the three patched skills are staged from the generated tree");
+
+  // 2) no stock-inherited name anywhere in the tree or the pins — a file copy
+  //    would shadow the plugin artifact's in-process registration
+  for (const name of STOCK_INHERITED_SKILLS) {
+    assert.ok(!generatedTop.has(name), `${name} must be inherited from the artifact, never copied`);
+  }
+  assert.ok(!existsSync(join(inputs.skillsDir.resolved.path, "clonedeps")));
+  assert.ok(!existsSync(join(inputs.skillsDir.resolved.path, "reflect")));
+  assert.ok(!existsSync(join(inputs.skillsDir.resolved.path, "simplify")));
+  assert.ok(!existsSync(join(inputs.skillsDir.resolved.path, "verification-planning")));
+  assert.ok(!existsSync(join(inputs.skillsDir.resolved.path, "worktrees")));
+  assert.ok(!existsSync(join(inputs.skillsDir.resolved.path, "loop-engineering")), "unregistered stock leftover is not staged either");
+
+  // 3) required resources travel: every generated skill dir carries SKILL.md;
+  //    codemap keeps its scripts and companion docs (base directory changes
+  //    when shadowing the bundled registration — companions must travel)
+  for (const top of generatedTop) {
+    assert.ok(existsSync(join(inputs.skillsDir.resolved.path, top, "SKILL.md")), `${top}/SKILL.md present`);
+  }
+  assert.ok(existsSync(join(inputs.skillsDir.resolved.path, "codemap", "scripts", "codemap.mjs")));
+  assert.ok(existsSync(join(inputs.skillsDir.resolved.path, "codemap", "codemap.md")));
+  assert.ok(existsSync(join(inputs.skillsDir.resolved.path, "codemap", "README.md")));
+
+  // 4) the auditable deltas actually applied (patch content markers), while
+  //    the stock session-pinned deepwork contract stays intact
+  const codemap = readFileSync(join(inputs.skillsDir.resolved.path, "codemap", "SKILL.md"), "utf8");
+  assert.ok(codemap.includes("navigation index, not mandatory pre-reading"), "codemap navigation-index delta applied");
+  assert.ok(codemap.includes("node scripts/codemap.mjs init"), "stock relative script paths kept (relocatable)");
+  const deepwork = readFileSync(join(inputs.skillsDir.resolved.path, "deepwork", "SKILL.md"), "utf8");
+  assert.ok(deepwork.includes("deepwork never commits on its own initiative"), "user-authorized-commits delta applied");
+  assert.ok(deepwork.includes("keep live execution status in the Todo"), "todo-live-status delta applied");
+  assert.ok(deepwork.includes("<session-id>.md"), "stock session-pinned deepwork file contract kept (hook embeds the same contract)");
+  const omy = readFileSync(join(inputs.skillsDir.resolved.path, "oh-my-opencode-slim", "SKILL.md"), "utf8");
+  assert.ok(omy.includes("Built-in agents also accept inline `prompt` and `orchestratorPrompt`"), "inline-prompt fact correction applied");
+  assert.ok(omy.includes("shadows the bundled in-process skill"), "stock skill-shadow row kept — it documents this lane's mechanism");
+  assert.ok(omy.includes("<project>/.opencode/oh-my-opencode-slim/{preset}/{agent}.md"), "project-local prompt rows applied");
+
+  // 5) the stage guard refuses any skills input carrying an inherited name,
+  //    and the runtime list equals the generator's canonical list
+  assert.deepEqual([...STOCK_INHERITED_SKILLS].sort(), [...BUILDER_STOCK_INHERITED_SKILLS].sort(), "runtime guard and generator share one canonical inherited set");
+  const refusals = refuseStockSkillShadow(["clonedeps/SKILL.md", "codemap/SKILL.md", "reflect/SKILL.md"]);
+  assert.equal(refusals.length, 2, "only the inherited names refuse");
+  assert.ok(refusals.every((l) => l.includes("shadow") && l.includes("registered in-process")));
+
+  // 6) end-to-end: a staged tree that re-adds a stock-inherited copy refuses
+  //    at stage() before anything is written
+  const poisonedDir = join(S, "poisoned-skills");
+  mkdirSync(join(poisonedDir, "clonedeps"), { recursive: true });
+  writeFileSync(join(poisonedDir, "clonedeps", "SKILL.md"), "# clonedeps shadow copy\n");
+  for (const [rel, sha] of Object.entries(inputs.skillsDir.resolved.files)) {
+    const dest = join(poisonedDir, ...rel.split("/"));
+    mkdirSync(dirname(dest), { recursive: true });
+    writeFileSync(dest, readFileSync(join(inputs.skillsDir.resolved.path, ...rel.split("/"))));
+  }
+  const { profile: _, profilePath, profileSha256 } = loadProfile(join(RUNTIME, "profile.json"));
+  const poisonedProfile = structuredClone(profile);
+  poisonedProfile.inputs.skillsDir = { kind: "dir", source: poisonedDir, files: { ...structuredClone(inputs.skillsDir.resolved.files), "clonedeps/SKILL.md": sha256File(join(poisonedDir, "clonedeps", "SKILL.md")) } };
+  const poisonOut = join(S, "poisoned-stage-out");
+  mkdirSync(poisonOut, { recursive: true });
+  assert.throws(
+    () => stage({ flavor: "v2", profile: poisonedProfile, profilePath, profileSha256, host: PRIVATE_TEST_HOST_V2, outDir: poisonOut, explicit: { omoPlugin: fakeOmoPluginArtifact() } }),
+    (err) => err instanceof StageRefusal && err.report.some((l) => l.includes("clonedeps") && l.includes("shadow") && l.includes("registered in-process"))
+  );
+  assert.deepEqual(readdirSync(poisonOut), [], "shadow refusal leaves the output dir empty");
 });
 
 // ---------------------------------------------------------------------------
@@ -1072,6 +1177,7 @@ test("compression component (owner-frozen wrapper dir): staged copy replaces the
   const omoV1Dir = join(S, "comp-omo-v1");
   mkdirSync(join(omoV1Dir, "index", "dist"), { recursive: true });
   writeFileSync(join(omoV1Dir, "index", "dist", "index.js"), 'export default { id: "oh-my-opencode-slim" };\n');
+  addStockSkillDirs(omoV1Dir);
   const bcpFile = join(S, "comp-blackboard-v1.ts");
   writeFileSync(bcpFile, "export default {};\n");
   const resV1 = stage({ flavor: "v1", profile: withCompression(), profilePath, profileSha256, host: hostV1, outDir: outV1, explicit: { compressionPlugin: frozenDir, vibeguardV1: vgDir, omoPluginV1: omoV1Dir, bcpPlugin: bcpFile } });

@@ -63,6 +63,41 @@ function extractArray(body) {
   return null;
 }
 
+// Only existing, explicitly supported project sources belong in this bounded
+// profile check. Missing project config is normal; extra/global/duplicate
+// layers still fail. Do not create a project file to satisfy this check.
+export function inspectV2ConfigStack(layers, candidateDir, projectDir) {
+  const documents = (dir) => ["opencode.json", "opencode.jsonc"]
+    .map((name) => join(dir, name)).filter(existsSync).map((path) => `DOC ${path}`);
+  const expected = [`DOC ${join(candidateDir, "opencode.json")}`, `DIR ${candidateDir}`,
+    ...documents(projectDir)];
+  const localDir = join(projectDir, ".opencode");
+  if (existsSync(localDir)) expected.push(...documents(localDir), `DIR ${localDir}`);
+  const stack = layers.map((layer) => `${layer.type === "document" ? "DOC" : layer.type === "directory" ? "DIR" : "UNKNOWN"} ${layer.path}`);
+  return { ok: JSON.stringify(stack) === JSON.stringify(expected), stack, expected };
+}
+
+export function inspectV2AgentMatrix(agents, expectedAgents, nativeAgents = {}) {
+  const byId = Object.fromEntries(agents.map((agent) => [agent.id ?? agent.name, agent]));
+  const details = [];
+  for (const [id, exp] of Object.entries(expectedAgents)) {
+    const agent = byId[id];
+    if (!agent) { details.push(`${id}: MISSING`); continue; }
+    if (exp.mode && (agent.mode ?? null) !== exp.mode) details.push(`${id}: mode ${JSON.stringify(agent.mode)} != ${JSON.stringify(exp.mode)}`);
+    const modelId = agent.model?.modelID ?? agent.model?.id ?? null;
+    if (exp.model && modelId !== exp.model) details.push(`${id}: model ${JSON.stringify(modelId)} != ${JSON.stringify(exp.model)}`);
+    if (exp.systemBytes && typeof agent.system !== "string") {
+      details.push(`${id}: system body not exposed by endpoint (bytes not assertable here)`);
+    } else if (exp.systemBytes && Buffer.byteLength(agent.system, "utf8") !== exp.systemBytes) {
+      details.push(`${id}: system ${Buffer.byteLength(agent.system, "utf8")}B != expected ${exp.systemBytes}B`);
+    }
+    if (typeof nativeAgents[id]?.system === "string" && agent.system !== nativeAgents[id].system) {
+      details.push(`${id}: system differs from the staged native body (exact content mismatch)`);
+    }
+  }
+  return { ok: details.length === 0, details };
+}
+
 export function inspectV1PluginSelection(pluginList, candidateDir, profile, stagedComponents) {
   const entries = Object.entries(stagedComponents).filter(([, c]) => c.staged && c.relPath);
   const canonical = value => value.startsWith("file://") ? realpathSync(fileURLToPath(value)) : value;
@@ -347,16 +382,11 @@ export async function verify({ candidateDir, opencodeExe, flavor, projectDir, pr
       if (!check("config-stack-readable", Array.isArray(layers) && layers.length > 0, `status=${cfg.status}`)) {
         return finish(checks, candidateDir, flavor);
       }
-      const stack = layers.map((l) => (l.type === "document" ? `DOC ${l.path}` : `DIR ${l.path}`));
-      const expectedStack = [
-        `DOC ${join(candidateDir, "opencode.json")}`,
-        `DIR ${candidateDir}`,
-        `DOC ${join(projectDir, "opencode.json")}`,
-      ];
+      const configStack = inspectV2ConfigStack(layers, candidateDir, projectDir);
       check(
         "config-stack-isolation",
-        JSON.stringify(stack) === JSON.stringify(expectedStack),
-        `stack=${JSON.stringify(stack)}; expected exactly candidate layer + project layer, no production global layer (v2.0.20: OPENCODE_CONFIG_DIR replaces the global root)`
+        configStack.ok,
+        `stack=${JSON.stringify(configStack.stack)}; expected=${JSON.stringify(configStack.expected)}; only candidate and existing project sources, no production global layer (v2.0.20: OPENCODE_CONFIG_DIR replaces the global root)`
       );
 
       // agents and plugins warm up asynchronously (observed ~4-8s on v2.0.20), and
@@ -364,24 +394,7 @@ export async function verify({ candidateDir, opencodeExe, flavor, projectDir, pr
       // the full expected matrix matches or the deadline passes
       const agentUrl = `http://127.0.0.1:${port}/api/agent?location%5Bdirectory%5D=${encodeURIComponent(projectDir)}`;
       const expectedAgents = profile.expected.v2.agents;
-      const evalMatrix = (arr) => {
-        const byId = Object.fromEntries(arr.map((a) => [a.id ?? a.name, a]));
-        let ok = true;
-        const details = [];
-        for (const [id, exp] of Object.entries(expectedAgents)) {
-          const a = byId[id];
-          if (!a) { ok = false; details.push(`${id}: MISSING`); continue; }
-          if (exp.mode && (a.mode ?? null) !== exp.mode) { ok = false; details.push(`${id}: mode ${JSON.stringify(a.mode)} != ${JSON.stringify(exp.mode)}`); }
-          const modelId = a.model?.modelID ?? a.model?.id ?? null;
-          if (exp.model && modelId !== exp.model) { ok = false; details.push(`${id}: model ${JSON.stringify(modelId)} != ${JSON.stringify(exp.model)}`); }
-          if (exp.systemBytes && typeof a.system === "string" && Buffer.byteLength(a.system, "utf8") !== exp.systemBytes) {
-            ok = false; details.push(`${id}: system ${Buffer.byteLength(a.system, "utf8")}B != expected ${exp.systemBytes}B`);
-          } else if (exp.systemBytes && typeof a.system !== "string") {
-            ok = false; details.push(`${id}: system body not exposed by endpoint (bytes not assertable here)`);
-          }
-        }
-        return { ok, details };
-      };
+      const nativeAgents = JSON.parse(readFileSync(join(candidateDir, "opencode.json"), "utf8")).agents ?? {};
       let agentData = null;
       let agentNote = "unavailable";
       let matrix = { ok: false, details: ["endpoint never returned agents"] };
@@ -392,7 +405,7 @@ export async function verify({ candidateDir, opencodeExe, flavor, projectDir, pr
         if (r.status === 200 && arr && arr.length > 0) {
           agentData = arr;
           agentNote = "via location param";
-          matrix = evalMatrix(arr);
+          matrix = inspectV2AgentMatrix(arr, expectedAgents, nativeAgents);
           if (matrix.ok) break;
         }
         await new Promise((res) => setTimeout(res, 1000));

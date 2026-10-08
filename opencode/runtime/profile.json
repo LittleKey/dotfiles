@@ -7,10 +7,10 @@
     "noTmpDependencies": "No /tmp path from the owner's composition session is baked in; example artifact locations appear only in README prose as examples.",
     "sourcesOfRecord": {
       "dotfilesPrompts": "/home/littlekey/github/dotfiles/opencode (hard-linked production twins: opencode.json, oh-my-opencode-slim.json — read-only inputs, never written by this lane)",
-      "liveGlobalRoot": "/home/littlekey/.config/opencode (authoritative for agents/lark-operator.md, skills/, vibeguard.config.json; read-only inputs)",
+      "liveGlobalRoot": "/home/littlekey/.config/opencode (authoritative for agents/lark-operator.md and vibeguard.config.json; read-only inputs). skills/ is NO longer sourced from here (phase-1 follow-upstream): the pinned generated tree under runtime/generated/skills is authoritative — see inputs.skillsDir",
       "assetSnapshot": "runtime/assets/agents/lark-operator.md (release-internal copy of the live file, pinned below)"
     },
-    "convergence": "2026-10-01 composition convergence (decision e000070 + spec profile-composition-completion): v1 no longer requires ACP 1.18.2 or OMO 2.2.25 — both flavors select stock billion-context@0.1.175 + OMO 3.0.1 directory artifacts + the explicit dual-host BCP artifact; acp.jsonc/tui.json pins removed (rollback material, see rollbacks); private Council prompt replacements and *.bak-promptopt files are pinned for drift detection but never staged; the staged orchestrator_append copy drops the two private Council requirements; the v2 staged orchestrator copy narrows the native task-resume instruction to sessionID. Council prompts are NOT stock in the sources — upstream OMO 3.0.1 guidance stands unmodified in staged candidates."
+    "convergence": "2026-10-01 composition convergence (decision e000070 + spec profile-composition-completion): v1 no longer requires ACP 1.18.2 or OMO 2.2.25 — both flavors select stock billion-context@0.1.175 + OMO 3.0.1 directory artifacts + the explicit dual-host BCP artifact; acp.jsonc/tui.json pins removed (rollback material, see rollbacks); private Council prompt replacements and *.bak-promptopt files are pinned for drift detection but never staged. Council prompts are NOT stock in the sources — upstream OMO 3.0.1 guidance stands unmodified in staged candidates. 2026-10-06 phase-1 follow-upstream (plan upstream-defaults-20261006): staged prompt copies are byte-identical (staged-copy Council prune + v2 task_id→sessionID translation RETIRED; prompt policy lives in the sources); skills follow upstream — the generated skillsDir tree carries only the 3 patched skills (stock bytes + auditable skill-overrides patches) and 12 verbatim personal skills, while clonedeps/reflect/simplify/verification-planning/worktrees are inherited in-process from the plugin artifact (same-name copies would shadow it and are refused at staging); the full explorer prompt pin is retired (upstream default + explorer_append.md applies); prompt-lane source deletions/appends still require an owner oprofile pin re-read of omoPromptDir. Phase-1 follow-upstream (2026-10-06): staged prompt copies are byte-identical (Council prune + v2 task_id→sessionID translation retired); skills follow upstream — 5 stock-inherited skills are NOT copied (in-process OMO artifact registration), codemap/deepwork/oh-my-opencode-slim stage from the generated tree (pinned stock bytes + auditable skill-overrides patches), personal skills verbatim; omoPromptDir/hostConfigSource re-pinned to the current production sources (Council files deleted upstream, append changed, live config changed); final prompt-lane source-pin application stays an owner step."
   },
   "hosts": {
     "floors": {
@@ -35,44 +35,34 @@
   "inputs": {
     "agentsMd": {
       "kind": "file",
-      "source": "/home/littlekey/github/dotfiles/opencode/AGENTS.md",
-      "sha256": "8d2ccb5f304257351440dd0e3c6d4c55bcdd3b800527d6d5538a7ff8567ac0b1"
+      "source": "/home/littlekey/github/dotfiles/.slim/worktrees/phase1-upstream-defaults/opencode/AGENTS.md",
+      "sha256": "830273bf77ae8a49f40cea2b0cdb5bcddbe5c1cabf7d6c195178717da76371c6"
     },
     "omoConfig": {
       "kind": "file",
-      "source": "/home/littlekey/github/dotfiles/opencode/oh-my-opencode-slim.json",
-      "sha256": "30f2efa976568709193a9a1c94154641f5d9e20a77ed9422879a32430633effb"
+      "source": "/home/littlekey/github/dotfiles/.slim/worktrees/phase1-upstream-defaults/opencode/oh-my-opencode-slim.json",
+      "sha256": "4477be72cc3cf55d5b9d205121b520ef0efc50b588395d0b9eaf935f05ff3eea"
     },
     "omoPromptDir": {
       "kind": "dir",
-      "source": "/home/littlekey/github/dotfiles/opencode/oh-my-opencode-slim",
+      "source": "/home/littlekey/github/dotfiles/.slim/worktrees/phase1-upstream-defaults/opencode/oh-my-opencode-slim",
       "files": {
-        "council.md": "23f8fff5f388c13c71040ff9cde314ac00ca936218a4a327b4a6c2c8d9ff1a7e",
-        "council_append.md": "0ca3767df1a423bb4e4f8868c3e6681617164a4205fa536332c622cdabc632fd",
         "council_append.md.bak-promptopt": "ff832d25e5f99ab97f7dafa1f97875020f0ddd1d0a8052b56bd277da50912731",
-        "designer.md": "f2b5919e3d2226b55587a1d4e8ef6bece60a4b8c7aaa271930cac1098598c0ca",
+        "designer_append.md": "137e4a7b332c6001276ca7e338b2b833bc84159828736b4762ff15233f1ebbd2",
         "document-writer.md": "3f3c80299ad97bf22e5b3c80a78d1185072ed4657ea0b77f80c8a5cc62874bb8",
         "document-writer.md.bak-promptopt": "9c191381d7b965edff6f59411521933589e695c74b2f1351dcc7864ce7d22842",
-        "explorer.md": "2e8a2753d1acae40fb552c6d1111a9d0e38ca50edfa7562ff4e34ed70edd683c",
-        "fixer_append.md": "5ec756fcdf6f946192e31f74e4107a73859d83e4b45d5c403e38ed738915eb93",
+        "explorer_append.md": "2c2289ee72e6816c5ea9adbaeaa5fa9a83d08b8c14216b57e3db5e673a54b107",
         "lark-operator.md.bak-promptopt": "7edad9038f8fd2f538e6eea7d68ef052b6cc10e26c488c3a5e2bdab3877dda8e",
-        "librarian_append.md": "a817083b2e4e454499bc15293467a6eeba25a399f9059e9bed6061f71530ea64",
-        "oracle.md": "70b66d5deca517ed87c5b51b0f32b9d178aaa30e05aef8c04a325bc4d2094df3",
-        "oracle_append.md": "03ddba54a178ecd1fcd9aa1311f55dbb80ec0f981da90ee9197edcca623ce78f",
+        "librarian_append.md": "6f746e456532654f13beae383661e2ce297d7d75a5088d007a4b21702680b049",
+        "oracle_append.md": "8ecfd937d7dceb8bc27753ea2656e2ad7952fe00ad8e3e5fb2f614b3148e0730",
         "oracle_append.md.bak-promptopt": "c189e97905f0b6697d4bd5610747e5998f41675f4666cb70645e08eff92e6e14",
-        "orchestrator.md": "63846d43c1b56c6af412cfe594d29f98afe29715fd91443a2d03492b1a4eb900",
-        "orchestrator_append.md": "bd58b416741d1b70e8f4484f880aaa21e3e61eebb5739a081ca92d31ebda5eb1",
+        "orchestrator_append.md": "37e4a2b52feb8f4a00a3beeeb03d30b0eab1a02eea1b8793e1342c2232c6faf4",
         "orchestrator_append.md.bak-promptopt": "b3be33cb747af1308fae4684615c948a6cc2d7662107ba861f8fede3d2d434ab"
       }
     },
-    "explorerPrompt": {
-      "kind": "file",
-      "source": "/home/littlekey/github/dotfiles/opencode/oh-my-opencode-slim/explorer.md",
-      "sha256": "2e8a2753d1acae40fb552c6d1111a9d0e38ca50edfa7562ff4e34ed70edd683c"
-    },
     "larkOperatorPrompt": {
       "kind": "file",
-      "source": "/home/littlekey/github/dotfiles/opencode/runtime/assets/agents/lark-operator.md",
+      "source": "/home/littlekey/github/dotfiles/.slim/worktrees/phase1-upstream-defaults/opencode/runtime/assets/agents/lark-operator.md",
       "liveSource": "/home/littlekey/.config/opencode/agents/lark-operator.md",
       "sha256": "f08b86d334c22cc2711c6a1b1bebeb2f7776d9ac2f039f3ff88233c7fbc26d46",
       "liveObservedSha256": "f08b86d334c22cc2711c6a1b1bebeb2f7776d9ac2f039f3ff88233c7fbc26d46"
@@ -80,22 +70,18 @@
     "hostConfigSource": {
       "kind": "file",
       "source": "/home/littlekey/.config/opencode/opencode.json",
-      "sha256": "65be9de723c25c2dcbfae7838a2b6311ef76c3df0b1f09e573eabb351641b15a",
+      "sha256": "a145c14327ca9aeeac1f23a8cd55826f740c99be3832ba826c8b13fb0e66f8fd",
       "role": "models/provider subset source; credentials never copied"
     },
     "skillsDir": {
       "kind": "dir",
-      "source": "/home/littlekey/.config/opencode/skills",
       "files": {
-        "clonedeps/README.md": "b1a701f9459a7c25cdc55178d04844ad707ecaa4d0bf48801e3da42a3c9f46b4",
-        "clonedeps/SKILL.md": "a799db2e25ec3261aa8097d3c388cefa5963c915a6282cb10fd3675a24678596",
-        "clonedeps/codemap.md": "25329a65dcafdd4108be1a6b993489a2a2ff91e7561ca1b2fa3b4c064b695fcd",
         "codemap/README.md": "fab8e2159592b290b5615f2b234082f5c1d4283a538df9f9542afa841c76fa0b",
-        "codemap/SKILL.md": "77504dfc6c6ffda8f390e8d4f2abf8fe38dd6079b22a95b48663a5d098e7e802",
-        "codemap/codemap.md": "0e5298c0d4f931a93bb6da06d2211d9a8635d4a0396f3b6b8d8651907b690450",
+        "codemap/SKILL.md": "2ce756e95b392631aa3e3f75d35b43b2e1b6bf95cd72924825ade558bd8c8cf3",
+        "codemap/codemap.md": "eb16c36c04ef8a927b7391565ac5e18c210ac2e3bbff2b803159f9c71cd55f6b",
         "codemap/scripts/codemap.mjs": "a6e59ec16f7b7e5de185a9cf35933c23e94dfaab3389a99eed66a7ece3c1fdb5",
         "codemap/scripts/codemap.test.ts": "bd94813c7545a1fe0fa46f2c8967cb7b3d8531b78e7ff313d923cabad996d569",
-        "deepwork/SKILL.md": "4b746c4c6e669045f6d868ea85a6fb9d3a2b6455e6d189738ef5f28fcd876b5e",
+        "deepwork/SKILL.md": "f8f6db85fa0f401a53bcbc963bcab1d093b7bc766c563875c2314d85f2b5425d",
         "domain-modeling/ADR-FORMAT.md": "944c92aa790e8fbdc9199640b170979abb8a34ba8d0fe18c2a01a63bce140ca0",
         "domain-modeling/CONTEXT-FORMAT.md": "17ab16ce783e4d2801ee52fd9acdf550cbf44de65ae76797a93943bbedf22a13",
         "domain-modeling/SKILL.md": "327a2b50620e2fd70abc6893cd6965e76b20f8d0adb0dc2c8d5eb3845efb643e",
@@ -120,8 +106,7 @@
         "humanizer/SKILL.md": "e8269e236bed06ed0fe4824c274112e54950b0cb46b0bafe5e1576ef7c9f93d5",
         "humanizer/agents/openai.yaml": "9d87ff83149a04f86a372948b8ee35fa249de20923867bbc2a49304290aad736",
         "humanizer/scripts/validate-package.py": "750e5f50561b8a5285bd1a20ed8b127af65b1b25d50e88c2ce5fe8522943c8fd",
-        "oh-my-opencode-slim/SKILL.md": "8a72ef5caaff144da0fe0f95661b1fbc66d799d7ced9e4f8210029697be26bbc",
-        "reflect/SKILL.md": "3e7edc3d65599b3d0ec7ceea768f086be734ce6edcea9cc7a7166986ae227dbb",
+        "oh-my-opencode-slim/SKILL.md": "e286b4424cb14c5c62b43020fa510206160706686eb127ecd5a2f8247561417f",
         "setup-matt-pocock-skills/SKILL.md": "2bcd89e97777cdb705914424e39c97d5db524c8eb4eafac8120778a07774f0ec",
         "setup-matt-pocock-skills/agents/openai.yaml": "9527de0110541c45712319025155aeab8dc7d77c6ed6e5e83271bab1851ab939",
         "setup-matt-pocock-skills/domain.md": "edc6d6131fdffc4b7135704f5262124fc43355c95f61b7399dc5a4db643e28ca",
@@ -129,18 +114,14 @@
         "setup-matt-pocock-skills/issue-tracker-gitlab.md": "ea175f73d193b3f55819c0ed9bbccf6ee0e70ad8f928e3d7607596c53380acd6",
         "setup-matt-pocock-skills/issue-tracker-local.md": "7dcda20a2eb4bdc89b95d1143423c0691309921cadae3132e6424f371030506e",
         "setup-matt-pocock-skills/triage-labels.md": "4f53c9b40ce2651e3611aa090eaedbd6dbc9b71ef8c5f7e65eac0d8263190d0d",
-        "simplify/README.md": "30e479208ff37a348388284f434fde6b9ca9cbf704c56f21781b6175021cc7ad",
-        "simplify/SKILL.md": "29e126c20e8310fad21bd0db5fe4225c88538aa8585b1efbc9726a684643cf10",
-        "simplify/codemap.md": "1294ff736984194660510db9ff1e288f0abf72f1b8569db16a505c39587267e7",
         "to-spec/SKILL.md": "229fff978a0724d00481572e990a1f13182685513eff249cfee9c2f6847741db",
         "to-spec/agents/openai.yaml": "1c5b4d1e3d8e52287ef19cc2742fdbbfae1914ac75d33af3e4c8174f08cc55bb",
-        "verification-planning/SKILL.md": "7d2f4db38901c82a2884284805ebe4105b813933ba5cdca572acfed5b92e83c5",
         "wait-what/SKILL.md": "e3f44e3ccbc0e7b62f20ba70b295fc9c9f4aa3f96c77168faee1c71bacbf4215",
         "wait-what/agents/openai.yaml": "b41faadf741d51e4ea184148b2d1854d93f947aaf754c7844f70a00f04194999",
-        "worktrees/SKILL.md": "09c9b694ff3450e96d078ff687f25dae6238202972fdc62a6769605531bc22f6",
         "writing-plans/SKILL.md": "d9bfa0ab7228941091fc6d131d04e72a63c14d25ba3bf764b9e5283da9fde19a"
       },
-      "role": "live personal skill set (incl. executing-plans, grilling — absent from dotfiles); pinned by inventory"
+      "role": "generated skills tree (integrations/omo-slim/build-skills.mjs from pinned stock 3.0.1 + auditable skill-overrides patches + verbatim personal skills); stock-inherited skills (clonedeps, reflect, simplify, verification-planning, worktrees) are intentionally ABSENT — the OMO artifact registers them in-process; a same-name file copy would shadow it (stage refuses).",
+      "source": "/home/littlekey/github/dotfiles/.slim/worktrees/phase1-upstream-defaults/opencode/runtime/generated/skills"
     },
     "vibeguardConfig": {
       "kind": "file",
@@ -201,7 +182,10 @@
     "compressionPlugin": {
       "kind": "artifact-dir",
       "entry": "index.js",
-      "flavors": ["v1", "v2"],
+      "flavors": [
+        "v1",
+        "v2"
+      ],
       "required": "explicit",
       "provideFlag": "--compression-plugin <dir>",
       "replacesPlugin": "billion-context@0.1.175",
@@ -248,8 +232,15 @@
       ]
     },
     "v2": {
-      "stockPlugins": ["billion-context@0.1.175"],
-      "copyExtras": [{"input": "vibeguardConfig", "as": "vibeguard.config.json"}]
+      "stockPlugins": [
+        "billion-context@0.1.175"
+      ],
+      "copyExtras": [
+        {
+          "input": "vibeguardConfig",
+          "as": "vibeguard.config.json"
+        }
+      ]
     }
   },
   "expected": {
@@ -262,8 +253,7 @@
           "model": "glm-5.3"
         },
         "explorer": {
-          "model": "glm-5.3-flash",
-          "systemBytes": 1679
+          "model": "glm-5.3-flash"
         },
         "lark-operator": {
           "model": "glm-5.3",
@@ -294,5 +284,5 @@
       }
     }
   },
-  "pinnedAt": "2026-09-30T16:48:34.008Z"
+  "pinnedAt": "2026-10-05T18:24:16.745Z"
 }
