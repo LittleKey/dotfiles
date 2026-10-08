@@ -88,7 +88,13 @@
         "domain-modeling/agents/openai.yaml": "f6bf2aa996c6e6f53fdd0708e18a0d16a56aed8322cca59fedbe3c0d2c75f06b",
         "eli5/LICENSE": "1126322e2cc8d165adc4c792eeb195717de2bcc7b39be1ce77959d78e87ef685",
         "eli5/SKILL.md": "a671efd44a818aee7dbe4ea2ec634079401c3f578c08cb634c2b6181ced2dbe9",
-        "executing-plans/SKILL.md": "90fa28c3da44f8af191616baa69b043a739c1afc02dab95d5bac17b330ab06e8",
+        "executing-plans/SKILL.md": "b7562483fb024bd405a8a3a67841ca8c92423fc42112596a0ef90e38bb01f509",
+        "executing-plans/references/code-reviewer.md": "82e370be6b3447523816286195571e4216ba56ba1ad6ad0e87862294c4c78dcb",
+        "executing-plans/scripts/plan-workspace": "d558afd8e9e7a8bfa0fa4640ee267041a28efadbb5d27139293a6909d5d3a411",
+        "executing-plans/scripts/review-package": "50e37cbd714ac63e2d8f15455d4d141d1d0f5b13eab5b335c7c397184be0f43e",
+        "executing-plans/scripts/task-brief": "e85300b42d4d4112ab215caa96b14f334d05202f71f67278c34084cdfac37144",
+        "executing-plans/scripts/task-done": "57bb8e1c8ddfac719ff4ce993563f669e4bd6769c7ceee679a86191d3927037a",
+        "executing-plans/scripts/task-start": "5a00f7aa54ee0feeeb2d91aba00dbb5d96ca742916998c313654daea68dfeb3a",
         "find-code-simplifications/SKILL.md": "c2c01d88b1498df0f5f7782f8069c02fa2dfce4927228ba614a65b5fd8dd1a89",
         "find-code-simplifications/agents/openai.yaml": "065b31274e6f89abf10ad2cf1edf12baa79fb1893ef3bbb28c104279d48f282c",
         "grill-with-docs/SKILL.md": "7de372c13488f1ee96cc11cd8907b56b6809cc93eef776eeddd37de6b6cbe3fe",
@@ -118,7 +124,7 @@
         "to-spec/agents/openai.yaml": "1c5b4d1e3d8e52287ef19cc2742fdbbfae1914ac75d33af3e4c8174f08cc55bb",
         "wait-what/SKILL.md": "e3f44e3ccbc0e7b62f20ba70b295fc9c9f4aa3f96c77168faee1c71bacbf4215",
         "wait-what/agents/openai.yaml": "b41faadf741d51e4ea184148b2d1854d93f947aaf754c7844f70a00f04194999",
-        "writing-plans/SKILL.md": "d9bfa0ab7228941091fc6d131d04e72a63c14d25ba3bf764b9e5283da9fde19a"
+        "writing-plans/SKILL.md": "db6c872290da6ccc56fec85f064218f5635f6a2f214f40b2497473e6cf3f42de"
       },
       "role": "generated skills tree (integrations/omo-slim/build-skills.mjs from pinned stock 3.0.1 + auditable skill-overrides patches + verbatim personal skills); stock-inherited skills (clonedeps, reflect, simplify, verification-planning, worktrees) are intentionally ABSENT — the OMO artifact registers them in-process; a same-name file copy would shadow it (stage refuses).",
       "source": "/home/littlekey/github/dotfiles/.slim/worktrees/phase1-upstream-defaults/opencode/runtime/generated/skills"

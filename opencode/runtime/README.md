@@ -295,6 +295,28 @@ node integrations/omo-slim/build-skills.mjs \
 `runtime/generated/skills/` is the pinned `skillsDir` source; re-run the
 builder, then `oprofile pin`, whenever stock or personal sources change.
 
+### Migrating the personal plan skills
+
+The user-maintained `executing-plans` and `writing-plans` sources are retained
+under `opencode/skills/` and their installable copies are pinned under
+`runtime/generated/skills/`. The latter is the profile's installation input.
+`executing-plans` includes its review template and five executable helpers;
+copying only `SKILL.md` leaves it incomplete. The generator records source and
+output modes, and stage/activation preserve every helper's `0755` mode.
+
+On another machine, use the committed generated tree rather than requiring
+the old machine's live skills directory. Relocate the profile input paths to
+the new checkout and deliberately refresh pins after checking the changes.
+To regenerate from that tree, pass `runtime/generated/skills` as
+`--personal-dir` and a separate output directory as `--out-dir`; compare the
+new manifest before replacing the installation input. Never use an output
+directory that contains the personal source.
+
+`test/personal-skills.test.mjs` checks both host stage layouts, byte/mode
+identity against the retained sources, relocated installation, repeat install,
+rollback, shell syntax, and direct `task-brief` execution with sibling resource
+lookup. These are isolated installer checks, not a model-driven workflow test.
+
 ### Owner follow-ups (this lane's explicit handover)
 
 1. **Prompt-lane re-pin**: when the prompt lane lands its source
