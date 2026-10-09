@@ -13,11 +13,10 @@
 // still pending upstream (evidence: compression-smoke-v2-fixed-node, 0 real
 // LLM calls). Activation and verify never claim compression readiness from
 // plugin status alone; no provider URL is ever rewritten.
-// Composition (profile-composition-completion §1): both flavors select the
-// stock billion-context@0.1.175 compression engine (profile
-// flavors.*.stockPlugins — a host-resolved npm spec on v1, host-native on v2;
-// never staged by this lane), OMO 3.0.1 directory artifacts with per-host
-// entries, and the explicit dual-host BCP artifact. Prompt staging excludes
+// Current composition: both flavors select the host-managed billion-context
+// npm channel (profile flavors.*.stockPlugins); resolved package files are not
+// staged by this lane. OMO directory artifacts have per-host entries, alongside
+// the explicit dual-host BCP artifact. Prompt staging excludes
 // private Council replacements and *.bak-promptopt backups (decision e000070);
 // since the phase-1 transform retirement every staged prompt copy is
 // byte-identical to its pinned source (lib/prompts.mjs). Skills staging
@@ -38,11 +37,13 @@
 // entry REPLACES the spec in place inside core.plugin (profile plugin order
 // is preserved); on v2 the spec is REMOVED from plugins (the staged
 // plugins/<name>/index.js is auto-discovered — keeping the spec would load
-// the package twice). The owner-pinned frozen compression wrapper
+// the package twice). The historical owner-pinned frozen compression wrapper
 // (billion-frozen-20261002: root index.js re-exports only
 // './node_modules/billion-context/dist/agent/opencode-native.js') stages via
 // the generic dir component path with entry "index.js" — no shim, full
-// package dist + node_modules closure copied verbatim.
+// package dist + node_modules closure copied verbatim. This generic override
+// remains available to custom profiles; the personal profile no longer declares
+// that component and refuses a supplied --compression-plugin artifact.
 //
 // Private production staging (opts.productionPrivate): an explicit,
 // operator-requested mode for the cutover candidate. The rendered

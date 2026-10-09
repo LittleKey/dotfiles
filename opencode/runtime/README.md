@@ -22,11 +22,13 @@ Design constraints (from the approved implementation brief):
 - No `/tmp` paths baked into releases. Owner-provided artifacts (OMO plugin
   bundle, plugins, configs) are copied into the candidate; rendered configs
   and plugin shims reference only the candidate's own final paths.
-- One compression engine per profile: the stock `billion-context@0.1.175`
+- One compression engine per profile: the host-managed `billion-context@latest`
   package. v2 candidates disable legacy compaction (`compaction.auto: false`)
   and never stage an ACP/legacy compression plugin next to the native one;
-  `verify` forbids the `acp` plugin id. v1 candidates render the same stock
-  npm spec first in the plugin list — the deprecated production composition
+  `verify` forbids the `acp` plugin id. v1 candidates select the same stock
+  npm spec first. OpenCode resolves the public server export and owns package
+  cache/lockfiles. The personal profile no longer declares `compressionPlugin`;
+  supplying that artifact is refused. The deprecated production composition
   (ACP 1.18.2 + OMO 2.2.25, `acp.jsonc`, `tui.json`) is rollback material,
   not a new v1 build.
   Full compress/recover behaviour is **not** claimed by this tooling — it
@@ -77,6 +79,72 @@ This provides one source and an exact-content installation check. It does not
 make the complete personal profile machine-independent: local input paths,
 plugins, ownership and the Linux-only actual-host verifier still need the
 platform-specific handling described above.
+
+## Plugin ownership and generated configuration
+
+`../opencode.json` is the raw host-settings input. It intentionally has no
+`plugin` or `plugins` list. Maintain plugin selection in `profile.json`:
+
+- `components` defines the artifact requirements and stock-spec replacements.
+- `flavors.v1.stockPlugins` and `flavors.v1.pluginOrder` define v1 selection
+  and ordering; `flavors.v2.stockPlugins` defines the v2 stock selection.
+- Explicit CLI artifact inputs supply the actual plugin files and directories.
+
+The renderer discards plugin roots from raw host settings and derives them
+from those inputs. For v1 it writes `plugin` entries relative to the generated
+configuration file, such as `./plugins/omoPluginV1/index.js`, alongside the
+host-managed `billion-context@latest` npm spec. For v2 it writes the native
+`plugins` list and stages local artifacts for host discovery. The selected
+artifact bytes and their manifest identities remain part of verification.
+
+The three legacy absolute entries formerly in `../opencode.json` were ignored
+by this process and have been removed. Do not maintain a second plugin list
+there or copy the rendered global configuration back into the raw source.
+After an intentional raw-settings change, review it and update only the
+corresponding `inputs.hostConfigSource.sha256` pin. The installed configuration
+is an output of the deployment process, not another maintenance source.
+
+### Billion Context update ownership
+
+Maintain the npm channel in `flavors.*.stockPlugins`, not a package version or
+internal `dist/` import in a local wrapper. `latest` is a registry tag; actual
+resolution and update cadence depend on OpenCode's package manager/cache.
+Record resolved and loaded versions in runtime reports. A report's version is
+evidence for that run, not a source-code compatibility allowlist. Host-owned npm
+cache files do not belong in the oprofile managed-file inventory.
+
+On OpenCode 1.18.35, an isolated test with an existing `@latest` cache containing
+0.1.175 kept that version on startup. Updating that package directory with
+`npm install --save-exact --ignore-scripts --no-audit --no-fund billion-context@latest`
+and starting a fresh host/proxy loaded 0.1.189. This establishes an explicit
+update procedure, not a guarantee about every cache age or future host version.
+Find the actual host cache first; in this test it was
+`$XDG_CACHE_HOME/opencode/packages/billion-context@latest/`. Run an update from
+that directory while its host/proxy are stopped, then verify the resolved
+package and fresh process. The host's generated lock may contain a concrete
+version even though this profile continues to declare `latest`.
+
+Existing fixed-directory installations need a one-time owner migration: remove
+the old wrapper from discovery, change its config entry in place, and update
+authority while retaining a rollback copy outside discovery roots. Generic
+artifact replacement remains supported for historical/custom profiles, but is
+not enabled in this personal profile. Source changes alone do not migrate the
+live installation or prove compression/recovery compatibility.
+
+#### Verified v1 deployment (2026-10-09)
+
+The owner's v1 installation now uses this npm channel. After restarting the
+OpenCode 1.18.35 backend, the resolved package and the running proxy's health
+endpoint both reported 0.1.189. The old `plugins/compressionPlugin` directory
+was absent from the live configuration root. This is an observed deployment
+version, not a compatibility pin or a requirement for future installs.
+
+The maintained configuration is `profile.json`: both flavors select
+`billion-context@latest`; v1 then adds Vibeguard, OMO and BCP in `pluginOrder`,
+with `compaction.auto=false`. The raw `../opencode.json` remains a host-settings
+input without a second plugin list. The v2 channel declaration is source
+configuration, not new v2 runtime acceptance. These startup checks do not
+certify full compressed-session recovery.
 
 ## Host discovery facts (verified, metadata-only probes)
 
@@ -189,10 +257,12 @@ Use the committed generated tree as the complete personal source. The raw
 mirror: it lacks `grilling` and contains an older `to-spec`. Build into a
 separate output and compare all hashes/modes before replacing the input.
 
-The host-config source now points to the committed raw `opencode.json`, after
-comparison with the accepted installation authority and original backup. The
-raw source differs from that backup only in plugin paths; all user settings
-preserved by the renderer, including provider values, match current production.
+At that acceptance, the host-config source was switched to the committed raw
+`opencode.json`, after comparison with the installation authority and original
+backup. Its preserved user settings, including provider values, matched
+production. The later plugin-ownership cleanup removed the ignored legacy
+plugin list; plugin selection now belongs solely to the profile and artifact
+inputs described above.
 Rendered production agent permissions are output and cannot be reused as raw
 input. Historical `testedEntrySha256` values remain
 distinct from the new build digests in `candidateNote`: a successful build is

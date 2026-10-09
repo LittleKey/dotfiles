@@ -124,7 +124,7 @@ test("render v2: personal value preservation — models, exact body, mode:all, n
   assert.equal(rendered.agent, undefined, "no legacy agent root on v2");
   assert.equal(rendered.agents.build.disabled, false);
   assert.equal(rendered.agents.plan.disabled, true);
-  assert.deepEqual(rendered.plugins, ["billion-context@0.1.175"], "native transport still requires the external compression plugin");
+  assert.deepEqual(rendered.plugins, ["billion-context@latest"], "native transport still requires the external compression plugin");
   // compaction intent preserved on v2 (verified native route precondition)
   assert.equal(rendered.compaction.auto, false, "compaction.auto=false preserved on v2 (native self-spawn route)");
   // personal permission policy migrated to native v2 permissions — one
@@ -184,7 +184,7 @@ test("render v1: legacy agent root only, compaction intent, stock spec first, pl
   // Relative to the declaring config path: the same bytes resolve from the
   // staging candidate, a MOVED candidate, or the activated live root.
   assert.deepEqual(rendered.plugin, [
-    "billion-context@0.1.175",
+    "billion-context@latest",
     "./plugins/vibeguard/index.js",
     "./plugins/omo/index.js",
     "./plugins/blackboard.ts",
@@ -535,7 +535,7 @@ test("stage v1 composition: vibeguard directory entry is NOT shimmed (no self-re
   // the declaring config path (resolve from candidate, moved dir, or live root)
   const rendered = JSON.parse(readFileSync(join(cand, "opencode.json"), "utf8"));
   assert.deepEqual(rendered.plugin, [
-    "billion-context@0.1.175",
+    "billion-context@latest",
     "./plugins/vibeguardV1/index.js",
     "./plugins/omoPluginV1/index.js",
     "./plugins/fake-blackboard-v1.ts",
@@ -1120,6 +1120,9 @@ test("compression component (owner-frozen wrapper dir): staged copy replaces the
   const { profile: baseProfile, profilePath, profileSha256 } = loadProfile(join(RUNTIME, "profile.json"));
   const withCompression = () => {
     const clone = JSON.parse(JSON.stringify(baseProfile));
+    // Explicit historical fixture, independent of today's personal npm channel.
+    clone.flavors.v1.stockPlugins = ["billion-context@0.1.175"];
+    clone.flavors.v2.stockPlugins = ["billion-context@0.1.175"];
     clone.components.compressionPlugin = { kind: "artifact-dir", entry: "index.js", flavors: ["v1", "v2"], replacesPlugin: "billion-context@0.1.175" };
     return clone;
   };

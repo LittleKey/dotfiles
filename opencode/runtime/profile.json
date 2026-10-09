@@ -10,7 +10,7 @@
       "liveGlobalRoot": "/home/littlekey/.config/opencode (authoritative for agents/lark-operator.md and vibeguard.config.json; read-only inputs). skills/ is NO longer sourced from here (phase-1 follow-upstream): the pinned generated tree under runtime/generated/skills is authoritative — see inputs.skillsDir",
       "assetSnapshot": "runtime/assets/agents/lark-operator.md (release-internal copy of the live file, pinned below)"
     },
-    "convergence": "The composition lane selects billion-context@0.1.175, explicit OMO directory artifacts and the dual-host BCP artifact. Retired ACP/tui pins remain rollback history. Council overrides and *.bak-promptopt files are excluded from staging; prompt copies are byte-identical and the Explorer full override is retired in favor of its upstream base plus append. As of 2026-10-09, all eight OMO bundled skills follow the selected plugin artifact: v1 stages artifact-relative links and activation materializes original bytes; v2 inherits in-process. The former codemap/deepwork/oh-my-opencode-slim local overrides and combined build manifest are retired. skillsDir contains only 14 personal skills; input changes require deliberate, explained pin updates."
+    "convergence": "The composition lane selects the host-managed billion-context@latest npm channel, explicit OMO directory artifacts and the dual-host BCP artifact. Retired ACP/tui pins remain rollback history. Council overrides and *.bak-promptopt files are excluded from staging; prompt copies are byte-identical and the Explorer full override is retired in favor of its upstream base plus append. As of 2026-10-09, all eight OMO bundled skills follow the selected plugin artifact: v1 stages artifact-relative links and activation materializes original bytes; v2 inherits in-process. The former codemap/deepwork/oh-my-opencode-slim local overrides and combined build manifest are retired. skillsDir contains only 14 personal skills; input changes require deliberate, explained pin updates."
   },
   "hosts": {
     "floors": {
@@ -26,10 +26,10 @@
       "v1": "1.18.33 merged /config: OPENCODE_CONFIG_DIR ADDS a layer over the default root — launcher must use XDG_CONFIG_HOME instead."
     },
     "compression": {
-      "selection": "stock billion-context@0.1.175",
-      "v1": "npm-spec plugin entry rendered first in the plugin array (flavors.v1.stockPlugins); the host resolves the package — never staged by this lane; replaces the retired production ACP 1.18.2 compression plugin (acp.js + acp.jsonc, see rollbacks)",
-      "v2": "Explicit billion-context@0.1.175 package entry; native refers to its self-spawning integration route, not a built-in host engine. No ACP plugin is staged.",
-      "note": "version and selection come from the author spec; runtime compression behavior is accepted by the owner's post-build real matrix, never claimed by this lane"
+      "selection": "host-managed billion-context@latest",
+      "v1": "The npm channel is selected first through flavors.v1.stockPlugins. OpenCode resolves the public server export; no local compression artifact is accepted by this profile.",
+      "v2": "The same npm channel is declared in flavors.v2.stockPlugins. Native means the upstream self-spawning integration, not a built-in host engine. No ACP or local compression wrapper is staged.",
+      "note": "latest is a registry channel, not a startup-update guarantee. The host owns package resolution/cache; reports record actual resolved and loaded versions separately. Runtime acceptance requires host evidence and is not implied by metadata verification."
     }
   },
   "inputs": {
@@ -70,8 +70,8 @@
     "hostConfigSource": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/opencode.json",
-      "sha256": "65be9de723c25c2dcbfae7838a2b6311ef76c3df0b1f09e573eabb351641b15a",
-      "role": "Raw host settings from the committed dotfiles source. Compared 2026-10-08 with the accepted phase-1 backup: only plugin paths differ; compared with current production, all preserved settings and credential values are identical. Do not feed rendered production agent permissions back into the raw-source renderer. Credentials are scrubbed unless explicit private production staging is requested."
+      "sha256": "ef4e18a4fe20e9fca6350bcbb506b28a150a1128d5e9ea500f490a544bb8d45b",
+      "role": "Raw host settings from the dotfiles source. Plugin selection is maintained only in this profile's components and flavors sections, together with explicitly supplied artifacts; the raw source has no plugin list. The obsolete three-entry list was removed without changing v1/v2 rendered settings. Do not feed rendered production agent permissions back into the raw-source renderer. Credentials are scrubbed unless explicit private production staging is requested."
     },
     "skillsDir": {
       "kind": "dir",
@@ -182,20 +182,6 @@
       "expectActivePluginId": "vibeguard-privacy-v2",
       "note": "Select the native v2 entry, not the package's legacy v1 index.js. Staging emits one relative discovery shim. Actual HTTP/SSE privacy checks passed; WebSocket limits remain explicit."
     },
-    "compressionPlugin": {
-      "kind": "artifact-dir",
-      "entry": "index.js",
-      "flavors": [
-        "v1",
-        "v2"
-      ],
-      "required": "explicit",
-      "provideFlag": "--compression-plugin <dir>",
-      "replacesPlugin": "billion-context@0.1.175",
-      "testedEntrySha256": "dcea27592b27fd64be80f2f222be956188b814d1d358f6361d58829c32c07bc9",
-      "testedIdentity": "Fixed billion-frozen-20261002 package: exact upstream 0.1.175 native entry and dependencies. Native entry digest 4abf8455a7703230e977ebef51d02b2890ada71033c3694c6440f571bed0648b. Import checked; complete-profile compression acceptance separate.",
-      "expectActivePluginId": "billion-context-opencode-native"
-    },
     "vibeguardV1": {
       "kind": "artifact-dir",
       "entry": "index.js",
@@ -224,9 +210,9 @@
         "bcpPlugin"
       ],
       "stockPlugins": [
-        "billion-context@0.1.175"
+        "billion-context@latest"
       ],
-      "stockPluginsNote": "The exact stock spec is replaced in place by the fixed-directory compressionPlugin. A second compressor or mutable cached copy must not be loaded.",
+      "stockPluginsNote": "The host resolves the npm channel through its package manager. Keep one compression entry and retire old local wrappers during migration. Resolved package bytes are host-owned, not oprofile-managed files.",
       "copyExtras": [
         {
           "input": "vibeguardConfig",
@@ -236,7 +222,7 @@
     },
     "v2": {
       "stockPlugins": [
-        "billion-context@0.1.175"
+        "billion-context@latest"
       ],
       "copyExtras": [
         {

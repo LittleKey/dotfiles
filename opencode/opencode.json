@@ -18,11 +18,6 @@
       "~/.local/share/opencode/**": "allow"
     }
   },
-  "plugin": [
-    "file:///home/littlekey/.config/opencode/local-plugins/dist/vibeguard/index.js",
-    "file:///home/littlekey/.config/opencode/local-plugins/dist/acp.js",
-    "file:///home/littlekey/.config/opencode/local-plugins/dist/omo.js"
-  ],
   "provider": {
     "newapi": {
       "npm": "@ai-sdk/openai-compatible",
