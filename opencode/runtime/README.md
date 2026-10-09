@@ -36,6 +36,48 @@ Design constraints (from the approved implementation brief):
 - No v1 → v2 host DB migration. Session databases stay separate; staging
   never touches XDG data of either host.
 
+## Prompt ownership and multi-host consistency
+
+`runtime/` is the personal profile's build and installation tooling. It checks
+source hashes, renders host-specific configuration, stages complete candidates,
+verifies them in isolation, and records managed installation/rollback state.
+It is not a second collection of builtin-role append prompts.
+
+| Content | Maintenance source | Runtime responsibility |
+| --- | --- | --- |
+| Five builtin appends: designer, explorer, librarian, oracle, orchestrator | [`../oh-my-opencode-slim/*_append.md`](../oh-my-opencode-slim/) | Check `inputs.omoPromptDir.files` hashes and stage accepted files byte-identically. |
+| Native Lark Operator definition | [`assets/agents/lark-operator.md`](assets/agents/lark-operator.md) | Preserve its full body and host-specific native registration; builtin appends do not supply this role. |
+| Installable skills and companion files | `generated/skills/` | Package the pinned skill inputs, preserving bytes and executable modes. These are skill files, not role appends. |
+| Prompt filtering | `lib/prompts.mjs` | Exclude retired Council overrides and backup files; no append body is embedded here. |
+
+The `document-writer` package no longer mirrors the five appends. Edit them only
+in this dotfiles checkout. Candidate and installed copies are outputs, and their
+hash inventories are verification metadata, not independently maintained prose.
+The repository-owned `profile.json` inputs point at the main checkout rather
+than the former phase-1 worktree.
+
+For consistent append content across machines:
+
+1. Select the same approved dotfiles commit on every machine, including its
+   `profile.json` prompt hash inventory. A branch name alone can move over time.
+2. In each machine's deployment profile, set `inputs.omoPromptDir.source` to
+   that checkout's `opencode/oh-my-opencode-slim`. Relocate the other source
+   paths as needed. Keep prompt hashes unchanged when only paths change;
+   reconcile machine-specific settings and external artifacts separately.
+3. Stage through `oprofile`: missing, additional or modified prompt inputs
+   refuse staging. After an intentional prompt edit, review the diff and update
+   the shared pins; do not re-pin unexpected drift separately on each machine.
+4. Install through the machine's existing deployment procedure. Compare the
+   five installed file hashes with the selected inventory, and confirm that
+   OMO resolves them from the intended directory. Project/preset prompt files
+   or inline overrides can change the effective prompt despite identical
+   global append files.
+
+This provides one source and an exact-content installation check. It does not
+make the complete personal profile machine-independent: local input paths,
+plugins, ownership and the Linux-only actual-host verifier still need the
+platform-specific handling described above.
+
 ## Host discovery facts (verified, metadata-only probes)
 
 - v2 `2.0.20`: `OPENCODE_CONFIG_DIR` **replaces** the `~/.config/opencode`
@@ -281,8 +323,9 @@ Reports, never silently resolves:
 ## Files
 
 - `profile.json` — pinned inputs, components, flavor rules, expectations.
-- `assets/agents/lark-operator.md` — snapshot of the live global
-  `~/.config/opencode/agents/lark-operator.md` (exists only there today).
+- `assets/agents/lark-operator.md` — retained full native Lark Operator
+  definition, originally captured from `~/.config/opencode/agents/lark-operator.md`;
+  it is distinct from the builtin-role appends and is required by the renderer.
 - `generated/skills/` — generated skills tree (build output, pinned by
   `profile.json`); see "Skills follow upstream" below.
 - `lib/*.mjs` — hash/atomic/inputs/render/prompts/hostenv/spawn/stage/verify/

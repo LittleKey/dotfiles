@@ -6,7 +6,7 @@
     "pinProtocol": "oprofile pin re-reads every pinned source and rewrites the sha256/files fields. Deliberate owner action — stage refuses drifted inputs otherwise.",
     "noTmpDependencies": "No /tmp path from the owner's composition session is baked in; example artifact locations appear only in README prose as examples.",
     "sourcesOfRecord": {
-      "dotfilesPrompts": "/home/littlekey/github/dotfiles/opencode (hard-linked production twins: opencode.json, oh-my-opencode-slim.json — read-only inputs, never written by this lane)",
+      "dotfilesPrompts": "The selected dotfiles checkout's opencode/oh-my-opencode-slim is the sole builtin-role append source. Input paths below use the main checkout, not an old worktree. Other machines relocate paths to the same approved revision without changing content hashes; prompt and raw config sources are read-only during staging.",
       "liveGlobalRoot": "/home/littlekey/.config/opencode (authoritative for agents/lark-operator.md and vibeguard.config.json; read-only inputs). skills/ is NO longer sourced from here (phase-1 follow-upstream): the pinned generated tree under runtime/generated/skills is authoritative — see inputs.skillsDir",
       "assetSnapshot": "runtime/assets/agents/lark-operator.md (release-internal copy of the live file, pinned below)"
     },
@@ -35,17 +35,17 @@
   "inputs": {
     "agentsMd": {
       "kind": "file",
-      "source": "/home/littlekey/github/dotfiles/.slim/worktrees/phase1-upstream-defaults/opencode/AGENTS.md",
+      "source": "/home/littlekey/github/dotfiles/opencode/AGENTS.md",
       "sha256": "830273bf77ae8a49f40cea2b0cdb5bcddbe5c1cabf7d6c195178717da76371c6"
     },
     "omoConfig": {
       "kind": "file",
-      "source": "/home/littlekey/github/dotfiles/.slim/worktrees/phase1-upstream-defaults/opencode/oh-my-opencode-slim.json",
+      "source": "/home/littlekey/github/dotfiles/opencode/oh-my-opencode-slim.json",
       "sha256": "4477be72cc3cf55d5b9d205121b520ef0efc50b588395d0b9eaf935f05ff3eea"
     },
     "omoPromptDir": {
       "kind": "dir",
-      "source": "/home/littlekey/github/dotfiles/.slim/worktrees/phase1-upstream-defaults/opencode/oh-my-opencode-slim",
+      "source": "/home/littlekey/github/dotfiles/opencode/oh-my-opencode-slim",
       "files": {
         "council_append.md.bak-promptopt": "ff832d25e5f99ab97f7dafa1f97875020f0ddd1d0a8052b56bd277da50912731",
         "designer_append.md": "137e4a7b332c6001276ca7e338b2b833bc84159828736b4762ff15233f1ebbd2",
@@ -62,14 +62,14 @@
     },
     "larkOperatorPrompt": {
       "kind": "file",
-      "source": "/home/littlekey/github/dotfiles/.slim/worktrees/phase1-upstream-defaults/opencode/runtime/assets/agents/lark-operator.md",
+      "source": "/home/littlekey/github/dotfiles/opencode/runtime/assets/agents/lark-operator.md",
       "liveSource": "/home/littlekey/.config/opencode/agents/lark-operator.md",
       "sha256": "f08b86d334c22cc2711c6a1b1bebeb2f7776d9ac2f039f3ff88233c7fbc26d46",
       "liveObservedSha256": "f08b86d334c22cc2711c6a1b1bebeb2f7776d9ac2f039f3ff88233c7fbc26d46"
     },
     "hostConfigSource": {
       "kind": "file",
-      "source": "/home/littlekey/github/dotfiles/.slim/worktrees/phase1-upstream-defaults/opencode/opencode.json",
+      "source": "/home/littlekey/github/dotfiles/opencode/opencode.json",
       "sha256": "65be9de723c25c2dcbfae7838a2b6311ef76c3df0b1f09e573eabb351641b15a",
       "role": "Raw host settings from the committed dotfiles source. Compared 2026-10-08 with the accepted phase-1 backup: only plugin paths differ; compared with current production, all preserved settings and credential values are identical. Do not feed rendered production agent permissions back into the raw-source renderer. Credentials are scrubbed unless explicit private production staging is requested."
     },
