@@ -3,8 +3,8 @@
   "generator": "integrations/omo-slim/build-skills.mjs",
   "stockPackage": {
     "name": "oh-my-opencode-slim",
-    "version": "3.0.1",
-    "dir": "/home/littlekey/.cache/opencode/packages/oh-my-opencode-slim@3.0.1/node_modules/oh-my-opencode-slim",
+    "version": "3.0.3",
+    "dir": "/home/littlekey/github/opencode-bcp/.slim/deepwork/omo-3.0.3-20261008/upstream/node_modules/oh-my-opencode-slim",
     "skillsRel": "src/skills",
     "verifiedFiles": {
       "clonedeps/README.md": "b1a701f9459a7c25cdc55178d04844ad707ecaa4d0bf48801e3da42a3c9f46b4",
@@ -15,7 +15,7 @@
       "codemap/codemap.md": "eb16c36c04ef8a927b7391565ac5e18c210ac2e3bbff2b803159f9c71cd55f6b",
       "codemap/scripts/codemap.mjs": "a6e59ec16f7b7e5de185a9cf35933c23e94dfaab3389a99eed66a7ece3c1fdb5",
       "codemap/scripts/codemap.test.ts": "bd94813c7545a1fe0fa46f2c8967cb7b3d8531b78e7ff313d923cabad996d569",
-      "deepwork/SKILL.md": "0d98fb3402c0c59e018b60de3304caa664c69b0692af2eb6929c7ed54506cfa2",
+      "deepwork/SKILL.md": "8c19f0533810a693a3437929343acabc70f79f74cb757c78c253cb353f1fe0a9",
       "oh-my-opencode-slim/SKILL.md": "802b1899aeece1431549110fbef112438332aa71394a00bf11397e7be0f5af06",
       "reflect/SKILL.md": "3e7edc3d65599b3d0ec7ceea768f086be734ce6edcea9cc7a7166986ae227dbb",
       "simplify/README.md": "30e479208ff37a348388284f434fde6b9ca9cbf704c56f21781b6175021cc7ad",
@@ -37,7 +37,7 @@
   ],
   "patched": {
     "codemap": {
-      "patchFile": "/home/littlekey/github/opencode-bcp/integrations/omo-slim/skill-overrides/codemap.json",
+      "patchFile": "/home/littlekey/github/opencode-bcp/.slim/worktrees/omo-3.0.3-upgrade/integrations/omo-slim/skill-overrides/codemap.json",
       "note": "codemap: treat codemap.md as a navigation index, not mandatory pre-reading (BCP token-efficiency policy). Stock 3.0.1 keeps its relative scripts/codemap.mjs command paths and the corrected codemap.md fact wording; only this paragraph is local policy.",
       "ops": [
         {
@@ -48,23 +48,33 @@
       ]
     },
     "deepwork": {
-      "patchFile": "/home/littlekey/github/opencode-bcp/integrations/omo-slim/skill-overrides/deepwork.json",
-      "note": "deepwork: BCP state/commit policy over stock 3.0.1. The stock session-pinned progress file contract (.slim/deepwork/<session-id>.md, enforced by the plugin hook's activation prompt) is kept verbatim; the old global free-named variant was dropped because it contradicts that hook.",
+      "patchFile": "/home/littlekey/github/opencode-bcp/.slim/worktrees/omo-3.0.3-upgrade/integrations/omo-slim/skill-overrides/3.0.3/deepwork.json",
+      "note": "BCP state, original-source handoff, risk-based review and user-authorized commit policy over stock 3.0.3. Keep the upstream pinned router, task directory, claim rules and bounded progress-file shape; Todo remains live execution status and durable files are recovery snapshots.",
       "ops": [
         {
           "id": "todo-live-status",
-          "findSha256": "1b6694228bc0189e37f16fdf9d0df6331479c1d422ee8cd313e02dd04396635f",
-          "replaceSha256": "6e467312fa89efa51b6ac30e6c9da065ed0ca61848b05c9054a5e36cc0385819"
+          "findSha256": "628b3e1f9fc3998d2693297d958fbe1525efcb57e698e419651690526069d60f",
+          "replaceSha256": "f1da4f32a3c1f7dc7939aa950541ec6776a2d15bb31395adfb4087beb37118e5"
         },
         {
           "id": "snapshot-handoff-boundaries",
-          "findSha256": "a58e1af1343e7e51c5e474e0c4987a05dd579ca635e0aa9c2d858b523df39dfd",
-          "replaceSha256": "ae24f5717dc27d16a3f14cf25f35aed825289a5fe7c44776648efe3da3f4d82f"
+          "findSha256": "79fddc5bb3283c0a51df2efd35c38c12ffa4ee57e8c0e5c896dc04133f75c11a",
+          "replaceSha256": "6f72eea9d9548826a830026c179fd9782b0ebc8fdbefd41155ac5bea163f07c6"
+        },
+        {
+          "id": "original-source-handoffs",
+          "findSha256": "715680903433ff3983c9303aaccbd2957e37d2cd0e56541d59d391f052adfe60",
+          "replaceSha256": "8b4e2f545d51491b1f30fb01839dd03d19837cec61a77f96c7a253dfe6b1c19c"
+        },
+        {
+          "id": "rg-status-discovery",
+          "findSha256": "7621d94e56666825372437dc34d08d9b08cb44e6a2d79a1d68f320ca3efeaf34",
+          "replaceSha256": "2eef8f9183090f6e319c2f4c7187d737b4b053bd31dcdc33c79c6e19f4b22b44"
         },
         {
           "id": "oracle-gates-from-risk",
           "findSha256": "f14f3365d2fb43be3a38264a9df34de35226aa251ae12e148bf327076cc5d1e8",
-          "replaceSha256": "2cbe6eba440c3ddb460a2ecae2aca045fa571b35b4b3d2e1c08546f7b403676a"
+          "replaceSha256": "ae46425efc6dce830745e22b841852926392292948518aab1db6e9daffc1f727"
         },
         {
           "id": "user-authorized-commits",
@@ -74,7 +84,7 @@
       ]
     },
     "oh-my-opencode-slim": {
-      "patchFile": "/home/littlekey/github/opencode-bcp/integrations/omo-slim/skill-overrides/oh-my-opencode-slim.json",
+      "patchFile": "/home/littlekey/github/opencode-bcp/.slim/worktrees/omo-3.0.3-upgrade/integrations/omo-slim/skill-overrides/oh-my-opencode-slim.json",
       "note": "oh-my-opencode-slim: config fact corrections, all verified against the 3.0.1 implementation (dist loader code). Upstream docs understate project-local config/prompt support and claim built-in agents reject inline prompts; the implementation supports both.",
       "ops": [
         {
@@ -96,7 +106,7 @@
     }
   },
   "personal": {
-    "dir": "/home/littlekey/.config/opencode/skills",
+    "dir": "/home/littlekey/github/opencode-bcp/.slim/deepwork/omo-3.0.3-20261008/personal-source",
     "skills": [
       "domain-modeling",
       "eli5",
@@ -111,16 +121,7 @@
       "wait-what",
       "writing-plans"
     ],
-    "skipped": [
-      "clonedeps",
-      "codemap",
-      "deepwork",
-      "oh-my-opencode-slim",
-      "reflect",
-      "simplify",
-      "verification-planning",
-      "worktrees"
-    ],
+    "skipped": [],
     "files": {
       "domain-modeling/ADR-FORMAT.md": "944c92aa790e8fbdc9199640b170979abb8a34ba8d0fe18c2a01a63bce140ca0",
       "domain-modeling/CONTEXT-FORMAT.md": "17ab16ce783e4d2801ee52fd9acdf550cbf44de65ae76797a93943bbedf22a13",
@@ -218,7 +219,7 @@
       "skills/codemap/codemap.md": "eb16c36c04ef8a927b7391565ac5e18c210ac2e3bbff2b803159f9c71cd55f6b",
       "skills/codemap/scripts/codemap.mjs": "a6e59ec16f7b7e5de185a9cf35933c23e94dfaab3389a99eed66a7ece3c1fdb5",
       "skills/codemap/scripts/codemap.test.ts": "bd94813c7545a1fe0fa46f2c8967cb7b3d8531b78e7ff313d923cabad996d569",
-      "skills/deepwork/SKILL.md": "f8f6db85fa0f401a53bcbc963bcab1d093b7bc766c563875c2314d85f2b5425d",
+      "skills/deepwork/SKILL.md": "073eac502f67927af18f31fce55277837ea0cf16d3abcfe1dd09ce0cf89c4a7e",
       "skills/domain-modeling/ADR-FORMAT.md": "944c92aa790e8fbdc9199640b170979abb8a34ba8d0fe18c2a01a63bce140ca0",
       "skills/domain-modeling/CONTEXT-FORMAT.md": "17ab16ce783e4d2801ee52fd9acdf550cbf44de65ae76797a93943bbedf22a13",
       "skills/domain-modeling/SKILL.md": "327a2b50620e2fd70abc6893cd6965e76b20f8d0adb0dc2c8d5eb3845efb643e",

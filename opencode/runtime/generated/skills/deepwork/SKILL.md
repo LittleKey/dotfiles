@@ -18,40 +18,66 @@ not as the default implementation worker.
 
 ## Setup and Deepwork State
 
-- keep live execution status in the Todo; when a durable handoff is useful, save a decision/evidence snapshot under `.slim/deepwork/`, not a second continuously synchronized checklist;
-- save code/doc deliverables to project paths (e.g. `src/`, `docs/`); reserve
-  `.slim/deepwork/` strictly for progress files;
+`.slim/deepwork/` holds exactly two shapes: the pinned router head
+`.slim/deepwork/<session-id>.md`, and one directory per task,
+`.slim/deepwork/<task-slug>/`, for that task's progress file and topic
+files. Keep live execution status and open items in the Todo. Keep durable
+decisions, one-line verdicts and original evidence references in the task
+progress file; use a topic file only when a durable artifact is needed.
+Deliverables (code, specs, data, docs) belong in real project paths. `.slim/deepwork/.runtime/` is machine-written
+guard bookkeeping (receipts, claim markers) — never read by the workflow;
+guards record in shadow mode by default.
 
-### Deepwork File
+### Pinned Router Head
 
-The activation prompt pins one progress file per session:
-`.slim/deepwork/<session-id>.md`, updated in place across turns; re-running
-`/deepwork` in the same session reuses it. Never create or modify another
-session's file. First line: `status: active`, flipped to `status: completed`
-when the work concludes. On resume or after compaction, re-read it before
-acting — it is the authoritative record of decisions, phases, and findings.
+The activation prompt pins `.slim/deepwork/<session-id>.md`, updated in
+place; re-running `/deepwork` reuses it. Never modify
+another session's file; only the orchestrator writes it. At most 12 lines:
+`status: active` (flip to `status: completed` when the session's work
+concludes), then `task:`, `slug:` (its task directory), `phase:`, `next:`,
+`blockers:` — one line each. A session without a task keeps only the
+`status:` line. The head is a hint: on conflict, the task progress file
+wins.
 
-Before creating this file—and before planning or delegation—inspect the existing
-`.gitignore` and `.ignore` and add only missing entries: `.gitignore` must
-contain `.slim/deepwork/`; `.ignore` must contain `!.slim/deepwork/` and
-`!.slim/deepwork/**`. This keeps deepwork state git-local yet OpenCode-readable.
+Before creating any deepwork file, ensure `.gitignore` contains
+`.slim/deepwork/` and `.ignore` contains `!.slim/deepwork/` plus
+`!.slim/deepwork/**`, adding only missing entries.
 
-Do not follow a rigid template. Choose whatever markdown structure best fits the
-work. The file only needs to remain useful as persistent session state and should
-capture, as applicable:
+### Task Progress File
 
-- current goal and understanding;
-- researched, factual context from `@librarian` to avoid oracle doing its own
-  research;
-- plan drafts, Oracle review budget/gates, and review notes;
-- implementation phases and status;
-- validation results;
-- unresolved questions, blockers, and follow-ups.
+Each task keeps one progress file,
+`.slim/deepwork/<task-slug>/progress.md` — at most 80 lines, rewritten in
+place, never appended to. Head: one-line fields — `status: active`, current
+phase, next step, frozen constraints (a constraint not written here is
+gone). Below: a dated recovery snapshot of decisions and evidence, with
+one-line conclusions and original references. Refresh it at meaningful
+handoff or recovery boundaries, folding as you go; do not maintain a second
+continuously synchronized checklist. Make the snapshot's age visible and
+consult live execution status before resuming. Claim a task with `mkdir -p .slim/deepwork` then a plain
+`mkdir .slim/deepwork/<task-slug>` (no `-p` on the task directory); on
+success, write its `slug:` into the pinned head — flipping a
+reused head's `status:` back to `active` — before working. If the
+directory already exists: a `slug:` in another session's `status: active`
+head means claimed; otherwise adopt it by writing the `slug:` yourself.
+Retain delegated conclusions through original user-readable replies or
+lane-authored topic artifacts. Keep only a one-line conclusion and the
+original reference in the progress snapshot; do not transcribe full reports
+into a second copy. Before acceptance or dependent dispatch, read the
+original source and check its exact version, evidence and limits. A retained
+reply or an artifact's first line alone is not semantic acceptance.
+Past ~400 lines, consolidate a topic file — one per topic, new versions
+overwrite old ones.
 
-Refresh this snapshot at meaningful handoff or recovery boundaries. Record
-accepted findings and original references rather than duplicating the Todo or
-source bodies. A snapshot's age must be visible; consult the live execution
-state before resuming work.
+### Resuming
+
+On resume or after compaction, read one chain, one file per hop: the
+pinned head → the progress file its `slug:` points to → the topic files
+its pointers reference. Nothing else. To find an existing task, read task
+status lines only (`rg -m 1 '^status:' .slim/deepwork/*/progress.md`)
+plus the pinned heads' `status:` and `slug:` lines; skip completed tasks,
+any task whose slug sits in another session's `status: active` head, and
+slug-less heads (legacy — never claimable, noted once); after picking
+one, do not read other task directories.
 
 ## Planning
 
@@ -63,7 +89,7 @@ state before resuming work.
   valid for a phase, reference it instead of scheduling a fresh gate for
   unchanged ground. Each scheduled gate keeps the 1 + 2 review budget below.
   Record the phase order, specialist ownership, gate order, and one-line gate
-  rationale in the deepwork file; share a compact version with the user;
+  rationale in the progress snapshot; share a compact version with the user;
 
 ## Phase Execution
 
@@ -84,9 +110,9 @@ Use the scheduler model throughout:
 
 ## Phase Gate and Commit
 
-- after each planned phase, run relevant validation, update the deepwork file,
+- after each planned phase, run relevant validation, update the task progress file,
   then request its planned `@oracle` gate before continuing;
-- before its planned Oracle gate, record in the deepwork file the phase goal,
+- before its planned Oracle gate, record in the task progress file the phase goal,
   changed paths, validation evidence, the specific decision or risk to review,
   and accepted research with file references, so Oracle reviews established
   context rather than repeating discovery;
@@ -117,7 +143,7 @@ Gate 2 — review attempt 2 of 3 (1 re-review remaining)
 For re-reviews, tell Oracle to prioritize unresolved material findings, risks
 introduced by remediation, and whether prior findings are resolved. It must not
 reopen accepted, unchanged, or resolved concerns. When the two re-reviews are
-exhausted, record any remaining material risk or blocker in the deepwork file
+exhausted, record any remaining material risk or blocker in the task progress file
 and ask the user whether to accept the risk, change scope, or authorize an
 exceptional additional review.
 
@@ -125,7 +151,7 @@ exceptional additional review.
 
 When a deepwork phase includes `@designer`, treat the delivered UI/UX as
 accepted design intent for later phases. Record any important design decisions in
-the deepwork file before continuing.
+the task progress file before continuing.
 
 After designer work:
 
@@ -137,9 +163,16 @@ After designer work:
   component-feel changes back to `@designer`;
 - use `@fixer` only for bounded mechanical follow-up that preserves the design
   exactly, such as wiring, tests, type fixes, or non-visual behavior changes;
-- if design intent must change, record why in the deepwork file before changing
+- if design intent must change, record why in the task progress file before changing
   it.
 
 ## Completion
+
+When the work concludes, rewrite the task progress file in place into a
+tombstone of at most 15 lines: first line `status: completed`, then the
+final conclusion, pointers to key deliverables, surviving frozen
+constraints, and the date. Drop the log and checklist. Move nothing; add
+no index files or ledgers. A finished task directory is read by nothing
+and may be deleted at any time, without record.
 
 - finish with final validation and a concise summary.

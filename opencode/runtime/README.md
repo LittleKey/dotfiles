@@ -1,5 +1,12 @@
 # opencode personal-profile runtime
 
+**Portability:** this is an owner-specific profile with absolute source paths,
+external plugin inputs and installation-authority requirements. It is not a
+drop-in upgrade for a normal upstream installation on another machine. The
+current actual-host verifier requires Linux `/proc`; macOS needs separate
+host/DB verification. For a macOS OMO-only build and isolated trial, use
+`integrations/omo-slim/MACOS-TRIAL.md` in the matching `opencode-bcp` checkout.
+
 Owner-owned staging/activation tooling for the personal OpenCode profile
 (v1 `1.18.x` and native-v2 `2.0.x` hosts). This directory is **new** scope
 (`dotfiles/opencode/runtime/**`); it never edits the hard-linked production
@@ -124,6 +131,40 @@ Host floors are `v1 >= 1.18.29`, `v2 >= 2.0.20`; tested versions are
 `1.18.33` and `2.0.20`. Unknown majors and pre-releases are rejected.
 
 ## Lifecycle
+
+### OMO 3.0.3 installation (2026-10-09, loaded-state acceptance passed)
+
+The generated skill input now targets OMO 3.0.3, with a version-specific
+`deepwork` override. Its pinned router/task-directory contract is retained;
+the local delta keeps Todo as live status, original-source handoffs,
+risk-based review and explicit authorization for commits. The other two
+overrides apply to byte-identical upstream files. All twelve personal skills
+and all 49 generated file modes are preserved, including the eight approved
+plan-skill files and five executable helpers.
+
+Use the committed generated tree as the complete personal source. The raw
+`opencode/skills` directory retains the plan-skill sources but is not a complete
+mirror: it lacks `grilling` and contains an older `to-spec`. Build into a
+separate output and compare all hashes/modes before replacing the input.
+
+The host-config source now points to the committed raw `opencode.json`, after
+comparison with the accepted installation authority and original backup. The
+raw source differs from that backup only in plugin paths; all user settings
+preserved by the renderer, including provider values, match current production.
+Rendered production agent permissions are output and cannot be reused as raw
+input. Historical `testedEntrySha256` values remain
+distinct from the new build digests in `candidateNote`: a successful build is
+not actual-host acceptance. The approved OMO 3.0.3 payload is now installed in
+the production config, with 4,859 managed files verified and 34 obsolete OMO
+files quarantined outside discovery roots. The user upgraded OpenCode to 1.18.35
+and approved retaining it. Fresh isolated checks on that binary passed:
+11 metadata, 58 role/permission/skill and 27 BCP checks. The existing production
+process then passed exact role/model/variant/mode, readonly permission, skill
+body and helper-mode checks. Evidence is recorded separately under
+`/home/littlekey/github/opencode-bcp/.slim/deepwork/omo-3.0.3-20261008/proof/host-1.18.35/`;
+historical 1.18.33 manifests and tested-version pins were not rewritten. The
+OpenChamber installation was not changed. The probes use a scripted local
+provider; real-model behavior and full compression recovery remain untested.
 
 ### OpenChamber local-path display compatibility
 
@@ -287,13 +328,15 @@ bytes, or anchor drift; emits `build-manifest.json` provenance):
 
 ```bash
 node integrations/omo-slim/build-skills.mjs \
-  --package-dir ~/.cache/opencode/packages/oh-my-opencode-slim@3.0.1/node_modules/oh-my-opencode-slim \
-  --personal-dir ~/.config/opencode/skills \
-  --out-dir dotfiles/opencode/runtime/generated
+  --package-dir /path/to/verified/oh-my-opencode-slim-3.0.3 \
+  --personal-dir dotfiles/opencode/runtime/generated/skills \
+  --out-dir /path/to/separate/generated-candidate
 ```
 
-`runtime/generated/skills/` is the pinned `skillsDir` source; re-run the
-builder, then `oprofile pin`, whenever stock or personal sources change.
+`runtime/generated/skills/` is the pinned `skillsDir` source. Compare the
+candidate against the previous byte/mode inventory before replacing it, and
+refresh only explained input pins. Do not use a broad `oprofile pin` to absorb
+unknown source drift.
 
 ### Migrating the personal plan skills
 

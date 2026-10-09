@@ -975,7 +975,7 @@ test("skills follow upstream: generated tree consistency, no stock-inherited sha
   assert.ok(codemap.includes("node scripts/codemap.mjs init"), "stock relative script paths kept (relocatable)");
   const deepwork = readFileSync(join(inputs.skillsDir.resolved.path, "deepwork", "SKILL.md"), "utf8");
   assert.ok(deepwork.includes("deepwork never commits on its own initiative"), "user-authorized-commits delta applied");
-  assert.ok(deepwork.includes("keep live execution status in the Todo"), "todo-live-status delta applied");
+  assert.ok(deepwork.includes("Keep live execution status and open items in the Todo"), "3.0.3 todo-live-status delta applied");
   assert.ok(deepwork.includes("<session-id>.md"), "stock session-pinned deepwork file contract kept (hook embeds the same contract)");
   const omy = readFileSync(join(inputs.skillsDir.resolved.path, "oh-my-opencode-slim", "SKILL.md"), "utf8");
   assert.ok(omy.includes("Built-in agents also accept inline `prompt` and `orchestratorPrompt`"), "inline-prompt fact correction applied");

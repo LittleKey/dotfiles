@@ -69,9 +69,9 @@
     },
     "hostConfigSource": {
       "kind": "file",
-      "source": "/home/littlekey/.config/opencode/opencode.json",
-      "sha256": "a145c14327ca9aeeac1f23a8cd55826f740c99be3832ba826c8b13fb0e66f8fd",
-      "role": "models/provider subset source; credentials never copied"
+      "source": "/home/littlekey/github/dotfiles/.slim/worktrees/phase1-upstream-defaults/opencode/opencode.json",
+      "sha256": "65be9de723c25c2dcbfae7838a2b6311ef76c3df0b1f09e573eabb351641b15a",
+      "role": "Raw host settings from the committed dotfiles source. Compared 2026-10-08 with the accepted phase-1 backup: only plugin paths differ; compared with current production, all preserved settings and credential values are identical. Do not feed rendered production agent permissions back into the raw-source renderer. Credentials are scrubbed unless explicit private production staging is requested."
     },
     "skillsDir": {
       "kind": "dir",
@@ -81,7 +81,7 @@
         "codemap/codemap.md": "eb16c36c04ef8a927b7391565ac5e18c210ac2e3bbff2b803159f9c71cd55f6b",
         "codemap/scripts/codemap.mjs": "a6e59ec16f7b7e5de185a9cf35933c23e94dfaab3389a99eed66a7ece3c1fdb5",
         "codemap/scripts/codemap.test.ts": "bd94813c7545a1fe0fa46f2c8967cb7b3d8531b78e7ff313d923cabad996d569",
-        "deepwork/SKILL.md": "f8f6db85fa0f401a53bcbc963bcab1d093b7bc766c563875c2314d85f2b5425d",
+        "deepwork/SKILL.md": "073eac502f67927af18f31fce55277837ea0cf16d3abcfe1dd09ce0cf89c4a7e",
         "domain-modeling/ADR-FORMAT.md": "944c92aa790e8fbdc9199640b170979abb8a34ba8d0fe18c2a01a63bce140ca0",
         "domain-modeling/CONTEXT-FORMAT.md": "17ab16ce783e4d2801ee52fd9acdf550cbf44de65ae76797a93943bbedf22a13",
         "domain-modeling/SKILL.md": "327a2b50620e2fd70abc6893cd6965e76b20f8d0adb0dc2c8d5eb3845efb643e",
@@ -126,7 +126,7 @@
         "wait-what/agents/openai.yaml": "b41faadf741d51e4ea184148b2d1854d93f947aaf754c7844f70a00f04194999",
         "writing-plans/SKILL.md": "db6c872290da6ccc56fec85f064218f5635f6a2f214f40b2497473e6cf3f42de"
       },
-      "role": "generated skills tree (integrations/omo-slim/build-skills.mjs from pinned stock 3.0.1 + auditable skill-overrides patches + verbatim personal skills); stock-inherited skills (clonedeps, reflect, simplify, verification-planning, worktrees) are intentionally ABSENT — the OMO artifact registers them in-process; a same-name file copy would shadow it (stage refuses).",
+      "role": "generated skills tree from pinned stock 3.0.3 + version-selected auditable overrides + 12 verbatim personal skills from the accepted committed generated tree. All 49 file modes and all personal bytes retained. Stock-inherited skills are absent from this input: v1 stages artifact-relative skill links and installs original-byte managed copies; v2 inherits in-process. Same-name input copies are refused.",
       "source": "/home/littlekey/github/dotfiles/.slim/worktrees/phase1-upstream-defaults/opencode/runtime/generated/skills"
     },
     "vibeguardConfig": {
@@ -147,6 +147,7 @@
       "provideFlag": "--omo-plugin <built-plugin-dir>",
       "testedEntrySha256": "2640dc072afdd9fdb60338c9458ff66418d38c3977a9173c4b06e500a3384e7c",
       "testedIdentity": "oh-my-opencode-slim 3.0.1 v2 self-contained entry (owner candidate root omo-candidates-upstream-council, 2026-10-01 build; upstream Council guidance stands unmodified in this build). The bundle imports ../../omo-delivery.mjs, so the artifact MUST be a directory copy preserving relative layout — an entry-file copy alone is not installable. Supersedes the pre-convergence build a781e9779696e82826d28f8d84bde1c7ebed12f8ddc42c5fb1dd5bf45a9fad32.",
+      "candidateNote": "3.0.3 revision-2 server SHA-256 2630177038926dbdf298d0ea25f8f6852ee3fbc988a80d445b43b2b6cafb32c0. Build/relocation smoke only; no v2 host acceptance in this upgrade. Supersedes the historical first-build candidate note; historical testedEntrySha256 remains separate.",
       "expectActivePluginId": "oh-my-opencode-slim"
     },
     "omoPluginV1": {
@@ -159,6 +160,7 @@
       "provideFlag": "--omo-v1-plugin <built-plugin-dir>",
       "testedEntrySha256": "ebcda7f4568e74d42dffbfd7f818044b5b7e1b42f512464ab81e07bfcdc753eb",
       "testedIdentity": "oh-my-opencode-slim 3.0.1 v1 plugin entry (owner candidate root omo-candidates-upstream-council, 2026-10-01 build; zod rewritten to the package-local resolution per the builder contract). Imports ../omo-delivery.mjs — directory copy preserving relative layout required. Runtime acceptance on 1.18.x is the owner's post-build matrix, not this lane's.",
+      "candidateNote": "3.0.3 revision-2 index SHA-256 8b5fc1040bc30e239f1047742856bb81c711d11fd8e13a459891170b84b4de2d. OpenCode 1.18.33 candidate checks and independent review passed; see omo-3.0.3-20261008/proof/HOST.json and REVIEW-SEAL.json. Production preparation was separately approved. The prior first-build candidate is historical; stage still reports the difference from historical testedEntrySha256 rather than relabeling it.",
       "expectActivePluginId": "oh-my-opencode-slim"
     },
     "bcpPlugin": {
