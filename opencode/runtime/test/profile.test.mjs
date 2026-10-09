@@ -11,7 +11,7 @@ import { tmpdir, homedir } from "node:os";
 import { join, dirname, relative, sep } from "node:path";
 import { execFileSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 
 import { loadProfile, verifyAllInputs, verifyExplicit, RefusalError } from "../lib/inputs.mjs";
 import { stage, StageRefusal, STOCK_INHERITED_SKILLS, refuseStockSkillShadow } from "../lib/stage.mjs";
@@ -25,12 +25,6 @@ import { spawnSandboxed, childExit, assertChildEnv, EnvRefused } from "../lib/sp
 import { isExcludedPromptFile } from "../lib/prompts.mjs";
 import { sha256File } from "../lib/hash.mjs";
 import { inspectV1PluginSelection } from "../lib/verify.mjs";
-// This integration assertion reads the companion repository, independently of
-// the dotfiles checkout/worktree depth. Override for another checkout layout.
-const bcpRoot = process.env.OPROFILE_BCP_ROOT ?? join(homedir(), "github/opencode-bcp");
-const { STOCK_INHERITED_SKILLS: BUILDER_STOCK_INHERITED_SKILLS } = await import(
-  pathToFileURL(join(bcpRoot, "integrations/omo-slim/build-skills.mjs")).href
-);
 
 const RUNTIME = dirname(dirname(fileURLToPath(import.meta.url))); // .../opencode/runtime
 let S; // sandbox root
@@ -388,7 +382,7 @@ function fakeOmoPluginArtifact() {
   return dir;
 }
 
-// Minimal five stock skill resources mirroring the pinned OMO 3.0.1 v1
+// Minimal stock skill resources mirroring the pinned OMO artifact's v1
 // artifact layout (flat dirs with SKILL.md; one extra file on clonedeps).
 // GOAL1 (compatibility remediation): the v1 stage now requires these under
 // plugins/<omoPluginV1>/server/src/skills/ and refuses without them.
@@ -940,54 +934,32 @@ test("prompts: exclusions stay; staged copies byte-identical; anchor transforms 
 
 test("skills follow upstream: generated tree consistency, no stock-inherited shadows, guard refuses them", () => {
   const { profile } = loadProfile(join(RUNTIME, "profile.json"));
-  // 1) the pinned generated tree resolves cleanly (fresh pins from the build
-  //    manifest match the tree on disk — fail-closed if either drifts)
+  // All eight bundled names belong to the artifact, including the three
+  // formerly patched skills. Neither dotfiles tree keeps a local copy.
+  assert.deepEqual([...STOCK_INHERITED_SKILLS].sort(), [
+    "clonedeps", "codemap", "deepwork", "oh-my-opencode-slim",
+    "reflect", "simplify", "verification-planning", "worktrees",
+  ]);
   const inputs = personalInputs(profile);
   const generatedTop = new Set(Object.keys(inputs.skillsDir.resolved.files).map((rel) => rel.split("/")[0]));
-  assert.ok(generatedTop.has("codemap") && generatedTop.has("deepwork") && generatedTop.has("oh-my-opencode-slim"), "the three patched skills are staged from the generated tree");
-
-  // 2) no stock-inherited name anywhere in the tree or the pins — a file copy
-  //    would shadow the plugin artifact's in-process registration
   for (const name of STOCK_INHERITED_SKILLS) {
     assert.ok(!generatedTop.has(name), `${name} must be inherited from the artifact, never copied`);
+    assert.ok(!existsSync(join(inputs.skillsDir.resolved.path, name, "SKILL.md")), `${name}: no install-input copy`);
+    assert.ok(!existsSync(join(RUNTIME, "../skills", name, "SKILL.md")), `${name}: no ordinary dotfiles copy`);
   }
-  assert.ok(!existsSync(join(inputs.skillsDir.resolved.path, "clonedeps")));
-  assert.ok(!existsSync(join(inputs.skillsDir.resolved.path, "reflect")));
-  assert.ok(!existsSync(join(inputs.skillsDir.resolved.path, "simplify")));
-  assert.ok(!existsSync(join(inputs.skillsDir.resolved.path, "verification-planning")));
-  assert.ok(!existsSync(join(inputs.skillsDir.resolved.path, "worktrees")));
   assert.ok(!existsSync(join(inputs.skillsDir.resolved.path, "loop-engineering")), "unregistered stock leftover is not staged either");
 
-  // 3) required resources travel: every generated skill dir carries SKILL.md;
-  //    codemap keeps its scripts and companion docs (base directory changes
-  //    when shadowing the bundled registration — companions must travel)
+  // Personal skill resources remain complete, including local compositions.
   for (const top of generatedTop) {
     assert.ok(existsSync(join(inputs.skillsDir.resolved.path, top, "SKILL.md")), `${top}/SKILL.md present`);
   }
-  assert.ok(existsSync(join(inputs.skillsDir.resolved.path, "codemap", "scripts", "codemap.mjs")));
-  assert.ok(existsSync(join(inputs.skillsDir.resolved.path, "codemap", "codemap.md")));
-  assert.ok(existsSync(join(inputs.skillsDir.resolved.path, "codemap", "README.md")));
+  for (const name of ["executing-plans", "writing-plans", "grilling", "grilling-companion", "guided-grilling"]) {
+    assert.ok(generatedTop.has(name), `${name}: personal skill retained`);
+  }
 
-  // 4) the auditable deltas actually applied (patch content markers), while
-  //    the stock session-pinned deepwork contract stays intact
-  const codemap = readFileSync(join(inputs.skillsDir.resolved.path, "codemap", "SKILL.md"), "utf8");
-  assert.ok(codemap.includes("navigation index, not mandatory pre-reading"), "codemap navigation-index delta applied");
-  assert.ok(codemap.includes("node scripts/codemap.mjs init"), "stock relative script paths kept (relocatable)");
-  const deepwork = readFileSync(join(inputs.skillsDir.resolved.path, "deepwork", "SKILL.md"), "utf8");
-  assert.ok(deepwork.includes("deepwork never commits on its own initiative"), "user-authorized-commits delta applied");
-  assert.ok(deepwork.includes("Keep live execution status and open items in the Todo"), "3.0.3 todo-live-status delta applied");
-  assert.ok(deepwork.includes("<session-id>.md"), "stock session-pinned deepwork file contract kept (hook embeds the same contract)");
-  const omy = readFileSync(join(inputs.skillsDir.resolved.path, "oh-my-opencode-slim", "SKILL.md"), "utf8");
-  assert.ok(omy.includes("Built-in agents also accept inline `prompt` and `orchestratorPrompt`"), "inline-prompt fact correction applied");
-  assert.ok(omy.includes("shadows the bundled in-process skill"), "stock skill-shadow row kept — it documents this lane's mechanism");
-  assert.ok(omy.includes("<project>/.opencode/oh-my-opencode-slim/{preset}/{agent}.md"), "project-local prompt rows applied");
-
-  // 5) the stage guard refuses any skills input carrying an inherited name,
-  //    and the runtime list equals the generator's canonical list
-  assert.deepEqual([...STOCK_INHERITED_SKILLS].sort(), [...BUILDER_STOCK_INHERITED_SKILLS].sort(), "runtime guard and generator share one canonical inherited set");
   const refusals = refuseStockSkillShadow(["clonedeps/SKILL.md", "codemap/SKILL.md", "reflect/SKILL.md"]);
-  assert.equal(refusals.length, 2, "only the inherited names refuse");
-  assert.ok(refusals.every((l) => l.includes("shadow") && l.includes("registered in-process")));
+  assert.equal(refusals.length, 3, "formerly patched names also refuse");
+  assert.ok(refusals.every((l) => l.includes("shadow") && l.includes("plugin artifact")));
 
   // 6) end-to-end: a staged tree that re-adds a stock-inherited copy refuses
   //    at stage() before anything is written
@@ -1006,7 +978,7 @@ test("skills follow upstream: generated tree consistency, no stock-inherited sha
   mkdirSync(poisonOut, { recursive: true });
   assert.throws(
     () => stage({ flavor: "v2", profile: poisonedProfile, profilePath, profileSha256, host: PRIVATE_TEST_HOST_V2, outDir: poisonOut, explicit: { omoPlugin: fakeOmoPluginArtifact() } }),
-    (err) => err instanceof StageRefusal && err.report.some((l) => l.includes("clonedeps") && l.includes("shadow") && l.includes("registered in-process"))
+    (err) => err instanceof StageRefusal && err.report.some((l) => l.includes("clonedeps") && l.includes("shadow") && l.includes("plugin artifact"))
   );
   assert.deepEqual(readdirSync(poisonOut), [], "shadow refusal leaves the output dir empty");
 });

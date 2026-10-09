@@ -2,7 +2,7 @@
 // no network, no model requests, no production writes).
 //
 // Plan upstream-defaults-20261006 PHASE1 remediation coverage:
-//   GOAL1 — v1 exposes the pinned OMO artifact's five stock skills via the
+//   GOAL1 — v1 exposes the pinned OMO artifact's eight stock skills via the
 //   default <configroot>/skills discovery: skills/<name>/ stages as a real
 //   directory of RELATIVE file links into plugins/omoPluginV1/server/src/
 //   skills/<name>/ (zero duplicated bytes, relocation-safe, no config key,
@@ -49,7 +49,7 @@ const HOST_V1 = { flavor: "v1", version: "1.18.33", executable: "test://exe", ru
 const HOST_V2 = { flavor: "v2", version: "2.0.20", executable: "test://exe", runtimeTested: "2.0.20", minCompatible: "2.0.20" };
 
 function writeFakeOmoV1({ omitSkill = null, omitSkillMd = null, omitSkillsRoot = false } = {}) {
-  // Fake OMO v1 artifact: nested entry (index/dist/index.js) + the five stock
+  // Fake OMO v1 artifact: nested entry (index/dist/index.js) + the stock
   // skill resources (server/src/skills/<skill>/SKILL.md). Optional holes let a
   // test drop a required resource and observe the stage refusal.
   const dir = join(S, `omo-v1-${Math.random().toString(36).slice(2, 8)}`);
@@ -63,6 +63,10 @@ function writeFakeOmoV1({ omitSkill = null, omitSkillMd = null, omitSkillsRoot =
       writeFileSync(join(dir, "server", "src", "skills", skill, "SKILL.md"), `---\nname: ${skill}\ndescription: fake stock skill\n---\nbody\n`);
     }
     writeFileSync(join(dir, "server", "src", "skills", "clonedeps", "codemap.md"), "fake codemap resource\n");
+    if (existsSync(join(dir, "server", "src", "skills", "codemap"))) {
+      mkdirSync(join(dir, "server", "src", "skills", "codemap", "scripts"));
+      writeFileSync(join(dir, "server", "src", "skills", "codemap", "scripts", "codemap.mjs"), "export const upstream = true;\n");
+    }
   }
   return dir;
 }
@@ -107,7 +111,7 @@ test("v1 staging projects the pinned OMO input despite a conflicting host-source
   assert.equal(readFileSync(join(again.candidateDir, "opencode.json"), "utf8"), readFileSync(join(result.candidateDir, "opencode.json"), "utf8"));
 });
 
-test("GOAL1 v1 stage: five stock skills staged as relative file links into the staged artifact; manifest records read-through identity", () => {
+test("GOAL1 v1 stage: eight stock skills and nested resources follow the staged artifact; manifest records read-through identity", () => {
   const result = stageV1(writeFakeOmoV1());
   const cand = result.candidateDir;
 
@@ -131,21 +135,19 @@ test("GOAL1 v1 stage: five stock skills staged as relative file links into the s
   }
   assert.ok(statSync(join(cand, "skills", "clonedeps", "codemap.md")).isFile(), "non-SKILL.md resource files are linked too");
 
-  // patched + personal skills remain real staged copies next to the links
-  assert.ok(existsSync(join(cand, "skills")), "skills/ root present");
-  for (const patched of ["codemap", "deepwork", "oh-my-opencode-slim"]) {
-    const rec = JSON.parse(readFileSync(join(cand, "opencode.json"), "utf8"));
-    assert.ok(typeof rec === "object", "rendered config parses");
-    if (existsSync(join(cand, "skills", patched))) {
-      assert.ok(!isLink(join(cand, "skills", patched, "SKILL.md")), `patched skill ${patched} stays a real staged copy (precedence kept)`);
-    }
+  // The former codemap override's nested script now comes from the artifact.
+  const scriptRel = "skills/codemap/scripts/codemap.mjs";
+  assert.ok(isLink(join(cand, scriptRel)));
+  assert.equal(readFileSync(join(cand, scriptRel), "utf8"), "export const upstream = true;\n");
+  for (const name of ["executing-plans", "guided-grilling"]) {
+    assert.ok(!isLink(join(cand, "skills", name, "SKILL.md")), `${name}: personal skill stays a regular copy`);
   }
 
   // manifest honesty: one record per linked file with the RELATIVE link target
   // and the read-through sha256 (which verify then re-checks against bytes)
   const { manifest } = readStageManifest(cand);
   const linkRecs = manifest.files.filter((f) => f.path.startsWith("skills/") && f.link);
-  const expectedLinks = STOCK_INHERITED_SKILLS.reduce((n, s) => n + readdirSync(join(cand, "skills", s)).length, 0);
+  const expectedLinks = STOCK_INHERITED_SKILLS.length + 2; // SKILL.md files + two companion resources
   assert.equal(linkRecs.length, expectedLinks, "every linked file is a manifest record");
   for (const rec of linkRecs) {
     const linkAbs = join(cand, ...rec.path.split("/"));
@@ -165,6 +167,7 @@ test("GOAL1 v1 stage: five stock skills staged as relative file links into the s
   // relocation safety: move the whole candidate; every link still resolves
   const moved = join(S, `moved-${Math.random().toString(36).slice(2, 8)}`);
   renameSync(cand, moved);
+  assert.equal(readFileSync(join(moved, scriptRel), "utf8"), "export const upstream = true;\n");
   assert.equal(
     readFileSync(join(moved, "skills", "reflect", "SKILL.md"), "utf8"),
     readFileSync(join(moved, "plugins", "omoPluginV1", "server", "src", "skills", "reflect", "SKILL.md"), "utf8"),
@@ -190,12 +193,12 @@ test("GOAL1 refusals: missing skill directory, missing SKILL.md, missing whole s
   // SKILL.md missing from an otherwise present directory
   refused = null;
   try {
-    stageV1(writeFakeOmoV1({ omitSkillMd: "reflect" }));
+    stageV1(writeFakeOmoV1({ omitSkillMd: "deepwork" }));
   } catch (err) {
     refused = err;
   }
   assert.ok(refused instanceof StageRefusal, "missing SKILL.md refuses the stage");
-  assert.ok(refused.report.some((l) => l.includes("server/src/skills/reflect/SKILL.md")), `refusal names the missing manifest file: ${refused.report.join(" | ")}`);
+  assert.ok(refused.report.some((l) => l.includes("server/src/skills/deepwork/SKILL.md")), `refusal names the missing manifest file: ${refused.report.join(" | ")}`);
 
   // the whole resource root missing
   refused = null;

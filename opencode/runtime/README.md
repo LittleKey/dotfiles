@@ -326,60 +326,51 @@ Reports, never silently resolves:
 - `assets/agents/lark-operator.md` — retained full native Lark Operator
   definition, originally captured from `~/.config/opencode/agents/lark-operator.md`;
   it is distinct from the builtin-role appends and is required by the renderer.
-- `generated/skills/` — generated skills tree (build output, pinned by
-  `profile.json`); see "Skills follow upstream" below.
+- `generated/skills/` — personal skill installation tree, pinned by
+  `profile.json`; the historical directory name is retained. OMO bundled
+  skills come from the plugin artifact, not this tree.
 - `lib/*.mjs` — hash/atomic/inputs/render/prompts/hostenv/spawn/stage/verify/
   activate/manifest/dwbridge (`lib/spawn.mjs` is the one validated spawn
   boundary; `lib/prompts.mjs` keeps the staging exclusions — the anchored
   staged-copy transforms were retired in phase 1; `lib/stage.mjs` carries the
   `STOCK_INHERITED_SKILLS` shadow guard).
 - `bin/oprofile.mjs` — CLI.
-- `test/profile.test.mjs` — unit tests (`node --test test/profile.test.mjs`). The stock-skill consistency assertion imports the companion `opencode-bcp` repository from `~/github/opencode-bcp`; set `OPROFILE_BCP_ROOT` to use another checkout. Run the complete suite from this directory with `node --test --experimental-test-module-mocks test/*.test.mjs`.
+- `test/profile.test.mjs` — unit tests (`node --test test/profile.test.mjs`). The skill checks no longer import a companion repository's mixed stock/personal generator. Run the complete suite from this directory with `node --test --experimental-test-module-mocks test/*.test.mjs`.
 
-## Skills follow upstream (phase 1, `upstream-defaults-20261006`)
+## Skills follow upstream (2026-10-09)
 
-`oh-my-opencode-slim` 3.0.1 registers its packaged skills **in-process** from
-the plugin artifact's own `src/skills/<name>/SKILL.md` (`CUSTOM_SKILLS`
-registry). The staged OMO artifact carries `src/skills/**` verbatim, so stock
-skills need no local copies — a same-named file copy under a skills root only
-**shadows** the in-process registration (the plugin's own legacy-copy warning)
-and drifts from the executing code. Skills are **not appendable** (no host or
-plugin mechanism extends a packaged `SKILL.md`), so the only auditable way to
-carry a local delta is a full file copy of pinned stock bytes + a small
-anchored patch.
+Dotfiles maintains **no copies of OMO's eight bundled skills** in either
+`opencode/skills/` or `runtime/generated/skills/`:
 
-Layout:
+`clonedeps`, `codemap`, `deepwork`, `oh-my-opencode-slim`, `reflect`,
+`simplify`, `verification-planning`, `worktrees`.
 
-- **Inherited, never copied** (provided by the artifact's in-process
-  registration): `clonedeps`, `reflect`, `simplify`, `verification-planning`,
-  `worktrees`. Staging refuses any of these names from a skills input
-  (`refuseStockSkillShadow`) — remove a shadowing copy, never delete the skill.
-- **Patched copies** (stock bytes + `integrations/omo-slim/skill-overrides/<name>.json`):
-  `codemap` (navigation-index policy), `deepwork` (Todo-live-status state,
-  user-authorized commits, risk-based Oracle gates; the stock session-pinned
-  `.slim/deepwork/<session-id>.md` contract is kept — the plugin hook embeds
-  it), `oh-my-opencode-slim` (config fact corrections verified against 3.0.1
-  loader code: project-local config/prompts, 4-level prompt lookup,
-  inline `prompt`/`orchestratorPrompt` support).
-- **Personal skills**: copied verbatim from the pinned personal source into
-  the generated tree.
-- `loop-engineering` (packaged but not registered in-process) is excluded
-  everywhere.
+All eight use the selected OMO artifact's original skill bytes and companion
+resources. The former local overrides of `codemap`, `deepwork` and
+`oh-my-opencode-slim` are retired, including their policy and documentation
+changes. Staging refuses personal inputs under any of these eight names, so
+an old mixed generated tree cannot silently restore the overrides.
 
-Regeneration (deterministic; refuses on version drift, missing/drifted stock
-bytes, or anchor drift; emits `build-manifest.json` provenance):
+- **v1:** stage exposes every bundled resource through relative file links
+  into `plugins/omoPluginV1/server/src/skills/`. Links remain valid after
+  candidate relocation; activation materializes managed copies of those
+  artifact bytes for the host's file-based skill discovery. Missing required
+  skill resources refuse staging.
+- **v2:** the plugin registers bundled skills in-process. No same-name skill
+  files are staged outside its artifact.
+- **Personal skills:** `runtime/generated/skills/` contains 14 personal
+  skills / 44 files. Their existing bytes and modes are retained, including
+  the plan helpers and the guided-grilling composition. `profile.json`
+  inventories this complete installation input.
+- `loop-engineering` remains an unregistered legacy resource and is not part
+  of the selected skill inventory.
 
-```bash
-node integrations/omo-slim/build-skills.mjs \
-  --package-dir /path/to/verified/oh-my-opencode-slim-3.0.3 \
-  --personal-dir dotfiles/opencode/runtime/generated/skills \
-  --out-dir /path/to/separate/generated-candidate
-```
-
-`runtime/generated/skills/` is the pinned `skillsDir` source. Compare the
-candidate against the previous byte/mode inventory before replacing it, and
-refresh only explained input pins. Do not use a broad `oprofile pin` to absorb
-unknown source drift.
+The previous mixed `build-manifest.json` is removed. Do not use
+`opencode-bcp/integrations/omo-slim/build-skills.mjs` to replace this tree: its
+stock-patching mode would reintroduce the three retired overrides. Maintain
+personal files and their companions directly, compare all retained bytes and
+modes, and refresh only explained `skillsDir` pins. A broad `oprofile pin`
+must not be used to absorb unknown source drift.
 
 ### Migrating the personal plan skills
 
@@ -387,16 +378,15 @@ The user-maintained `executing-plans` and `writing-plans` sources are retained
 under `opencode/skills/` and their installable copies are pinned under
 `runtime/generated/skills/`. The latter is the profile's installation input.
 `executing-plans` includes its review template and five executable helpers;
-copying only `SKILL.md` leaves it incomplete. The generator records source and
-output modes, and stage/activation preserve every helper's `0755` mode.
+copying only `SKILL.md` leaves it incomplete. Git retains the executable bits,
+and stage/activation preserve every helper's `0755` mode.
 
 On another machine, use the committed generated tree rather than requiring
 the old machine's live skills directory. Relocate the profile input paths to
 the new checkout and deliberately refresh pins after checking the changes.
-To regenerate from that tree, pass `runtime/generated/skills` as
-`--personal-dir` and a separate output directory as `--out-dir`; compare the
-new manifest before replacing the installation input. Never use an output
-directory that contains the personal source.
+Keep the complete personal tree, compare retained bytes and modes before
+replacing it, and update only the explained profile pins. The upstream OMO
+skill payload is supplied separately by the selected plugin artifact.
 
 `test/personal-skills.test.mjs` checks both host stage layouts, byte/mode
 identity against the retained sources, relocated installation, repeat install,
@@ -409,7 +399,7 @@ lookup. These are isolated installer checks, not a model-driven workflow test.
 guidance. `opencode/skills/guided-grilling/SKILL.md` is the entry point: it asks
 the model to load the installed `grilling` and then `grilling-companion`.
 Both have byte-identical installable copies in `runtime/generated/skills/`
-and are included in the generated manifest and the profile's skill inventory.
+and are included in the profile's skill inventory.
 The retained upstream `grilling` and `grill-with-docs` files are unchanged.
 
 Invoke it explicitly, for example: **“使用 guided-grilling 帮我梳理这个方案。”**
@@ -439,10 +429,10 @@ For another machine:
 Keep upstream updates separate from these two local skills. Review their
 composition contract after an upstream workflow change. To edit the local
 skills, update their `opencode/skills/` sources and corresponding installable
-copies, regenerate to a separate directory as above, compare all retained
-bytes/modes, and refresh only the explained manifest/profile pins. The complete
-personal source for regeneration is `runtime/generated/skills/`, not the
-incomplete collection of upstream snapshots under `opencode/skills/`.
+copies, compare all retained bytes/modes, and refresh only the explained
+profile pins. The complete personal installation source is
+`runtime/generated/skills/`; the editable collection under `opencode/skills/`
+does not contain every retained personal skill.
 
 The installer test checks these local sources through v1/v2 relocation,
 installation, reinstall and rollback. It does not establish model adherence to
@@ -456,13 +446,12 @@ skill inheritance or instruction priority.
    `oprofile pin` (the current pins refuse the changed tree — fail-closed by
    design). The final managed-profile application of the source policy stays
    an owner step.
-2. **Global shadow cleanup before cutover**: old same-name copies under
-   `~/.config/opencode/skills/` shadow the inherited registrations. The five
-   inherited names are no longer installed by any candidate, so existing
-   unmanaged copies at a live root must be archived/removed by the owner
-   (this lane never deletes unmanaged files); the three patched names are
-   reinstalled as managed files, but a pre-existing **unmanaged** copy at the
-   same path makes activation refuse — archive it first, then activate.
+2. **Global shadow cleanup before cutover**: this repository cleanup does not
+   remove files from `~/.config/opencode/skills/`. A v1 candidate replaces its
+   managed bundled-skill files with current artifact bytes. A v2 transition
+   needs explicit retirement of old global copies, which otherwise shadow
+   in-process registration. The generic installer does not retire orphaned
+   files or overwrite unmanaged conflicts; reconcile those during cutover.
 3. **Host runtime verification**: `verify` counts the staged skill files only;
    it does NOT assert runtime skill discovery (the in-process v2 registration
    and any v1 `ctx.skill` behavior are untested on real hosts). Actual

@@ -10,7 +10,7 @@
       "liveGlobalRoot": "/home/littlekey/.config/opencode (authoritative for agents/lark-operator.md and vibeguard.config.json; read-only inputs). skills/ is NO longer sourced from here (phase-1 follow-upstream): the pinned generated tree under runtime/generated/skills is authoritative — see inputs.skillsDir",
       "assetSnapshot": "runtime/assets/agents/lark-operator.md (release-internal copy of the live file, pinned below)"
     },
-    "convergence": "2026-10-01 composition convergence (decision e000070 + spec profile-composition-completion): v1 no longer requires ACP 1.18.2 or OMO 2.2.25 — both flavors select stock billion-context@0.1.175 + OMO 3.0.1 directory artifacts + the explicit dual-host BCP artifact; acp.jsonc/tui.json pins removed (rollback material, see rollbacks); private Council prompt replacements and *.bak-promptopt files are pinned for drift detection but never staged. Council prompts are NOT stock in the sources — upstream OMO 3.0.1 guidance stands unmodified in staged candidates. 2026-10-06 phase-1 follow-upstream (plan upstream-defaults-20261006): staged prompt copies are byte-identical (staged-copy Council prune + v2 task_id→sessionID translation RETIRED; prompt policy lives in the sources); skills follow upstream — the generated skillsDir tree carries only the 3 patched skills (stock bytes + auditable skill-overrides patches) and 12 verbatim personal skills, while clonedeps/reflect/simplify/verification-planning/worktrees are inherited in-process from the plugin artifact (same-name copies would shadow it and are refused at staging); the full explorer prompt pin is retired (upstream default + explorer_append.md applies); prompt-lane source deletions/appends still require an owner oprofile pin re-read of omoPromptDir. Phase-1 follow-upstream (2026-10-06): staged prompt copies are byte-identical (Council prune + v2 task_id→sessionID translation retired); skills follow upstream — 5 stock-inherited skills are NOT copied (in-process OMO artifact registration), codemap/deepwork/oh-my-opencode-slim stage from the generated tree (pinned stock bytes + auditable skill-overrides patches), personal skills verbatim; omoPromptDir/hostConfigSource re-pinned to the current production sources (Council files deleted upstream, append changed, live config changed); final prompt-lane source-pin application stays an owner step."
+    "convergence": "The composition lane selects billion-context@0.1.175, explicit OMO directory artifacts and the dual-host BCP artifact. Retired ACP/tui pins remain rollback history. Council overrides and *.bak-promptopt files are excluded from staging; prompt copies are byte-identical and the Explorer full override is retired in favor of its upstream base plus append. As of 2026-10-09, all eight OMO bundled skills follow the selected plugin artifact: v1 stages artifact-relative links and activation materializes original bytes; v2 inherits in-process. The former codemap/deepwork/oh-my-opencode-slim local overrides and combined build manifest are retired. skillsDir contains only 14 personal skills; input changes require deliberate, explained pin updates."
   },
   "hosts": {
     "floors": {
@@ -76,12 +76,6 @@
     "skillsDir": {
       "kind": "dir",
       "files": {
-        "codemap/README.md": "fab8e2159592b290b5615f2b234082f5c1d4283a538df9f9542afa841c76fa0b",
-        "codemap/SKILL.md": "2ce756e95b392631aa3e3f75d35b43b2e1b6bf95cd72924825ade558bd8c8cf3",
-        "codemap/codemap.md": "eb16c36c04ef8a927b7391565ac5e18c210ac2e3bbff2b803159f9c71cd55f6b",
-        "codemap/scripts/codemap.mjs": "a6e59ec16f7b7e5de185a9cf35933c23e94dfaab3389a99eed66a7ece3c1fdb5",
-        "codemap/scripts/codemap.test.ts": "bd94813c7545a1fe0fa46f2c8967cb7b3d8531b78e7ff313d923cabad996d569",
-        "deepwork/SKILL.md": "073eac502f67927af18f31fce55277837ea0cf16d3abcfe1dd09ce0cf89c4a7e",
         "domain-modeling/ADR-FORMAT.md": "944c92aa790e8fbdc9199640b170979abb8a34ba8d0fe18c2a01a63bce140ca0",
         "domain-modeling/CONTEXT-FORMAT.md": "17ab16ce783e4d2801ee52fd9acdf550cbf44de65ae76797a93943bbedf22a13",
         "domain-modeling/SKILL.md": "327a2b50620e2fd70abc6893cd6965e76b20f8d0adb0dc2c8d5eb3845efb643e",
@@ -114,7 +108,6 @@
         "humanizer/SKILL.md": "e8269e236bed06ed0fe4824c274112e54950b0cb46b0bafe5e1576ef7c9f93d5",
         "humanizer/agents/openai.yaml": "9d87ff83149a04f86a372948b8ee35fa249de20923867bbc2a49304290aad736",
         "humanizer/scripts/validate-package.py": "750e5f50561b8a5285bd1a20ed8b127af65b1b25d50e88c2ce5fe8522943c8fd",
-        "oh-my-opencode-slim/SKILL.md": "e286b4424cb14c5c62b43020fa510206160706686eb127ecd5a2f8247561417f",
         "setup-matt-pocock-skills/SKILL.md": "2bcd89e97777cdb705914424e39c97d5db524c8eb4eafac8120778a07774f0ec",
         "setup-matt-pocock-skills/agents/openai.yaml": "9527de0110541c45712319025155aeab8dc7d77c6ed6e5e83271bab1851ab939",
         "setup-matt-pocock-skills/domain.md": "edc6d6131fdffc4b7135704f5262124fc43355c95f61b7399dc5a4db643e28ca",
@@ -128,7 +121,7 @@
         "wait-what/agents/openai.yaml": "b41faadf741d51e4ea184148b2d1854d93f947aaf754c7844f70a00f04194999",
         "writing-plans/SKILL.md": "db6c872290da6ccc56fec85f064218f5635f6a2f214f40b2497473e6cf3f42de"
       },
-      "role": "generated skills tree from pinned stock 3.0.3 + version-selected auditable overrides + 14 verbatim personal skills. The prior 49 files retain their bytes and modes; guided-grilling and grilling-companion add two 0644 files, for 51 files total. Upstream grilling and grill-with-docs remain unchanged. Stock-inherited skills are absent from this input: v1 stages artifact-relative skill links and installs original-byte managed copies; v2 inherits in-process. Same-name input copies are refused.",
+      "role": "Personal-only installation tree: 14 skills, 44 files with preserved bytes and modes. All eight OMO bundled names are excluded, including the retired codemap/deepwork/oh-my-opencode-slim overrides. v1 obtains bundled resources from artifact-relative links and installs original-byte managed copies; v2 inherits in-process. Same-name personal inputs are refused. The historical generated/ directory name is retained; the mixed stock-patching generator and its manifest no longer maintain this tree.",
       "source": "/home/littlekey/github/dotfiles/opencode/runtime/generated/skills"
     },
     "vibeguardConfig": {

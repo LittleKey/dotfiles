@@ -63,9 +63,9 @@
 // root wherever it lives (relocation-safe), and the host's default
 // <configroot>/skills discovery picks the names up with no config key and no
 // CLI flag. Missing required resources (skill dir or SKILL.md) refuse the
-// stage before anything is committed. The patched
-// codemap/deepwork/oh-my-opencode-slim skills and every user skill stay real
-// staged copies, so patched + personal skills keep their names and content;
+// stage before anything is committed. All eight bundled skills, including
+// the formerly patched codemap/deepwork/oh-my-opencode-slim, follow the
+// artifact. Personal skills remain regular byte-identical staged copies;
 // activation materializes the linked entries as regular artifact-byte copies
 // pinned by the manifest (the same staleness model as every managed file —
 // re-staging refreshes them together with the artifact component). v2 keeps
@@ -81,15 +81,10 @@ import { launcherEnv } from "./hostenv.mjs";
 import { assertChildEnv } from "./spawn.mjs";
 import { sha256, sha256File } from "./hash.mjs";
 
-// Stock-inherited skills (plan upstream-defaults-20261006): the OMO 3.0.1
-// plugin artifact registers its packaged skills IN-PROCESS from the artifact's
-// own src/skills (CUSTOM_SKILLS registry). A same-named file copy under the
-// candidate skills/ root would SHADOW that registration (the legacy copy
-// mechanism) and drift from the executing plugin code — so staging refuses
-// these names outright. The canonical list lives in
-// integrations/omo-slim/build-skills.mjs (which generates the pinned tree
-// WITHOUT them); the test suites assert both lists stay equal.
-export const STOCK_INHERITED_SKILLS = ["clonedeps", "reflect", "simplify", "verification-planning", "worktrees"];
+// All bundled CUSTOM_SKILLS come from the selected plugin artifact. v1
+// exposes its resources through links; v2 registers them in-process. Refuse
+// same-name personal inputs, including the three retired local overrides.
+export const STOCK_INHERITED_SKILLS = ["clonedeps", "codemap", "deepwork", "oh-my-opencode-slim", "reflect", "simplify", "verification-planning", "worktrees"];
 
 /**
  * Pure guard: returns refusal lines for any staged skills path that would
@@ -101,7 +96,7 @@ export function refuseStockSkillShadow(relPaths) {
     const [top] = rel.split("/");
     if (STOCK_INHERITED_SKILLS.includes(top)) {
       refusals.push(
-        `skills/${rel} shadows stock-inherited skill '${top}' — it is registered in-process by the OMO plugin artifact (src/skills); remove the copy instead of shadowing it (never delete the skill to fix discovery)`
+        `skills/${rel} shadows stock-inherited skill '${top}' — it is provided by the OMO plugin artifact (v1 resource links, v2 in-process registration); remove the input copy instead of shadowing it`
       );
     }
   }
@@ -353,7 +348,7 @@ export function stage(opts) {
           linkedFileCount++;
         }
       }
-      v1StockSkillNote = `Stock skills (compatibility remediation): ${STOCK_INHERITED_SKILLS.length} stock-inherited skill director(ies) [${STOCK_INHERITED_SKILLS.join(", ")}] staged under skills/ as ${linkedFileCount} relative file link(s) into plugins/${V1_STOCK_SKILL_COMPONENT}/${V1_STOCK_SKILL_ROOT}/ — v1 default skill discovery (<configroot>/skills) exposes the pinned artifact's stock skills with zero duplicated bytes (no config key, no CLI flag). Activation materializes these managed entries as regular artifact-byte copies pinned by the manifest. Patched codemap/deepwork/oh-my-opencode-slim and user skills remain real staged copies; the refuseStockSkillShadow guard still refuses same-name user inputs.`;
+      v1StockSkillNote = `Stock skills (compatibility remediation): ${STOCK_INHERITED_SKILLS.length} stock-inherited skill director(ies) [${STOCK_INHERITED_SKILLS.join(", ")}] staged under skills/ as ${linkedFileCount} relative file link(s) into plugins/${V1_STOCK_SKILL_COMPONENT}/${V1_STOCK_SKILL_ROOT}/ — v1 default skill discovery (<configroot>/skills) exposes the pinned artifact's stock skills with zero duplicated bytes (no config key, no CLI flag). Activation materializes these managed entries as regular artifact-byte copies pinned by the manifest. Only personal skills remain real staged input copies; the refuseStockSkillShadow guard refuses all eight bundled names in user inputs.`;
     }
 
     // Stock-plugin overrides from THIS stage's committed layout. A staged
