@@ -1,4 +1,4 @@
-// Migration contract for the user-owned plan skills: complete trees, executable
+// Migration contract for user-owned skills: complete trees, executable
 // helpers, relocation, both host stages, repeat installation and rollback.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -12,7 +12,7 @@ import { activate, rollback, verifyCandidateAgainstManifest } from '../lib/activ
 import { sha256File } from '../lib/hash.mjs';
 
 const runtime = join(import.meta.dirname, '..');
-const names = ['executing-plans', 'writing-plans'];
+const names = ['executing-plans', 'writing-plans', 'grilling-companion', 'guided-grilling'];
 const helpers = ['plan-workspace', 'review-package', 'task-brief', 'task-done', 'task-start'];
 function inventory(root, prefix = '') {
   return Object.fromEntries(readdirSync(join(root, prefix), { withFileTypes: true }).flatMap((entry) => {
@@ -23,7 +23,7 @@ function inventory(root, prefix = '') {
 }
 
 for (const flavor of ['v1', 'v2']) {
-  test(`${flavor}: all generated skills and plan helpers survive staged relocation, install, reinstall and rollback`, () => {
+  test(`${flavor}: all generated skills, personal compositions and plan helpers survive staged relocation, install, reinstall and rollback`, () => {
     const temp = mkdtempSync(join(tmpdir(), 'oprofile-plan-skills-'));
     try {
       const pinned = loadProfile(join(runtime, 'profile.json'));

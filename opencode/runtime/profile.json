@@ -99,8 +99,10 @@
         "find-code-simplifications/agents/openai.yaml": "065b31274e6f89abf10ad2cf1edf12baa79fb1893ef3bbb28c104279d48f282c",
         "grill-with-docs/SKILL.md": "7de372c13488f1ee96cc11cd8907b56b6809cc93eef776eeddd37de6b6cbe3fe",
         "grill-with-docs/agents/openai.yaml": "94cd0ab161fb468a836349f5ed482ba58ce8e709a05c57ce533d739dbd35cca9",
+        "grilling-companion/SKILL.md": "9d42183c27a94b3be76429e0cf384e319cf8f761a9982e634369169f491f5227",
         "grilling/SKILL.md": "10ff989e7498b23b5acb49d5048f11dcd906757d2f79c5cdf8a00001381296f2",
         "grilling/agents/openai.yaml": "1411d7df7d99b7e621a1ff8283c8133cc2464be63d064e52d8ce169c6800ee9b",
+        "guided-grilling/SKILL.md": "6e165e3d814d52a7cc511525b9db049eef4493dd0c5284a3b66e8105f414a75a",
         "handoff/SKILL.md": "7c62de979fdc7ac32fb5ddb2146156c917f80ee070d30fadc9d40343c4b6ed25",
         "handoff/agents/openai.yaml": "5c479fd562c691851690e8b18c8501045bef0943c10743d636b2fae26add1d28",
         "humanizer/.claude-plugin/marketplace.json": "24261fcfead5f536e0a6f0c3fd27fa809c69393217d67d617adb6c83a2715eb7",
@@ -126,8 +128,8 @@
         "wait-what/agents/openai.yaml": "b41faadf741d51e4ea184148b2d1854d93f947aaf754c7844f70a00f04194999",
         "writing-plans/SKILL.md": "db6c872290da6ccc56fec85f064218f5635f6a2f214f40b2497473e6cf3f42de"
       },
-      "role": "generated skills tree from pinned stock 3.0.3 + version-selected auditable overrides + 12 verbatim personal skills from the accepted committed generated tree. All 49 file modes and all personal bytes retained. Stock-inherited skills are absent from this input: v1 stages artifact-relative skill links and installs original-byte managed copies; v2 inherits in-process. Same-name input copies are refused.",
-      "source": "/home/littlekey/github/dotfiles/.slim/worktrees/phase1-upstream-defaults/opencode/runtime/generated/skills"
+      "role": "generated skills tree from pinned stock 3.0.3 + version-selected auditable overrides + 14 verbatim personal skills. The prior 49 files retain their bytes and modes; guided-grilling and grilling-companion add two 0644 files, for 51 files total. Upstream grilling and grill-with-docs remain unchanged. Stock-inherited skills are absent from this input: v1 stages artifact-relative skill links and installs original-byte managed copies; v2 inherits in-process. Same-name input copies are refused.",
+      "source": "/home/littlekey/github/dotfiles/opencode/runtime/generated/skills"
     },
     "vibeguardConfig": {
       "kind": "file",

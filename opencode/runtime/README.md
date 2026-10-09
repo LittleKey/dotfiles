@@ -360,6 +360,52 @@ identity against the retained sources, relocated installation, repeat install,
 rollback, shell syntax, and direct `task-brief` execution with sibling resource
 lookup. These are isolated installer checks, not a model-driven workflow test.
 
+### Guided grilling: local composition, unchanged upstream
+
+`opencode/skills/grilling-companion/SKILL.md` contains the local communication
+guidance. `opencode/skills/guided-grilling/SKILL.md` is the entry point: it asks
+the model to load the installed `grilling` and then `grilling-companion`.
+Both have byte-identical installable copies in `runtime/generated/skills/`
+and are included in the generated manifest and the profile's skill inventory.
+The retained upstream `grilling` and `grill-with-docs` files are unchanged.
+
+Invoke it explicitly, for example: **“使用 guided-grilling 帮我梳理这个方案。”**
+The companion adds clear explanations, context-aware questions and reasoned
+recommendations. It preserves all ready questions, dependency ordering,
+user-owned decisions and upstream completion/confirmation requirements. It
+does not add a question cap, early stopping rule or the full `mama` persona.
+Directly invoking `grilling` still uses the original workflow; existing
+`grill-with-docs` calls are not automatically wrapped.
+
+For another machine:
+
+1. Pull this repository's `master` and use the committed generated skills.
+2. Include the **two complete new directories** in that machine's normal skill
+   deployment. For an ordinary upstream install, its selected skills root may
+   be `~/.config/opencode/skills/`; for an existing managed profile, update its
+   skill inputs and install through that profile's normal update process.
+3. Preserve that machine's upstream `grilling`; it must be discoverable under
+   that name and permitted alongside both new skills. The wrapper does not
+   silently substitute `grill-me` or download a missing dependency. Do not copy
+   this owner's absolute-path profile unchanged onto another machine.
+4. Restart OpenCode after installation, then confirm that all three names are
+   available. In a small interview, check that both dependency skills load,
+   recommendations remain proposals, previously settled decisions are not
+   needlessly repeated, and implementation waits for final confirmation.
+
+Keep upstream updates separate from these two local skills. Review their
+composition contract after an upstream workflow change. To edit the local
+skills, update their `opencode/skills/` sources and corresponding installable
+copies, regenerate to a separate directory as above, compare all retained
+bytes/modes, and refresh only the explained manifest/profile pins. The complete
+personal source for regeneration is `runtime/generated/skills/`, not the
+incomplete collection of upstream snapshots under `opencode/skills/`.
+
+The installer test checks these local sources through v1/v2 relocation,
+installation, reinstall and rollback. It does not establish model adherence to
+the communication guidance: composition is a prompt contract, not host-enforced
+skill inheritance or instruction priority.
+
 ### Owner follow-ups (this lane's explicit handover)
 
 1. **Prompt-lane re-pin**: when the prompt lane lands its source

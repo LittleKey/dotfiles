@@ -37,7 +37,7 @@
   ],
   "patched": {
     "codemap": {
-      "patchFile": "/home/littlekey/github/opencode-bcp/.slim/worktrees/omo-3.0.3-upgrade/integrations/omo-slim/skill-overrides/codemap.json",
+      "patchFile": "/home/littlekey/github/opencode-bcp/integrations/omo-slim/skill-overrides/codemap.json",
       "note": "codemap: treat codemap.md as a navigation index, not mandatory pre-reading (BCP token-efficiency policy). Stock 3.0.1 keeps its relative scripts/codemap.mjs command paths and the corrected codemap.md fact wording; only this paragraph is local policy.",
       "ops": [
         {
@@ -48,7 +48,7 @@
       ]
     },
     "deepwork": {
-      "patchFile": "/home/littlekey/github/opencode-bcp/.slim/worktrees/omo-3.0.3-upgrade/integrations/omo-slim/skill-overrides/3.0.3/deepwork.json",
+      "patchFile": "/home/littlekey/github/opencode-bcp/integrations/omo-slim/skill-overrides/3.0.3/deepwork.json",
       "note": "BCP state, original-source handoff, risk-based review and user-authorized commit policy over stock 3.0.3. Keep the upstream pinned router, task directory, claim rules and bounded progress-file shape; Todo remains live execution status and durable files are recovery snapshots.",
       "ops": [
         {
@@ -84,7 +84,7 @@
       ]
     },
     "oh-my-opencode-slim": {
-      "patchFile": "/home/littlekey/github/opencode-bcp/.slim/worktrees/omo-3.0.3-upgrade/integrations/omo-slim/skill-overrides/oh-my-opencode-slim.json",
+      "patchFile": "/home/littlekey/github/opencode-bcp/integrations/omo-slim/skill-overrides/oh-my-opencode-slim.json",
       "note": "oh-my-opencode-slim: config fact corrections, all verified against the 3.0.1 implementation (dist loader code). Upstream docs understate project-local config/prompt support and claim built-in agents reject inline prompts; the implementation supports both.",
       "ops": [
         {
@@ -106,7 +106,7 @@
     }
   },
   "personal": {
-    "dir": "/home/littlekey/github/opencode-bcp/.slim/deepwork/omo-3.0.3-20261008/personal-source",
+    "dir": "/home/littlekey/github/dotfiles/opencode/runtime/generated/skills",
     "skills": [
       "domain-modeling",
       "eli5",
@@ -114,6 +114,8 @@
       "find-code-simplifications",
       "grill-with-docs",
       "grilling",
+      "grilling-companion",
+      "guided-grilling",
       "handoff",
       "humanizer",
       "setup-matt-pocock-skills",
@@ -121,7 +123,11 @@
       "wait-what",
       "writing-plans"
     ],
-    "skipped": [],
+    "skipped": [
+      "codemap",
+      "deepwork",
+      "oh-my-opencode-slim"
+    ],
     "files": {
       "domain-modeling/ADR-FORMAT.md": "944c92aa790e8fbdc9199640b170979abb8a34ba8d0fe18c2a01a63bce140ca0",
       "domain-modeling/CONTEXT-FORMAT.md": "17ab16ce783e4d2801ee52fd9acdf550cbf44de65ae76797a93943bbedf22a13",
@@ -142,6 +148,8 @@
       "grill-with-docs/agents/openai.yaml": "94cd0ab161fb468a836349f5ed482ba58ce8e709a05c57ce533d739dbd35cca9",
       "grilling/SKILL.md": "10ff989e7498b23b5acb49d5048f11dcd906757d2f79c5cdf8a00001381296f2",
       "grilling/agents/openai.yaml": "1411d7df7d99b7e621a1ff8283c8133cc2464be63d064e52d8ce169c6800ee9b",
+      "grilling-companion/SKILL.md": "9d42183c27a94b3be76429e0cf384e319cf8f761a9982e634369169f491f5227",
+      "guided-grilling/SKILL.md": "6e165e3d814d52a7cc511525b9db049eef4493dd0c5284a3b66e8105f414a75a",
       "handoff/SKILL.md": "7c62de979fdc7ac32fb5ddb2146156c917f80ee070d30fadc9d40343c4b6ed25",
       "handoff/agents/openai.yaml": "5c479fd562c691851690e8b18c8501045bef0943c10743d636b2fae26add1d28",
       "humanizer/.claude-plugin/marketplace.json": "24261fcfead5f536e0a6f0c3fd27fa809c69393217d67d617adb6c83a2715eb7",
@@ -186,6 +194,8 @@
       "grill-with-docs/agents/openai.yaml": "0644",
       "grilling/SKILL.md": "0644",
       "grilling/agents/openai.yaml": "0644",
+      "grilling-companion/SKILL.md": "0644",
+      "guided-grilling/SKILL.md": "0644",
       "handoff/SKILL.md": "0644",
       "handoff/agents/openai.yaml": "0644",
       "humanizer/.claude-plugin/marketplace.json": "0644",
@@ -212,7 +222,7 @@
     }
   },
   "output": {
-    "skillsDir": "/home/littlekey/github/dotfiles/.slim/worktrees/phase1-upstream-defaults/opencode/runtime/generated/skills",
+    "skillsDir": "/home/littlekey/github/dotfiles/opencode/runtime/generated/skills",
     "files": {
       "skills/codemap/README.md": "fab8e2159592b290b5615f2b234082f5c1d4283a538df9f9542afa841c76fa0b",
       "skills/codemap/SKILL.md": "2ce756e95b392631aa3e3f75d35b43b2e1b6bf95cd72924825ade558bd8c8cf3",
@@ -237,8 +247,10 @@
       "skills/find-code-simplifications/agents/openai.yaml": "065b31274e6f89abf10ad2cf1edf12baa79fb1893ef3bbb28c104279d48f282c",
       "skills/grill-with-docs/SKILL.md": "7de372c13488f1ee96cc11cd8907b56b6809cc93eef776eeddd37de6b6cbe3fe",
       "skills/grill-with-docs/agents/openai.yaml": "94cd0ab161fb468a836349f5ed482ba58ce8e709a05c57ce533d739dbd35cca9",
+      "skills/grilling-companion/SKILL.md": "9d42183c27a94b3be76429e0cf384e319cf8f761a9982e634369169f491f5227",
       "skills/grilling/SKILL.md": "10ff989e7498b23b5acb49d5048f11dcd906757d2f79c5cdf8a00001381296f2",
       "skills/grilling/agents/openai.yaml": "1411d7df7d99b7e621a1ff8283c8133cc2464be63d064e52d8ce169c6800ee9b",
+      "skills/guided-grilling/SKILL.md": "6e165e3d814d52a7cc511525b9db049eef4493dd0c5284a3b66e8105f414a75a",
       "skills/handoff/SKILL.md": "7c62de979fdc7ac32fb5ddb2146156c917f80ee070d30fadc9d40343c4b6ed25",
       "skills/handoff/agents/openai.yaml": "5c479fd562c691851690e8b18c8501045bef0943c10743d636b2fae26add1d28",
       "skills/humanizer/.claude-plugin/marketplace.json": "24261fcfead5f536e0a6f0c3fd27fa809c69393217d67d617adb6c83a2715eb7",
@@ -288,8 +300,10 @@
       "skills/find-code-simplifications/agents/openai.yaml": "0644",
       "skills/grill-with-docs/SKILL.md": "0644",
       "skills/grill-with-docs/agents/openai.yaml": "0644",
+      "skills/grilling-companion/SKILL.md": "0644",
       "skills/grilling/SKILL.md": "0644",
       "skills/grilling/agents/openai.yaml": "0644",
+      "skills/guided-grilling/SKILL.md": "0644",
       "skills/handoff/SKILL.md": "0644",
       "skills/handoff/agents/openai.yaml": "0644",
       "skills/humanizer/.claude-plugin/marketplace.json": "0644",
