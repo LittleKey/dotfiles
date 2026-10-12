@@ -66,7 +66,7 @@ const OMO_CONFIG = {
   presets: {
     newapi: {
       council: { default_preset: "default", councillors: {} },
-      orchestrator: { permission: { task: { "*": "allow" }, apply_patch: "allow" }, skills: ["writing-plans"] },
+      orchestrator: { permission: { task: { "*": "allow" }, apply_patch: "allow" }, skills: ["grilling-companion"] },
       explorer: { permission: { edit: "deny", apply_patch: "deny" }, skills: [] },
       librarian: { permission: { edit: "deny", apply_patch: "deny" }, skills: ["context7-docs"] },
       oracle: { permission: { edit: "deny", write: "deny", apply_patch: "deny", ast_grep_replace: "deny" }, skills: ["find-code-simplifications"] },

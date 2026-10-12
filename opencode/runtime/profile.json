@@ -10,7 +10,7 @@
       "liveGlobalRoot": "/home/littlekey/.config/opencode (authoritative for agents/lark-operator.md and vibeguard.config.json; read-only inputs). skills/ is NO longer sourced from here (phase-1 follow-upstream): the pinned generated tree under runtime/generated/skills is authoritative — see inputs.skillsDir",
       "assetSnapshot": "runtime/assets/agents/lark-operator.md (release-internal copy of the live file, pinned below)"
     },
-    "convergence": "The composition lane selects the host-managed billion-context@latest npm channel, explicit OMO directory artifacts and the dual-host BCP artifact. Retired ACP/tui pins remain rollback history. Council overrides and *.bak-promptopt files are excluded from staging; prompt copies are byte-identical and the Explorer full override is retired in favor of its upstream base plus append. As of 2026-10-09, all eight OMO bundled skills follow the selected plugin artifact: v1 stages artifact-relative links and activation materializes original bytes; v2 inherits in-process. The former codemap/deepwork/oh-my-opencode-slim local overrides and combined build manifest are retired. skillsDir contains only 14 personal skills; input changes require deliberate, explained pin updates."
+    "convergence": "The composition lane selects the host-managed billion-context@latest npm channel, explicit OMO directory artifacts and the dual-host BCP artifact. Retired ACP/tui pins remain rollback history. Council overrides and *.bak-promptopt files are excluded from staging; prompt copies are byte-identical and the Explorer full override is retired in favor of its upstream base plus append. As of 2026-10-09, all eight OMO bundled skills follow the selected plugin artifact: v1 stages artifact-relative links and activation materializes original bytes; v2 inherits in-process. The former codemap/deepwork/oh-my-opencode-slim local overrides and combined build manifest are retired. skillsDir contains only 11 personal skills (the 2026-10-11 owner removal retired executing-plans and writing-plans from sources and pins; eli5 was retired the same day in its own bounded pass); input changes require deliberate, explained pin updates."
   },
   "hosts": {
     "floors": {
@@ -80,15 +80,6 @@
         "domain-modeling/CONTEXT-FORMAT.md": "17ab16ce783e4d2801ee52fd9acdf550cbf44de65ae76797a93943bbedf22a13",
         "domain-modeling/SKILL.md": "327a2b50620e2fd70abc6893cd6965e76b20f8d0adb0dc2c8d5eb3845efb643e",
         "domain-modeling/agents/openai.yaml": "f6bf2aa996c6e6f53fdd0708e18a0d16a56aed8322cca59fedbe3c0d2c75f06b",
-        "eli5/LICENSE": "1126322e2cc8d165adc4c792eeb195717de2bcc7b39be1ce77959d78e87ef685",
-        "eli5/SKILL.md": "a671efd44a818aee7dbe4ea2ec634079401c3f578c08cb634c2b6181ced2dbe9",
-        "executing-plans/SKILL.md": "b7562483fb024bd405a8a3a67841ca8c92423fc42112596a0ef90e38bb01f509",
-        "executing-plans/references/code-reviewer.md": "82e370be6b3447523816286195571e4216ba56ba1ad6ad0e87862294c4c78dcb",
-        "executing-plans/scripts/plan-workspace": "d558afd8e9e7a8bfa0fa4640ee267041a28efadbb5d27139293a6909d5d3a411",
-        "executing-plans/scripts/review-package": "50e37cbd714ac63e2d8f15455d4d141d1d0f5b13eab5b335c7c397184be0f43e",
-        "executing-plans/scripts/task-brief": "e85300b42d4d4112ab215caa96b14f334d05202f71f67278c34084cdfac37144",
-        "executing-plans/scripts/task-done": "57bb8e1c8ddfac719ff4ce993563f669e4bd6769c7ceee679a86191d3927037a",
-        "executing-plans/scripts/task-start": "5a00f7aa54ee0feeeb2d91aba00dbb5d96ca742916998c313654daea68dfeb3a",
         "find-code-simplifications/SKILL.md": "c2c01d88b1498df0f5f7782f8069c02fa2dfce4927228ba614a65b5fd8dd1a89",
         "find-code-simplifications/agents/openai.yaml": "065b31274e6f89abf10ad2cf1edf12baa79fb1893ef3bbb28c104279d48f282c",
         "grill-with-docs/SKILL.md": "7de372c13488f1ee96cc11cd8907b56b6809cc93eef776eeddd37de6b6cbe3fe",
@@ -118,10 +109,9 @@
         "to-spec/SKILL.md": "229fff978a0724d00481572e990a1f13182685513eff249cfee9c2f6847741db",
         "to-spec/agents/openai.yaml": "1c5b4d1e3d8e52287ef19cc2742fdbbfae1914ac75d33af3e4c8174f08cc55bb",
         "wait-what/SKILL.md": "e3f44e3ccbc0e7b62f20ba70b295fc9c9f4aa3f96c77168faee1c71bacbf4215",
-        "wait-what/agents/openai.yaml": "b41faadf741d51e4ea184148b2d1854d93f947aaf754c7844f70a00f04194999",
-        "writing-plans/SKILL.md": "db6c872290da6ccc56fec85f064218f5635f6a2f214f40b2497473e6cf3f42de"
+        "wait-what/agents/openai.yaml": "b41faadf741d51e4ea184148b2d1854d93f947aaf754c7844f70a00f04194999"
       },
-      "role": "Personal-only installation tree: 14 skills, 44 files with preserved bytes and modes. All eight OMO bundled names are excluded, including the retired codemap/deepwork/oh-my-opencode-slim overrides. v1 obtains bundled resources from artifact-relative links and installs original-byte managed copies; v2 inherits in-process. Same-name personal inputs are refused. The historical generated/ directory name is retained; the mixed stock-patching generator and its manifest no longer maintain this tree.",
+      "role": "Personal-only installation tree: 11 skills, 34 files with preserved bytes and modes. All eight OMO bundled names are excluded, including the retired codemap/deepwork/oh-my-opencode-slim overrides. The executing-plans and writing-plans skills (7+1 files) were deliberately removed 2026-10-11 (owner decision) from both the maintained sources and this tree; eli5 (2 files) was retired the same day in a separate bounded pass. v1 obtains bundled resources from artifact-relative links and installs original-byte managed copies; v2 inherits in-process. Same-name personal inputs are refused. The historical generated/ directory name is retained; the mixed stock-patching generator and its manifest no longer maintain this tree.",
       "source": "/home/littlekey/github/dotfiles/opencode/runtime/generated/skills"
     },
     "vibeguardConfig": {
@@ -142,7 +132,7 @@
       "provideFlag": "--omo-plugin <built-plugin-dir>",
       "testedEntrySha256": "2640dc072afdd9fdb60338c9458ff66418d38c3977a9173c4b06e500a3384e7c",
       "testedIdentity": "oh-my-opencode-slim 3.0.1 v2 self-contained entry (owner candidate root omo-candidates-upstream-council, 2026-10-01 build; upstream Council guidance stands unmodified in this build). The bundle imports ../../omo-delivery.mjs, so the artifact MUST be a directory copy preserving relative layout — an entry-file copy alone is not installable. Supersedes the pre-convergence build a781e9779696e82826d28f8d84bde1c7ebed12f8ddc42c5fb1dd5bf45a9fad32.",
-      "candidateNote": "3.0.3 revision-2 server SHA-256 2630177038926dbdf298d0ea25f8f6852ee3fbc988a80d445b43b2b6cafb32c0. Build/relocation smoke only; no v2 host acceptance in this upgrade. Supersedes the historical first-build candidate note; historical testedEntrySha256 remains separate.",
+      "candidateNote": "3.0.4 artifact-r3 server SHA-256 dfb98115965d3330aeeb2d8d5a1d560d13ef14a3a485afea5fde2bdd6bc16a29. Hash/build-only limits: independent artifact review passed as a bounded verdict (notification microtask race fix verified in both entries), but there is no v2 host acceptance in this upgrade. The 2026-10-12 post-restart metadata verification exercised the v1 index entry, not this v2 server entry. Supersedes the 3.0.3 revision-2 and historical first-build candidate notes; historical testedEntrySha256 remains separate.",
       "expectActivePluginId": "oh-my-opencode-slim"
     },
     "omoPluginV1": {
@@ -155,7 +145,7 @@
       "provideFlag": "--omo-v1-plugin <built-plugin-dir>",
       "testedEntrySha256": "ebcda7f4568e74d42dffbfd7f818044b5b7e1b42f512464ab81e07bfcdc753eb",
       "testedIdentity": "oh-my-opencode-slim 3.0.1 v1 plugin entry (owner candidate root omo-candidates-upstream-council, 2026-10-01 build; zod rewritten to the package-local resolution per the builder contract). Imports ../omo-delivery.mjs — directory copy preserving relative layout required. Runtime acceptance on 1.18.x is the owner's post-build matrix, not this lane's.",
-      "candidateNote": "3.0.3 revision-2 index SHA-256 8b5fc1040bc30e239f1047742856bb81c711d11fd8e13a459891170b84b4de2d. OpenCode 1.18.33 candidate checks and independent review passed; see omo-3.0.3-20261008/proof/HOST.json and REVIEW-SEAL.json. Production preparation was separately approved. The prior first-build candidate is historical; stage still reports the difference from historical testedEntrySha256 rather than relabeling it.",
+      "candidateNote": "3.0.4 artifact-r3 index SHA-256 060e169bd20e6286b4a10cb3f04963ca3f27b6e93fa816bbcc96481cc4bd86b6. Verification basis: independent artifact review PASS (bounded verdict; notification microtask race fix verified in both entries), metadata-level checks 27/27 on the split root-wrapper layout, and 13/13 read-only checks against the user's restarted OpenCode 1.18.35 service on 2026-10-12. The restarted service's nine role prompt hashes matched the isolated smoke, models/variants and readonly rules were preserved, and all three retired skills were absent. The host exposes no direct plugin-version API; this is metadata-level acceptance, not full BCP/model/compression or v2-host lifecycle acceptance. Installed payload and post-restart-verification.json are recorded under omo-3.0.4-upgrade-20261011/install-prep (wrapper 8b8a5c0c3101c6caf2903ad69e4a6df046270c0e7d6f33357979fda687c41705). The prior 3.0.3 revision-2 and first-build candidates are historical; stage still reports the difference from historical testedEntrySha256 rather than relabeling it.",
       "expectActivePluginId": "oh-my-opencode-slim"
     },
     "bcpPlugin": {

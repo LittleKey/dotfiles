@@ -139,7 +139,7 @@ test("GOAL1 v1 stage: eight stock skills and nested resources follow the staged 
   const scriptRel = "skills/codemap/scripts/codemap.mjs";
   assert.ok(isLink(join(cand, scriptRel)));
   assert.equal(readFileSync(join(cand, scriptRel), "utf8"), "export const upstream = true;\n");
-  for (const name of ["executing-plans", "guided-grilling"]) {
+  for (const name of ["grilling-companion", "guided-grilling"]) {
     assert.ok(!isLink(join(cand, "skills", name, "SKILL.md")), `${name}: personal skill stays a regular copy`);
   }
 

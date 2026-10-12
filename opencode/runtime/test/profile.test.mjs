@@ -953,7 +953,7 @@ test("skills follow upstream: generated tree consistency, no stock-inherited sha
   for (const top of generatedTop) {
     assert.ok(existsSync(join(inputs.skillsDir.resolved.path, top, "SKILL.md")), `${top}/SKILL.md present`);
   }
-  for (const name of ["executing-plans", "writing-plans", "grilling", "grilling-companion", "guided-grilling"]) {
+  for (const name of ["grilling", "grilling-companion", "guided-grilling"]) {
     assert.ok(generatedTop.has(name), `${name}: personal skill retained`);
   }
 

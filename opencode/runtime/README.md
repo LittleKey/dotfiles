@@ -253,9 +253,10 @@ and all 49 generated file modes are preserved, including the eight approved
 plan-skill files and five executable helpers.
 
 Use the committed generated tree as the complete personal source. The raw
-`opencode/skills` directory retains the plan-skill sources but is not a complete
-mirror: it lacks `grilling` and contains an older `to-spec`. Build into a
-separate output and compare all hashes/modes before replacing the input.
+`opencode/skills` directory is not a complete mirror: it lacks `grilling` and
+contains an older `to-spec`, and the retired plan-skill and `eli5` sources were
+removed from it on 2026-10-11. Build into a separate output and compare all
+hashes/modes before replacing the input.
 
 At that acceptance, the host-config source was switched to the committed raw
 `opencode.json`, after comparison with the installation authority and original
@@ -266,7 +267,7 @@ inputs described above.
 Rendered production agent permissions are output and cannot be reused as raw
 input. Historical `testedEntrySha256` values remain
 distinct from the new build digests in `candidateNote`: a successful build is
-not actual-host acceptance. The approved OMO 3.0.3 payload is now installed in
+not actual-host acceptance. The approved OMO 3.0.3 payload was installed in
 the production config, with 4,859 managed files verified and 34 obsolete OMO
 files quarantined outside discovery roots. The user upgraded OpenCode to 1.18.35
 and approved retaining it. Fresh isolated checks on that binary passed:
@@ -277,6 +278,49 @@ body and helper-mode checks. Evidence is recorded separately under
 historical 1.18.33 manifests and tested-version pins were not rewritten. The
 OpenChamber installation was not changed. The probes use a scripted local
 provider; real-model behavior and full compression recovery remain untested.
+
+### OMO 3.0.4 installation (2026-10-11, disk-applied; post-restart acceptance 2026-10-12)
+
+The approved oh-my-opencode-slim 3.0.4 component (`dist/index.js` and
+`dist/server/index.js` dual entries) is disk-installed in the production
+config. The deployment's bounded rename sequence staged and fully verified
+the incoming component outside plugin discovery (4,052 staged files, sha and
+mode), archived the previous 3.0.3 component atomically to
+`install-prep/archive/omoPluginV1-pre-omo304`, then moved the new component
+in; no deletion-first step and no fallback was needed. The installation
+authority was swapped to
+`a9478a5c3536965f1883b3a976aeba411b696b2ccc70e6507de9617da8482d61` (4,110
+records, all re-verified against the live tree, bound to manifest
+`1ef3c7675b12ff9aa4d8958243cf5a85d394c36be7b089a1e55a6e895d3fbf76`), and the
+same transaction removed the retired `eli5` skill directory (below).
+Post-install checks found `skills/eli5`, `skills/executing-plans` and
+`skills/writing-plans` absent, `opencode.json` and `agents/` byte-unchanged,
+and the installed top-level skill set equal to the pre-install state minus
+`eli5`. The component's patch set and artifact hashes are recorded in
+`opencode-bcp/integrations/omo-slim/README.md`; evidence and the archived
+component live under that repository's `.slim/omo-3.0.4-upgrade-20261011/`
+(`install-prep/evidence/installation-evidence.json`).
+
+The user restarted the host, and a read-only post-restart acceptance ran on
+2026-10-12: the served 1.18.35 process (OpenChamber-managed; pid 238858 at
+verification time) passed 13/13 metadata checks — host version exactly
+1.18.35, 9/9 roles registered, all 9 served role-prompt SHA-256 values equal
+to the isolated split-layout smoke evidence, 9/9 model/variant selections
+matching the merged personal preset, each of the five `*_append.md` appends
+present exactly once per role, 16/16 readonly deny rules, and 49 skills
+served: the 18 on-disk personal skills matched live disk, and all three
+retired skills (`executing-plans`, `writing-plans`, `eli5`) were absent. The
+authority and entry digests were unchanged after the queries. The runtime
+API exposes no plugin-version field, so 3.0.4 identity rests on the disk
+component hashes plus this new-process, served-metadata evidence — not on a
+runtime version string or universal behavior. The digest-bound report is
+machine-local at
+`/home/littlekey/github/opencode-bcp/.slim/omo-3.0.4-upgrade-20261011/install-prep/evidence/post-restart-verification.json`
+(sha256 `080d003e70d1245a985fa2ecfa92fe6a94cd091218891d5cbf25fb35466bab6a`).
+The isolated 1.18.35 smoke (27 checks) and the artifact review are not
+served-runtime acceptance; full compression recovery, real-model turns and
+v2-host lifecycle remain untested. The 3.0.3 section above retains its
+original dates as history.
 
 ### OpenChamber local-path display compatibility
 
@@ -428,10 +472,11 @@ an old mixed generated tree cannot silently restore the overrides.
   skill resources refuse staging.
 - **v2:** the plugin registers bundled skills in-process. No same-name skill
   files are staged outside its artifact.
-- **Personal skills:** `runtime/generated/skills/` contains 14 personal
-  skills / 44 files. Their existing bytes and modes are retained, including
-  the plan helpers and the guided-grilling composition. `profile.json`
-  inventories this complete installation input.
+- **Personal skills:** `runtime/generated/skills/` contains 11 personal
+  skills / 34 files. Their existing bytes and modes are retained, including
+  the guided-grilling composition. `profile.json` inventories this complete
+  installation input; the two plan skills and `eli5` were retired from it on
+  2026-10-11 (see below).
 - `loop-engineering` remains an unregistered legacy resource and is not part
   of the selected skill inventory.
 
@@ -442,26 +487,49 @@ personal files and their companions directly, compare all retained bytes and
 modes, and refresh only explained `skillsDir` pins. A broad `oprofile pin`
 must not be used to absorb unknown source drift.
 
-### Migrating the personal plan skills
+### Retired personal plan skills (2026-10-11)
 
-The user-maintained `executing-plans` and `writing-plans` sources are retained
-under `opencode/skills/` and their installable copies are pinned under
-`runtime/generated/skills/`. The latter is the profile's installation input.
-`executing-plans` includes its review template and five executable helpers;
-copying only `SKILL.md` leaves it incomplete. Git retains the executable bits,
-and stage/activation preserve every helper's `0755` mode.
+The two user-maintained plan skills, `executing-plans` and `writing-plans`, are
+retired by approved decision: their sources under `opencode/skills/`, their
+pinned copies under `runtime/generated/skills/`, and their profile inventory
+entries are removed from the personal installation inputs, so the staged
+candidates no longer carry them on either flavor. Git history retains their
+earlier files, executable modes and test coverage; historical plans, execution
+evidence and rollback snapshots are unaffected.
 
-On another machine, use the committed generated tree rather than requiring
-the old machine's live skills directory. Relocate the profile input paths to
-the new checkout and deliberately refresh pins after checking the changes.
-Keep the complete personal tree, compare retained bytes and modes before
-replacing it, and update only the explained profile pins. The upstream OMO
-skill payload is supplied separately by the selected plugin artifact.
+Planning, Todo tracking, dependency-ordered dispatch and result collection are
+supplied by oh-my-opencode-slim together with the host's task tools. OMO
+does not reproduce the retired artifacts: the fixed plan templates, the
+`.plans/` working directory and the `task-start`/`task-done` helpers have no
+replacement.
 
-`test/personal-skills.test.mjs` checks both host stage layouts, byte/mode
-identity against the retained sources, relocated installation, repeat install,
-rollback, shell syntax, and direct `task-brief` execution with sibling resource
-lookup. These are isolated installer checks, not a model-driven workflow test.
+This documentation change removed nothing from an installed host by itself.
+The two retired plan-skill directories were removed from the owner's
+installation directly earlier on 2026-10-11 — a bounded pass of eight
+unlinks with the installation authority kept in sync. The later approved
+OMO 3.0.4 deployment inherited that absence and removed only `eli5` (see the
+OMO 3.0.4 lifecycle entry). The user restart completed on 2026-10-12; the bounded post-restart metadata
+acceptance is recorded in the OMO 3.0.4 lifecycle entry. Where removals are still needed elsewhere, remove them ownership-aware
+(through the deployment's own uninstall/rollback records) or by explicit
+inspection and deletion, never by untargeted deletion inside skill
+directories.
+
+### Retired eli5 skill (2026-10-11)
+
+The two-file `eli5` skill (`LICENSE` + `SKILL.md`) was retired from the
+personal installation inputs the same day, in its own bounded pass: its
+sources under `opencode/skills/`, its pinned copies under
+`runtime/generated/skills/` and its profile pins are removed, so new staged
+candidates no longer carry it on either flavor. Git history retains its
+earlier files.
+
+Disk removal is applied (2026-10-11): the approved OMO 3.0.4 installation
+removed the live `~/.config/opencode/skills/eli5/` directory through its
+bounded rename sequence, and the installation authority was swapped in the
+same transaction — all three retired personal skills (`executing-plans`,
+`writing-plans`, `eli5`) are absent from the installed skills tree. The user restart completed on 2026-10-12 with the bounded post-restart
+metadata acceptance recorded in the OMO 3.0.4 lifecycle entry. The
+historical `.oprofile/backup/` eli5 copies are untouched.
 
 ### Guided grilling: local composition, unchanged upstream
 
