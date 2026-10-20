@@ -18,7 +18,7 @@
       "v2": "2.0.20"
     },
     "tested": {
-      "v1": "1.18.33",
+      "v1": "1.18.35",
       "v2": "2.0.20"
     },
     "discoveryEvidence": {
@@ -65,7 +65,7 @@
       "source": "/home/littlekey/github/dotfiles/opencode/runtime/assets/agents/lark-operator.md",
       "liveSource": "/home/littlekey/.config/opencode/agents/lark-operator.md",
       "sha256": "f08b86d334c22cc2711c6a1b1bebeb2f7776d9ac2f039f3ff88233c7fbc26d46",
-      "liveObservedSha256": "f08b86d334c22cc2711c6a1b1bebeb2f7776d9ac2f039f3ff88233c7fbc26d46"
+      "liveObservedSha256": "ac21bbf61fa77ad25662f1934abef35f71e3fc0b3fa35003f7ac46c1a3d0d7fe"
     },
     "hostConfigSource": {
       "kind": "file",
@@ -124,27 +124,29 @@
   "components": {
     "omoPlugin": {
       "kind": "artifact-dir",
-      "entry": "server/dist/server/index.js",
+      "entry": "dist/server/index.js",
       "flavors": [
         "v2"
       ],
       "required": "always",
       "provideFlag": "--omo-plugin <built-plugin-dir>",
-      "testedEntrySha256": "2640dc072afdd9fdb60338c9458ff66418d38c3977a9173c4b06e500a3384e7c",
-      "testedIdentity": "oh-my-opencode-slim 3.0.1 v2 self-contained entry (owner candidate root omo-candidates-upstream-council, 2026-10-01 build; upstream Council guidance stands unmodified in this build). The bundle imports ../../omo-delivery.mjs, so the artifact MUST be a directory copy preserving relative layout — an entry-file copy alone is not installable. Supersedes the pre-convergence build a781e9779696e82826d28f8d84bde1c7ebed12f8ddc42c5fb1dd5bf45a9fad32.",
+      "stockSkillsRoot": "src/skills",
+      "testedEntrySha256": "b3fe0082076b97220782fe12693bf73407769c5938501a61ac72b8493abe0fab",
+      "testedIdentity": "oh-my-opencode-slim 3.0.5 G1-approved artifact-r2 v2 entry (package-root layout, 2026-10-20; /home/littlekey/github/opencode-bcp/.slim/omo-3.0.5-upgrade-20261020/artifact-r2/omoPlugin, ARTIFACT.json version 3.0.5, sourceHead b938df0cdd…; helper omo-delivery.mjs ce4344c47d41dec4dbc4b5fe1d8a49b764d0ffb0941757577161518f77421c99). Re-pin supersedes the 3.0.1 monorepo-layout entry path server/dist/server/index.js (owner candidate root omo-candidates-upstream-council no longer on disk; hash 2640dc072afdd9fdb60338c9458ff66418d38c3977a9173c4b06e500a3384e7c historical) and the stale artifact-r1 build 0708dbc0a51681e9dccc94ce415758a05c1807db5748daaa0010f0fe1e5fde8b. The bundle still imports ../../omo-delivery.mjs via relative layout, so the artifact MUST be a directory copy — an entry-file copy alone is not installable. 3.0.1 provenance: owner candidate root omo-candidates-upstream-council, 2026-10-01 build; upstream Council guidance stands unmodified in that build. Supersedes the pre-convergence build a781e9779696e82826d28f8d84bde1c7ebed12f8ddc42c5fb1dd5bf45a9fad32.",
       "candidateNote": "3.0.4 artifact-r3 server SHA-256 dfb98115965d3330aeeb2d8d5a1d560d13ef14a3a485afea5fde2bdd6bc16a29. Hash/build-only limits: independent artifact review passed as a bounded verdict (notification microtask race fix verified in both entries), but there is no v2 host acceptance in this upgrade. The 2026-10-12 post-restart metadata verification exercised the v1 index entry, not this v2 server entry. Supersedes the 3.0.3 revision-2 and historical first-build candidate notes; historical testedEntrySha256 remains separate.",
       "expectActivePluginId": "oh-my-opencode-slim"
     },
     "omoPluginV1": {
       "kind": "artifact-dir",
-      "entry": "index/dist/index.js",
+      "entry": "dist/index.js",
       "flavors": [
         "v1"
       ],
       "required": "always",
       "provideFlag": "--omo-v1-plugin <built-plugin-dir>",
-      "testedEntrySha256": "ebcda7f4568e74d42dffbfd7f818044b5b7e1b42f512464ab81e07bfcdc753eb",
-      "testedIdentity": "oh-my-opencode-slim 3.0.1 v1 plugin entry (owner candidate root omo-candidates-upstream-council, 2026-10-01 build; zod rewritten to the package-local resolution per the builder contract). Imports ../omo-delivery.mjs — directory copy preserving relative layout required. Runtime acceptance on 1.18.x is the owner's post-build matrix, not this lane's.",
+      "stockSkillsRoot": "src/skills",
+      "testedEntrySha256": "f9073b3bb6895a76213eea27690902aeaecc135d71a5e25e56e8fb35f5d3a3fc",
+      "testedIdentity": "oh-my-opencode-slim 3.0.5 G1-approved artifact-r2 v1 entry (package-root layout, 2026-10-20; same artifact dir as the v2 lane: .slim/omo-3.0.5-upgrade-20261020/artifact-r2/omoPlugin). Re-pin supersedes the 3.0.1 monorepo-layout entry path index/dist/index.js (owner candidate root no longer on disk; hash ebcda7f4568e74d42dffbfd7f818044b5b7e1b42f512464ab81e07bfcdc753eb historical) and the stale artifact-r1 build 65222a551484dc3c1ed13c394fcea6ac4944f26cc823277237369a292f78c559. 3.0.1 provenance: owner candidate root omo-candidates-upstream-council, 2026-10-01 build; zod rewritten to the package-local resolution per the builder contract. Imports ../omo-delivery.mjs — directory copy preserving relative layout required. Runtime acceptance on 1.18.x is the owner's post-build matrix, not this lane's.",
       "candidateNote": "3.0.4 artifact-r3 index SHA-256 060e169bd20e6286b4a10cb3f04963ca3f27b6e93fa816bbcc96481cc4bd86b6. Verification basis: independent artifact review PASS (bounded verdict; notification microtask race fix verified in both entries), metadata-level checks 27/27 on the split root-wrapper layout, and 13/13 read-only checks against the user's restarted OpenCode 1.18.35 service on 2026-10-12. The restarted service's nine role prompt hashes matched the isolated smoke, models/variants and readonly rules were preserved, and all three retired skills were absent. The host exposes no direct plugin-version API; this is metadata-level acceptance, not full BCP/model/compression or v2-host lifecycle acceptance. Installed payload and post-restart-verification.json are recorded under omo-3.0.4-upgrade-20261011/install-prep (wrapper 8b8a5c0c3101c6caf2903ad69e4a6df046270c0e7d6f33357979fda687c41705). The prior 3.0.3 revision-2 and first-build candidates are historical; stage still reports the difference from historical testedEntrySha256 rather than relabeling it.",
       "expectActivePluginId": "oh-my-opencode-slim"
     },
@@ -162,7 +164,7 @@
     },
     "vibeguardV2": {
       "kind": "artifact-dir",
-      "entry": "v2-plugin.mjs",
+      "entry": "index.js",
       "flavors": [
         "v2"
       ],
@@ -170,7 +172,8 @@
       "provideFlag": "--vibeguard-plugin <dir>",
       "testedEntrySha256": "ff27701734653d0d9ef1b7c62caeed9f50bb1efd5324e8c7b6f02a701e82598c",
       "expectActivePluginId": "vibeguard-privacy-v2",
-      "note": "Select the native v2 entry, not the package's legacy v1 index.js. Staging emits one relative discovery shim. Actual HTTP/SSE privacy checks passed; WebSocket limits remain explicit."
+      "testedIdentity": "builder-emitted privacy package (builder.mjs output deployed at plugins/vibeguardV2/) — v2 entry index.js (bytes identical to src/privacy/v2-plugin.mjs, hash ff2770… unchanged), v1 sibling entry v1-plugin.js, shared stream-restore.mjs, vibeguard/ engine dir, manifest.json, package.json. The entry occupies the discovery path itself, so staging writes NO shim.",
+      "note": "Real deployed layout (2026-10-20): the v2 entry is index.js at the package root (previously v2-plugin.mjs + a generated shim — superseded). Stage the whole built package directory; --vibeguard-plugin points at it. Discovery-only in v2 (no config entry). Actual HTTP/SSE privacy checks passed; WebSocket limits remain explicit."
     },
     "vibeguardV1": {
       "kind": "artifact-dir",
@@ -182,6 +185,54 @@
       "provideFlag": "--vibeguard-v1 <dir>",
       "testedEntrySha256": "02d38e3246766120c4291be107af4adcfcd823956bdeb674a4846fcae1e223fd",
       "testedIdentity": "production local-plugins/dist/vibeguard/ directory — index.js plus its sibling modules (config/deep/engine/patterns/restore/session). The dependency directory is required: an unbundled index.js alone is not an installable plugin. dist/manifest.json 'vibeSession' entry is stale — the entry hash here is authoritative."
+    },
+    "claudeAdvisor": {
+      "kind": "artifact-dir",
+      "stagingDir": "plugins/claude-advisor",
+      "entry": {
+        "v1": "index.v1.mjs",
+        "v2": "index.js"
+      },
+      "flavors": [
+        "v1",
+        "v2"
+      ],
+      "required": "always",
+      "provideFlag": "--claude-advisor <dir>",
+      "testedEntrySha256": {
+        "v1": "74cfedfa3a508c096fafa90bf37ad5e04ceef2c59cbd525c0c06948c1c19ec7e",
+        "v2": "5f5dcb8eeb6072629ae65f8a1577cb9cb1a153cd5087781da0279dd517c2df72"
+      },
+      "expectActivePluginId": "claude-advisor",
+      "testedIdentity": "omo-coworkers claude-advisor with v2.1.0 delegation-tool coverage: guard.mjs DELEGATION_TOOLS {task, subagent} (subagent_type=claude checkpoint for both names; acp_run unchanged), re-pinned 2026-10-20 after fix-2; guard suite 18/18. ",
+      "note": "Per-flavor entry map (v1 index.v1.mjs vs v2 index.js sibling files in one dir) — stage.mjs resolves entry/testedEntrySha256 by flavor. stagingDir plugins/claude-advisor mirrors the live deployed dir name so activation replaces it in place (a differently named managed dir would leave the live tree discovered as a twin). v1: the explicit plugin entry references the lane's discovery shim plugins/claude-advisor/index.js (re-exporting ./index.v1.mjs) — one load path. v2: DISCOVERY ONLY via the staged index.js — NO rendered config entry, because a config entry plus discovery would load the plugin twice (matches the live deploy). Takes no options. Entry selection is pinned explicitly per flavor (v1 index.v1.mjs / v2 index.js); index.mjs-vs-index.js discovery precedence is UNRESOLVED (A7 smoke 2026-10-20: smoke host preferred index.mjs, live host loaded index.js with both present) — stage.mjs refuses any staged dir exposing index.mjs at its discovery root."
+    },
+    "supervisor": {
+      "kind": "artifact-dir",
+      "entry": {
+        "v1": "index.v1.mjs",
+        "v2": "index.js"
+      },
+      "flavors": [
+        "v1",
+        "v2"
+      ],
+      "required": "always",
+      "provideFlag": "--supervisor-plugin <dir>",
+      "stagingDir": "managed-plugins/supervisor",
+      "testedEntrySha256": {
+        "v1": "590967f09b886eeeff4e56ff4c1ca4fff3c894b6c82f86c0f32889d6144a41ae",
+        "v2": "cdea2ea35283edd9ae726def7240d6bcba8d464549779febef65b17d17934b23"
+      },
+      "v1Options": {
+        "mode": "inject"
+      },
+      "v2Options": {
+        "mode": "inject"
+      },
+      "expectActivePluginId": "supervisor",
+      "testedIdentity": "omo-coworkers source tree /home/littlekey/github/omo-coworkers/plugins/supervisor — index.v1.mjs (v1 factory SupervisorNudge; upstream renamed index.mjs → index.v1.mjs on 2026-10-20, bytes unchanged) and index.js (v2 {id:'supervisor'} setup entry) sharing lib/runtime.mjs verbatim; lib/, test/ and README.md staged with the tree.",
+      "note": "Real deployed layout (2026-10-20): managed-plugins/supervisor — OUTSIDE the plugins/ discovery root, registered by config entry ONLY (stagingDir override places the staged copy there; config entry plus a discovered index.js inside plugins/ would twin). Mode default in lib/config.mjs is 'observe' — only the exact string 'inject' is honored. Both flavors pin {\"mode\":\"inject\"}: v1 renders the explicit entry as the tuple [\"./managed-plugins/supervisor/index.js\", {\"mode\":\"inject\"}] (path is the lane shim re-exporting ./index.v1.mjs); v2 renders {\"package\":\"./managed-plugins/supervisor\",\"options\":{\"mode\":\"inject\"}} via v2Options (options reach setup() through ctx.options) — byte-for-byte the live config's entry form. Staging REAL COPIES de-symlinks the live managed-plugins/supervisor symlink on activation (desired). Same entry-pinning rule as claudeAdvisor: index.mjs discovery precedence unresolved — staged dir must not expose index.mjs at its config/discovery root (enforced by stage.mjs)."
     }
   },
   "rollbacks": {
@@ -197,7 +248,9 @@
       "pluginOrder": [
         "vibeguardV1",
         "omoPluginV1",
-        "bcpPlugin"
+        "bcpPlugin",
+        "claudeAdvisor",
+        "supervisor"
       ],
       "stockPlugins": [
         "billion-context@latest"
@@ -245,17 +298,17 @@
         },
         "oracle": {
           "model": "gpt-6-astra"
-        },
-        "librarian": {
-          "model": "gpt-5.6-luna"
         }
       },
+      "agentMatrixNote": "librarian expectation removed with the 3.0.5 artifact-r2 re-pin: the 3.0.5 bundle defines AGENT_ALIASES {librarian: 'explorer'} and MARKETPLACE_BUILTIN_RENAMES {librarian: 'explorer'} (dist/server/index.js:31337, :32644) — the librarian role is merged into explorer and no longer registers as its own agent; librarian invocations route to explorer (glm-5.3-flash).",
       "plugins": {
         "expectActive": [
           "oh-my-opencode-slim",
           "opencode-bcp",
           "vibeguard-privacy-v2",
-          "billion-context-opencode-native"
+          "billion-context-opencode-native",
+          "claude-advisor",
+          "supervisor"
         ],
         "forbidIds": [
           "acp"
@@ -263,5 +316,5 @@
       }
     }
   },
-  "pinnedAt": "2026-10-05T18:24:16.745Z"
+  "pinnedAt": "2026-10-20T12:02:16.172Z"
 }

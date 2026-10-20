@@ -457,7 +457,9 @@ export async function verify({ candidateDir, opencodeExe, flavor, projectDir, pr
         `plan/explore/general disables: ${JSON.stringify([merged.agent?.plan?.disable, merged.agent?.explore?.disable, merged.agent?.general?.disable])}`
       );
       check("v1-model-preserved", merged.model === profile.expected.v1.model, `model=${JSON.stringify(merged.model)}; config keys=${JSON.stringify(Object.keys(merged))}; data keys=${JSON.stringify(merged.data && typeof merged.data === "object" ? Object.keys(merged.data) : [])}`);
-      const pluginList = (merged.plugin ?? []).map(String);
+      // Tuple entries [path, options] (v1 per-plugin options form) count as
+      // their path for the selection check.
+      const pluginList = (merged.plugin ?? []).map((e) => (Array.isArray(e) ? String(e[0]) : String(e)));
       const selection = inspectV1PluginSelection(pluginList, candidateDir, profile, stagedComponents);
       check(
         "v1-plugins-in-candidate",

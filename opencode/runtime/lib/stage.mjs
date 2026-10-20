@@ -82,10 +82,13 @@ import { launcherEnv } from "./hostenv.mjs";
 import { assertChildEnv } from "./spawn.mjs";
 import { sha256, sha256File } from "./hash.mjs";
 
-// All bundled CUSTOM_SKILLS come from the selected plugin artifact. v1
-// exposes its resources through links; v2 registers them in-process. Refuse
-// same-name personal inputs, including the three retired local overrides.
-export const STOCK_INHERITED_SKILLS = ["clonedeps", "codemap", "deepwork", "oh-my-opencode-slim", "reflect", "simplify", "verification-planning", "worktrees"];
+// All bundled CUSTOM_SKILLS come from the selected plugin artifact. BOTH
+// flavors stage them under skills/: v2.1.0 lists skills from config-dir files
+// only (<config-dir>/skills/<name>/SKILL.md) — plugin bundles do NOT inject
+// skill listings there (A7 smoke evidence 2026-10-20), so in-process
+// registration alone is not enough for the host listing. Refuse same-name
+// personal inputs, including the three retired local overrides.
+export const STOCK_INHERITED_SKILLS = ["ai-estimates", "clonedeps", "codemap", "deanchor", "deepwork", "oh-my-opencode-slim", "reflect", "simplify", "step-back", "verification-planning", "worktrees"];
 
 /**
  * Pure guard: returns refusal lines for any staged skills path that would
@@ -152,8 +155,13 @@ export function stage(opts) {
   const report = [];
   const components = {};
   const unknownExplicit = [];
-  for (const [name, comp] of Object.entries(profile.components ?? {})) {
-    if (!(comp.flavors ?? ["v1", "v2"]).includes(flavor)) continue;
+  for (const [name, compDef] of Object.entries(profile.components ?? {})) {
+    if (!(compDef.flavors ?? ["v1", "v2"]).includes(flavor)) continue;
+    // One component may serve both flavors with sibling entries in one
+    // artifact dir (e.g. v1 index.mjs vs v2 index.js): entry and
+    // testedEntrySha256 may be per-flavor maps keyed by flavor.
+    const perFlavor = (v) => (v !== null && typeof v === "object" ? v[flavor] : v);
+    const comp = { ...compDef, entry: perFlavor(compDef.entry), testedEntrySha256: perFlavor(compDef.testedEntrySha256) };
     components[name] = verifyExplicit(name, comp, explicit[name], report);
   }
   // An explicitly supplied artifact with no pinned profile definition is an
@@ -248,7 +256,11 @@ export function stage(opts) {
     for (const [name, comp] of Object.entries(components)) {
       if (!comp.staged) continue;
       if (comp.kind === "dir") {
-        const relBase = `plugins/${name}`;
+        // Component definitions may pin the staged location (e.g. supervisor
+        // lives at managed-plugins/supervisor, outside the plugins/ discovery
+        // root); the default keeps every other component under plugins/<name>.
+        // Read from the pinned definition — verifyExplicit's record is narrow.
+        const relBase = profile.components?.[name]?.stagingDir ?? `plugins/${name}`;
         cpSync(comp.source, join(tmp, relBase), { recursive: true });
         for (const [rel, sha] of Object.entries(comp.files)) {
           // A per-host selected entry may coexist with a legacy index.js in
@@ -289,6 +301,16 @@ export function stage(opts) {
           stagedPlugins.push({ component: name, relPath: shimRel });
           components[name] = { ...comp, stagedAt: relBase, shim: shimRel, relPath: shimRel };
         }
+        // Discovery extension precedence between index.mjs and index.js is
+        // UNRESOLVED (A7 smoke 2026-10-20: the smoke host preferred index.mjs
+        // while the live host demonstrably loaded index.js with both present).
+        // Refuse any staged dir exposing both candidates — pin the entry
+        // explicitly (rename the non-entry file, e.g. index.v1.mjs).
+        if (existsSync(join(tmp, relBase, "index.mjs"))) {
+          throw new StageRefusal([
+            `component ${name}: staged dir ${relBase}/ exposes index.mjs next to the pinned entry ${comp.entry} — index.mjs-vs-index.js discovery precedence is unresolved; rename the file or pin the entry explicitly`,
+          ]);
+        }
       } else {
         const relBase = `plugins/${basename(comp.source)}`;
         mkdirSync(join(tmp, "plugins"), { recursive: true });
@@ -299,31 +321,37 @@ export function stage(opts) {
       }
     }
 
-    // GOAL1 (compatibility remediation): expose the artifact's stock skills to
-    // v1 default discovery. Validation happens on the STAGED component layout
-    // (what the host will actually execute), a missing resource refuses the
-    // whole stage, and every link target is inside the candidate (relative →
-    // relocation-safe). v2 skips this entirely (in-process registration).
-    const V1_STOCK_SKILL_COMPONENT = "omoPluginV1";
-    const V1_STOCK_SKILL_ROOT = "server/src/skills";
-    let v1StockSkillNote = null;
-    if (flavor === "v1") {
-      const skillComponent = components[V1_STOCK_SKILL_COMPONENT];
+    // Stock skills stage under skills/ for BOTH flavors: the host lists
+    // skills from config-dir files only (<configdir>/skills/<name>/SKILL.md)
+    // and plugin bundles do not inject listings (A7 smoke 2026-10-20), so the
+    // artifact's stock skills must be vendored as staged files. Validation
+    // happens on the STAGED component layout (what the host will actually
+    // execute), a missing resource refuses the whole stage, and every link
+    // target is inside the candidate (relative → relocation-safe). The staged
+    // omo component is per-flavor (v1: omoPluginV1, v2: omoPlugin); the skill
+    // root inside the artifact is pinned on the component definition
+    // (stockSkillsRoot) — adapt the component, not this staging logic.
+    const STOCK_SKILL_COMPONENT = flavor === "v1" ? "omoPluginV1" : "omoPlugin";
+    const stockSkillRelBase = components[STOCK_SKILL_COMPONENT]?.relPath?.split("/").slice(0, -1).join("/") ?? `plugins/${STOCK_SKILL_COMPONENT}`;
+    const STOCK_SKILL_ROOT = profile.components?.[STOCK_SKILL_COMPONENT]?.stockSkillsRoot ?? "server/src/skills";
+    let stockSkillNote = null;
+    {
+      const skillComponent = components[STOCK_SKILL_COMPONENT];
       if (!skillComponent?.staged) {
         throw new StageRefusal([
-          `v1 candidate has no staged component '${V1_STOCK_SKILL_COMPONENT}' — the stock skill resources cannot be exposed (required: plugins/${V1_STOCK_SKILL_COMPONENT}/${V1_STOCK_SKILL_ROOT}/<skill>/SKILL.md for ${STOCK_INHERITED_SKILLS.join(", ")})`,
+          `${flavor} candidate has no staged component '${STOCK_SKILL_COMPONENT}' — the stock skill resources cannot be exposed (required: ${stockSkillRelBase}/${STOCK_SKILL_ROOT}/<skill>/SKILL.md for ${STOCK_INHERITED_SKILLS.join(", ")})`,
         ]);
       }
-      const artifactSkillBase = join(tmp, "plugins", V1_STOCK_SKILL_COMPONENT, ...V1_STOCK_SKILL_ROOT.split("/"));
+      const artifactSkillBase = join(tmp, ...stockSkillRelBase.split("/"), ...STOCK_SKILL_ROOT.split("/"));
       const missing = [];
       for (const skill of STOCK_INHERITED_SKILLS) {
         const srcDir = join(artifactSkillBase, skill);
         if (!existsSync(srcDir) || !statSync(srcDir).isDirectory()) {
-          missing.push(`plugins/${V1_STOCK_SKILL_COMPONENT}/${V1_STOCK_SKILL_ROOT}/${skill}/ — required stock skill resource directory is missing from the staged artifact`);
+          missing.push(`${stockSkillRelBase}/${STOCK_SKILL_ROOT}/${skill}/ — required stock skill resource directory is missing from the staged artifact`);
           continue;
         }
         if (!existsSync(join(srcDir, "SKILL.md"))) {
-          missing.push(`plugins/${V1_STOCK_SKILL_COMPONENT}/${V1_STOCK_SKILL_ROOT}/${skill}/SKILL.md — required stock skill manifest is missing from the staged artifact`);
+          missing.push(`${stockSkillRelBase}/${STOCK_SKILL_ROOT}/${skill}/SKILL.md — required stock skill manifest is missing from the staged artifact`);
         }
       }
       if (missing.length > 0) throw new StageRefusal(missing);
@@ -339,7 +367,7 @@ export function stage(opts) {
           const linkTarget = relative(dirname(linkAbs), fileAbs).split(sep).join("/");
           symlinkSync(linkTarget, linkAbs);
           const sha = sha256File(fileAbs);
-          record(`skills/${skill}/${rel}`, `${V1_STOCK_SKILL_COMPONENT}/${V1_STOCK_SKILL_ROOT}/${skill}/${rel}`, sha, {
+          record(`skills/${skill}/${rel}`, `${STOCK_SKILL_COMPONENT}/${STOCK_SKILL_ROOT}/${skill}/${rel}`, sha, {
             // Read-through identity of the staged entry: identical bytes to
             // the linked artifact file (sha256File/statSync follow links).
             sha256: sha256File(linkAbs),
@@ -349,7 +377,7 @@ export function stage(opts) {
           linkedFileCount++;
         }
       }
-      v1StockSkillNote = `Stock skills (compatibility remediation): ${STOCK_INHERITED_SKILLS.length} stock-inherited skill director(ies) [${STOCK_INHERITED_SKILLS.join(", ")}] staged under skills/ as ${linkedFileCount} relative file link(s) into plugins/${V1_STOCK_SKILL_COMPONENT}/${V1_STOCK_SKILL_ROOT}/ — v1 default skill discovery (<configroot>/skills) exposes the pinned artifact's stock skills with zero duplicated bytes (no config key, no CLI flag). Activation materializes these managed entries as regular artifact-byte copies pinned by the manifest. Only personal skills remain real staged input copies; the refuseStockSkillShadow guard refuses all eight bundled names in user inputs.`;
+      stockSkillNote = `Stock skills: ${STOCK_INHERITED_SKILLS.length} stock-inherited skill director(ies) [${STOCK_INHERITED_SKILLS.join(", ")}] staged under skills/ as ${linkedFileCount} relative file link(s) into ${stockSkillRelBase}/${STOCK_SKILL_ROOT}/ — the host lists skills from config-dir files only (<configdir>/skills; A7 smoke 2026-10-20), so both flavors vendor the pinned artifact's stock skills with zero duplicated bytes (no config key, no CLI flag). Activation materializes these managed entries as regular artifact-byte copies pinned by the manifest. Only personal skills remain real staged input copies; the refuseStockSkillShadow guard refuses all ${STOCK_INHERITED_SKILLS.length} bundled names in user inputs.`;
     }
 
     // Stock-plugin overrides from THIS stage's committed layout. A staged
@@ -387,12 +415,25 @@ export function stage(opts) {
     };
     let rendered;
     if (flavor === "v2") {
+      // v2 config entries for staged components that declare v2Options: the
+      // object form {"package": "./plugins/<name>", "options": {...}} appended
+      // to the rendered plugins array. Components without v2Options (e.g.
+      // claude-advisor) stay discovery-only — an extra entry would twin.
+      const pluginConfigEntries = stagedPlugins
+        .map((p) => {
+          const options = profile.components?.[p.component]?.v2Options;
+          if (options == null) return null;
+          const dir = p.relPath.split("/").slice(0, -1).join("/");
+          return { package: `./${dir}`, options };
+        })
+        .filter(Boolean);
       rendered = renderV2(
         {
           ...renderInputs,
           explorerPrompt: inputs.explorerPrompt,
           larkOperatorPrompt: inputs.larkOperatorPrompt,
           stockPlugins: profile.flavors.v2.stockPlugins ?? [],
+          pluginConfigEntries,
         },
         renderReport
       );
@@ -404,7 +445,12 @@ export function stage(opts) {
           stockPlugins: profile.flavors.v1.stockPlugins ?? [],
         },
         (profile.flavors.v1.pluginOrder ?? [])
-          .map((name) => stagedPlugins.find((p) => p.component === name))
+          .map((name) => {
+            const entry = stagedPlugins.find((p) => p.component === name);
+            // v1Options renders the entry as the tuple [path, options]
+            // (per-plugin options form; supervisor's {"mode":"inject"}).
+            return entry ? { ...entry, options: profile.components?.[name]?.v1Options ?? null } : null;
+          })
           .filter(Boolean),
         renderReport
       );
@@ -450,7 +496,7 @@ export function stage(opts) {
         "Compression: the configured stock package uses its native self-spawn route. A synthetic v2.0.20 compression/export case preserved all ten source messages byte-for-byte; this does not validate this entire staged profile or every transport.",
         "Spawn boundary: every host child this lane launches goes through lib/spawn.mjs spawnSandboxed — the environment is validated before subprocess creation and a {env, notes} result object passed as an environment is refused (2026-10-01 production-DB incident regression).",
         `Prompt staging (decision e000070 + phase-1 follow-upstream): ${promptExcluded.length} pinned prompt file(s) excluded from the candidate [${promptExcluded.join(", ") || "none"}]; all other prompt files are staged byte-identical to their pinned sources (staged-copy transforms retired — prompt policy lives in the sources).`,
-        ...(v1StockSkillNote ? [v1StockSkillNote] : []),
+        ...(stockSkillNote ? [stockSkillNote] : []),
         ...(renderReport.legacyAliasPins?.length > 0
           ? [
               `Explorer alias pin (compatibility remediation GOAL2): rendered canonical agent entr(ies) ${renderReport.legacyAliasPins.map((p) => `${p.canonical} (from alias ${p.alias})`).join(", ")} — the pinned OMO plugin resolves a host entry for a canonical agent as hostEntries[name] ?? hostEntries[displayName] ?? hostEntries[legacyAlias] and Object.assigns the FIRST hit, so an unpinned alias name lets the alias entry override the OMO agent's registration (v1: the host drops the OMO agent; v2: the builtin explore draft snapshot, including its system prompt, is pasted over the OMO explorer). The alias entry itself stays verbatim and the stock builtin it names keeps exactly the disable intent the source carries.`,

@@ -246,7 +246,13 @@ export function renderV2(inputs, report = {}) {
   const replacedSpecs = new Set((inputs.pluginReplacements ?? []).map((r) => r.spec));
   const rendered = {
     ...core,
-    plugins: (inputs.stockPlugins ?? []).filter((spec) => !replacedSpecs.has(spec)),
+    plugins: [
+      ...(inputs.stockPlugins ?? []).filter((spec) => !replacedSpecs.has(spec)),
+      // Staged components declaring v2Options append the v2 object form
+      // {"package", "options"}; options reach setup() via ctx.options.
+      // Components without v2Options stay discovery-only (no twin entry).
+      ...(inputs.pluginConfigEntries ?? []).map((e) => ({ package: e.package, options: e.options })),
+    ],
     compaction: { auto: false },
     agents,
   };
@@ -578,11 +584,13 @@ function resolveOmoPermissionSource(inputs, report) {
 }
 
 /**
- * Render the v1 legacy profile. pluginEntries are {component, relPath} where
- * relPath is the plugin entry's path inside the config root; entries are
+ * Render the v1 legacy profile. pluginEntries are {component, relPath,
+ * options?} where relPath is the plugin entry's path inside the config root;
+ * entries are
  * rendered RELATIVE to the declaring config file (owner-verified: stock v1
  * config supports relative plugin paths, resolved against the config's
- * directory). The same staged bytes therefore resolve whether the config root
+ * directory). An entry with options renders as the v1 tuple form
+ * [path, options] (per-plugin options, e.g. supervisor's {"mode":"inject"}). The same staged bytes therefore resolve whether the config root
  * is the staging candidate, a moved candidate, or the activated live root —
  * no staging path, production path, or /tmp path is ever baked in.
  * inputs.pluginReplacements: [{spec, relEntry}] — a staged component override
@@ -664,7 +672,7 @@ export function renderV1(inputs, pluginEntries, report = {}) {
   for (const entry of pluginEntries) {
     const relEntry = `./${entry.relPath}`;
     if (replacedRelEntries.has(relEntry)) continue; // already placed at the stock spec's position
-    pluginList.push(relEntry);
+    pluginList.push(entry.options ? [relEntry, entry.options] : relEntry);
   }
   core.plugin = pluginList;
   core.agent = legacy;
