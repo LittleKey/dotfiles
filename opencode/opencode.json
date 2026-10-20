@@ -18,7 +18,7 @@
       "~/.local/share/opencode/**": "allow"
     }
   },
-  "provider": {
+  "providers": {
     "newapi": {
       "npm": "@ai-sdk/openai-compatible",
       "name": "newapi",
@@ -33,13 +33,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "capabilities": {
             "tool_calling": true,
@@ -79,13 +74,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "capabilities": {
             "tool_calling": true,
@@ -125,13 +115,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "capabilities": {
             "tool_calling": true,
@@ -171,13 +156,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "capabilities": {
             "tool_calling": true,
@@ -350,12 +330,8 @@
           },
           "capabilities": {
             "tools": true,
-            "input": [
-              "text"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text"],
+            "output": ["text"]
           },
           "pricing": {
             "input": 0,
@@ -390,13 +366,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "capabilities": {
             "tool_calling": true,
@@ -452,13 +423,8 @@
             "output": 32000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "capabilities": {
             "tool_calling": true,
@@ -489,13 +455,8 @@
             "output": 32000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "capabilities": {
             "tool_calling": true,
@@ -526,13 +487,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "capabilities": {
             "tool_calling": true,
@@ -603,13 +559,8 @@
             "output": 128000
           },
           "modalities": {
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "capabilities": {
             "tool_calling": true,
@@ -658,23 +609,6 @@
     },
     "general": {
       "disable": true
-    }
-  },
-  "providers": {
-    "newapi": {
-      "models": {
-        "glm-5.3": {
-          "capabilities": {
-            "tools": true,
-            "input": [
-              "text"
-            ],
-            "output": [
-              "text"
-            ]
-          }
-        }
-      }
     }
   }
 }
