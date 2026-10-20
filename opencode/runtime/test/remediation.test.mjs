@@ -2,12 +2,13 @@
 // no network, no model requests, no production writes).
 //
 // Plan upstream-defaults-20261006 PHASE1 remediation coverage:
-//   GOAL1 — v1 exposes the pinned OMO artifact's eight stock skills via the
-//   default <configroot>/skills discovery: skills/<name>/ stages as a real
-//   directory of RELATIVE file links into plugins/omoPluginV1/server/src/
-//   skills/<name>/ (zero duplicated bytes, relocation-safe, no config key,
-//   no CLI flag). Missing required resources refuse the stage. v2 keeps the
-//   plugin's in-process registration and stages no stock-skill links.
+//   GOAL1 — the pinned OMO artifact's stock skills stage via the default
+//   <configroot>/skills discovery: skills/<name>/ stages as a real directory
+//   of RELATIVE file links into plugins/<omoComponent>/<stockSkillsRoot>/
+//   (zero duplicated bytes, relocation-safe, no config key, no CLI flag) —
+//   for BOTH flavors: v2.1.0 lists skills from config-dir files only and
+//   plugin bundles do not inject listings (A7 smoke 2026-10-20). Missing
+//   required resources refuse the stage.
 //   GOAL2 — v1 gets a minimal canonical agent entry so the pinned OMO
 //   plugin's alias merge (AGENT_ALIASES explore→explorer, first-hit
 //   hostEntries lookup) can no longer suppress the default OMO explorer
@@ -49,23 +50,24 @@ const HOST_V1 = { flavor: "v1", version: "1.18.33", executable: "test://exe", ru
 const HOST_V2 = { flavor: "v2", version: "2.0.20", executable: "test://exe", runtimeTested: "2.0.20", minCompatible: "2.0.20" };
 
 function writeFakeOmoV1({ omitSkill = null, omitSkillMd = null, omitSkillsRoot = false } = {}) {
-  // Fake OMO v1 artifact: nested entry (index/dist/index.js) + the stock
-  // skill resources (server/src/skills/<skill>/SKILL.md). Optional holes let a
-  // test drop a required resource and observe the stage refusal.
+  // Fake OMO v1 artifact (r2 package-root layout): entry dist/index.js and
+  // the stock skill resources (src/skills/<skill>/SKILL.md — the component's
+  // pinned stockSkillsRoot). Optional holes let a test drop a required
+  // resource and observe the stage refusal.
   const dir = join(S, `omo-v1-${Math.random().toString(36).slice(2, 8)}`);
-  mkdirSync(join(dir, "index", "dist"), { recursive: true });
-  writeFileSync(join(dir, "index", "dist", "index.js"), 'export default { id: "oh-my-opencode-slim" };\n');
+  mkdirSync(join(dir, "dist"), { recursive: true });
+  writeFileSync(join(dir, "dist", "index.js"), 'export default { id: "oh-my-opencode-slim" };\n');
   if (!omitSkillsRoot) {
     for (const skill of STOCK_INHERITED_SKILLS) {
       if (skill === omitSkill) continue;
-      mkdirSync(join(dir, "server", "src", "skills", skill), { recursive: true });
+      mkdirSync(join(dir, "src", "skills", skill), { recursive: true });
       if (skill === omitSkillMd) continue;
-      writeFileSync(join(dir, "server", "src", "skills", skill, "SKILL.md"), `---\nname: ${skill}\ndescription: fake stock skill\n---\nbody\n`);
+      writeFileSync(join(dir, "src", "skills", skill, "SKILL.md"), `---\nname: ${skill}\ndescription: fake stock skill\n---\nbody\n`);
     }
-    writeFileSync(join(dir, "server", "src", "skills", "clonedeps", "codemap.md"), "fake codemap resource\n");
-    if (existsSync(join(dir, "server", "src", "skills", "codemap"))) {
-      mkdirSync(join(dir, "server", "src", "skills", "codemap", "scripts"));
-      writeFileSync(join(dir, "server", "src", "skills", "codemap", "scripts", "codemap.mjs"), "export const upstream = true;\n");
+    writeFileSync(join(dir, "src", "skills", "clonedeps", "codemap.md"), "fake codemap resource\n");
+    if (existsSync(join(dir, "src", "skills", "codemap"))) {
+      mkdirSync(join(dir, "src", "skills", "codemap", "scripts"));
+      writeFileSync(join(dir, "src", "skills", "codemap", "scripts", "codemap.mjs"), "export const upstream = true;\n");
     }
   }
   return dir;
@@ -80,11 +82,21 @@ function stageV1(omoV1Dir, pinned = loadProfile(join(RUNTIME, "profile.json"))) 
     mkdirSync(vgDir, { recursive: true });
     writeFileSync(join(vgDir, "index.js"), 'export default { id: "vibeguard-fake" };\n');
   }
+  const caDir = join(S, "claude-advisor-fake");
+  if (!existsSync(caDir)) {
+    mkdirSync(caDir, { recursive: true });
+    writeFileSync(join(caDir, "index.v1.mjs"), 'export default { id: "claude-advisor" };\n');
+  }
+  const supDir = join(S, "supervisor-fake");
+  if (!existsSync(supDir)) {
+    mkdirSync(supDir, { recursive: true });
+    writeFileSync(join(supDir, "index.v1.mjs"), 'export default { id: "supervisor" };\n');
+  }
   const bcpFile = join(S, "blackboard-fake.ts");
   if (!existsSync(bcpFile)) writeFileSync(bcpFile, "export default {};\n");
   return stage({
     flavor: "v1", profile, profilePath, profileSha256, host: HOST_V1, outDir,
-    explicit: { vibeguardV1: vgDir, omoPluginV1: omoV1Dir, bcpPlugin: bcpFile },
+    explicit: { vibeguardV1: vgDir, omoPluginV1: omoV1Dir, bcpPlugin: bcpFile, claudeAdvisor: caDir, supervisor: supDir },
   });
 }
 
@@ -111,7 +123,7 @@ test("v1 staging projects the pinned OMO input despite a conflicting host-source
   assert.equal(readFileSync(join(again.candidateDir, "opencode.json"), "utf8"), readFileSync(join(result.candidateDir, "opencode.json"), "utf8"));
 });
 
-test("GOAL1 v1 stage: eight stock skills and nested resources follow the staged artifact; manifest records read-through identity", () => {
+test("GOAL1 v1 stage: stock skills and nested resources follow the staged artifact; manifest records read-through identity", () => {
   const result = stageV1(writeFakeOmoV1());
   const cand = result.candidateDir;
 
@@ -125,11 +137,11 @@ test("GOAL1 v1 stage: eight stock skills and nested resources follow the staged 
     const target = readFileSync(skillMd, "utf8") && readlinkSafe(skillMd);
     assert.ok(!target.startsWith("/"), `skills/${skill}/SKILL.md link target is relative (${target})`);
     const resolved = realpathSync(skillMd);
-    assert.ok(resolved.endsWith(join("plugins", "omoPluginV1", "server", "src", "skills", skill, "SKILL.md")), `link resolves to the staged artifact resource (${resolved})`);
+    assert.ok(resolved.endsWith(join("plugins", "omoPluginV1", "src", "skills", skill, "SKILL.md")), `link resolves to the staged artifact resource (${resolved})`);
     // byte-identity: the discovered content IS the artifact's bytes
     assert.equal(
       readFileSync(skillMd, "utf8"),
-      readFileSync(join(cand, "plugins", "omoPluginV1", "server", "src", "skills", skill, "SKILL.md"), "utf8"),
+      readFileSync(join(cand, "plugins", "omoPluginV1", "src", "skills", skill, "SKILL.md"), "utf8"),
       "linked skill content equals the artifact bytes (zero-copy, no stale same-name local copy)"
     );
   }
@@ -142,6 +154,17 @@ test("GOAL1 v1 stage: eight stock skills and nested resources follow the staged 
   for (const name of ["grilling-companion", "guided-grilling"]) {
     assert.ok(!isLink(join(cand, "skills", name, "SKILL.md")), `${name}: personal skill stays a regular copy`);
   }
+
+  // sibling components: claude-advisor gets a discovery shim for its nested
+  // v1 entry; supervisor keeps its managed location and renders as the
+  // [path, options] tuple so v1Options reaches the plugin
+  assert.equal(readFileSync(join(cand, "plugins", "claude-advisor", "index.js"), "utf8"), 'export {default} from "./index.v1.mjs";\n');
+  assert.ok(statSync(join(cand, "managed-plugins", "supervisor", "index.v1.mjs")).isFile());
+  assert.equal(readFileSync(join(cand, "managed-plugins", "supervisor", "index.js"), "utf8"), 'export {default} from "./index.v1.mjs";\n');
+  const renderedV1 = JSON.parse(readFileSync(join(cand, "opencode.json"), "utf8"));
+  const supTuple = (renderedV1.plugin ?? []).find((e) => Array.isArray(e) && String(e[0]).includes("managed-plugins/supervisor"));
+  assert.ok(supTuple, "v1 renders the supervisor entry at its managed location");
+  assert.deepEqual(supTuple[1], { mode: "inject" }, "v1Options renders as the tuple's second element");
 
   // manifest honesty: one record per linked file with the RELATIVE link target
   // and the read-through sha256 (which verify then re-checks against bytes)
@@ -156,7 +179,7 @@ test("GOAL1 v1 stage: eight stock skills and nested resources follow the staged 
     assert.ok(!rec.path.includes("..") && !rec.link.startsWith("/"), "link stays inside the config root");
   }
   assert.ok(
-    manifest.notes.some((n) => n.includes("Stock skills (compatibility remediation)") && n.includes("relative file link")),
+    manifest.notes.some((n) => n.includes("Stock skills") && n.includes("relative file link")),
     "manifest documents the link-farm mechanism explicitly"
   );
 
@@ -170,7 +193,7 @@ test("GOAL1 v1 stage: eight stock skills and nested resources follow the staged 
   assert.equal(readFileSync(join(moved, scriptRel), "utf8"), "export const upstream = true;\n");
   assert.equal(
     readFileSync(join(moved, "skills", "reflect", "SKILL.md"), "utf8"),
-    readFileSync(join(moved, "plugins", "omoPluginV1", "server", "src", "skills", "reflect", "SKILL.md"), "utf8"),
+    readFileSync(join(moved, "plugins", "omoPluginV1", "src", "skills", "reflect", "SKILL.md"), "utf8"),
     "after a move the relative links still resolve inside the (relocated) config root"
   );
 });
@@ -185,7 +208,7 @@ test("GOAL1 refusals: missing skill directory, missing SKILL.md, missing whole s
   }
   assert.ok(refused instanceof StageRefusal, "missing resource directory refuses the stage");
   assert.ok(
-    refused.report.some((l) => l.includes("server/src/skills/simplify/") && l.includes("missing")),
+    refused.report.some((l) => l.includes("src/skills/simplify/") && l.includes("missing")),
     `refusal names the missing skill directory: ${refused.report.join(" | ")}`
   );
   assert.ok(refused.report.every((l) => !l.includes("clonedeps") || !l.includes("missing")), "present resources are not falsely reported");
@@ -198,7 +221,7 @@ test("GOAL1 refusals: missing skill directory, missing SKILL.md, missing whole s
     refused = err;
   }
   assert.ok(refused instanceof StageRefusal, "missing SKILL.md refuses the stage");
-  assert.ok(refused.report.some((l) => l.includes("server/src/skills/deepwork/SKILL.md")), `refusal names the missing manifest file: ${refused.report.join(" | ")}`);
+  assert.ok(refused.report.some((l) => l.includes("src/skills/deepwork/SKILL.md")), `refusal names the missing manifest file: ${refused.report.join(" | ")}`);
 
   // the whole resource root missing
   refused = null;
@@ -211,21 +234,59 @@ test("GOAL1 refusals: missing skill directory, missing SKILL.md, missing whole s
   assert.equal(refused.report.filter((l) => l.includes("required stock skill resource directory")).length, STOCK_INHERITED_SKILLS.length, "every required skill is named");
 });
 
-test("GOAL1 v2 unchanged: no stock-skill links are staged (in-process registration)", () => {
+test("GOAL1 v2 stage: stock skills vendor as the same link farm; supervisor keeps its managed location and options entry", () => {
   const { profile, profilePath, profileSha256 } = loadProfile(join(RUNTIME, "profile.json"));
   const outDir = join(S, "v2-out");
   mkdirSync(outDir, { recursive: true });
-  // v2 fake artifact WITHOUT any server/src/skills — v2 stage must not care
-  const artifact = join(S, "omo-v2-fake");
-  mkdirSync(join(artifact, "server", "dist", "server"), { recursive: true });
-  writeFileSync(join(artifact, "server", "dist", "server", "index.js"), 'export default { id: "oh-my-opencode-slim" };\n');
-  const result = stage({ flavor: "v2", profile, profilePath, profileSha256, host: HOST_V2, outDir, explicit: { omoPlugin: artifact } });
+  // v2 fake artifact: package-root layout entry dist/server/index.js (the
+  // sibling dist/index.js v1 entry may coexist — only the pinned per-flavor
+  // entry matters) plus the src/skills farm. v2.1.0 lists skills from
+  // config-dir files only (A7 smoke 2026-10-20), so v2 vendors the artifact's
+  // stock skills exactly like v1 — in-process bundle registration is NOT a
+  // skill listing on v2.
+  const artifact = writeFakeOmoV1();
+  mkdirSync(join(artifact, "dist", "server"), { recursive: true });
+  writeFileSync(join(artifact, "dist", "server", "index.js"), 'export default { id: "oh-my-opencode-slim" };\n');
+  const vg2 = join(S, "vg2-fake");
+  mkdirSync(vg2, { recursive: true });
+  writeFileSync(join(vg2, "index.js"), 'export default { id: "vibeguard-privacy-v2" };\n');
+  const ca2 = join(S, "ca2-fake");
+  mkdirSync(ca2, { recursive: true });
+  writeFileSync(join(ca2, "index.js"), 'export default { id: "claude-advisor" };\n');
+  const sup2 = join(S, "sup2-fake");
+  mkdirSync(sup2, { recursive: true });
+  writeFileSync(join(sup2, "index.js"), 'export default { id: "supervisor" };\n');
+  const result = stage({
+    flavor: "v2", profile, profilePath, profileSha256, host: HOST_V2, outDir,
+    explicit: { omoPlugin: artifact, vibeguardV2: vg2, claudeAdvisor: ca2, supervisor: sup2 },
+  });
   const cand = result.candidateDir;
   for (const skill of STOCK_INHERITED_SKILLS) {
-    assert.ok(!existsSync(join(cand, "skills", skill)), `v2 stages no skills/${skill} link farm (in-process registration covers it)`);
+    const resolved = realpathSync(join(cand, "skills", skill, "SKILL.md"));
+    assert.ok(
+      resolved.endsWith(join("plugins", "omoPlugin", "src", "skills", skill, "SKILL.md")),
+      `v2 vendors ${skill} as a link into the staged omoPlugin artifact (${resolved})`
+    );
   }
+  // nested v2 entry → discovery shim at the package root, exactly the live
+  // layout the A5 smoke pinned (index.js → dist/server/index.js)
+  assert.equal(readFileSync(join(cand, "plugins", "omoPlugin", "index.js"), "utf8"), 'export {default} from "./dist/server/index.js";\n');
+  // supervisor: managed location (outside the plugins/ discovery root), v2
+  // entry directly at index.js, config entry in the v2 object form so
+  // v2Options reaches setup() via ctx.options
+  assert.ok(statSync(join(cand, "managed-plugins", "supervisor", "index.js")).isFile(), "supervisor staged at its managed location");
+  const rendered = JSON.parse(readFileSync(join(cand, "opencode.json"), "utf8"));
+  const supEntry = (rendered.plugins ?? []).find((p) => typeof p === "object" && p.package === "./managed-plugins/supervisor");
+  assert.ok(supEntry, "v2 renders the supervisor config entry");
+  assert.deepEqual(supEntry.options, { mode: "inject" }, "v2 object-form entry carries the plugin options");
+  // components without v2Options (claude-advisor) stay discovery-only: no
+  // twin config entry is invented
+  assert.ok(
+    !(rendered.plugins ?? []).some((p) => String(typeof p === "object" ? p.package ?? "" : p).includes("claude-advisor")),
+    "claude-advisor stays discovery-only (no config twin)"
+  );
   const { manifest } = readStageManifest(cand);
-  assert.equal(manifest.files.filter((f) => f.link).length, 0, "v2 manifest carries no link records");
+  assert.equal(manifest.files.filter((f) => f.path.startsWith("skills/") && f.link).length, STOCK_INHERITED_SKILLS.length + 2, "v2 manifest records the vendored stock-skill links");
 });
 
 test("GOAL2 v1 render pin: disabled legacy alias gains a minimal canonical pin; builtin flag untouched; no pin without the trigger", () => {

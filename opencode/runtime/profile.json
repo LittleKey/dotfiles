@@ -64,7 +64,7 @@
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/runtime/assets/agents/lark-operator.md",
       "liveSource": "/home/littlekey/.config/opencode/agents/lark-operator.md",
-      "sha256": "f08b86d334c22cc2711c6a1b1bebeb2f7776d9ac2f039f3ff88233c7fbc26d46",
+      "sha256": "ac21bbf61fa77ad25662f1934abef35f71e3fc0b3fa35003f7ac46c1a3d0d7fe",
       "liveObservedSha256": "ac21bbf61fa77ad25662f1934abef35f71e3fc0b3fa35003f7ac46c1a3d0d7fe"
     },
     "hostConfigSource": {
@@ -290,11 +290,11 @@
         "lark-operator": {
           "model": "glm-5.3",
           "mode": "all",
-          "systemBytes": 3275,
+          "systemBytes": 3235,
           "systemBytesNote": "UTF-8 bytes of the preserved body; JavaScript string length is not a byte count."
         },
         "document-writer": {
-          "model": "glm-5.3-flash"
+          "model": "deepseek-flash"
         },
         "oracle": {
           "model": "gpt-6-astra"

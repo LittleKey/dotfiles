@@ -28,6 +28,29 @@ test("v2 layers accept an empty project or its existing config and refuse missin
   assert.equal(check([{ ...base[0], type: "unknown" }, base[1], doc]), false);
 });
 
+test("v2 layers accept existing ancestor .opencode directories between candidate and project", (t) => {
+  const root = mkdtempSync(join(tmpdir(), "ppl-anc-"));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const candidate = join(root, "candidate");
+  const project = join(root, "a", "b", "project");
+  mkdirSync(candidate, { recursive: true });
+  mkdirSync(project, { recursive: true });
+  writeFileSync(join(candidate, "opencode.json"), "{}");
+  const ancestor = join(root, "a", ".opencode");
+  mkdirSync(ancestor);
+  const base = [
+    { type: "document", path: join(candidate, "opencode.json") },
+    { type: "directory", path: candidate },
+    { type: "directory", path: ancestor },
+  ];
+  assert.equal(inspectV2ConfigStack(base, candidate, project).ok, true, "an existing ancestor .opencode is a legitimate v2.1.0 project-chain layer");
+  const foreign = join(root, "z", ".opencode");
+  mkdirSync(foreign, { recursive: true });
+  assert.equal(inspectV2ConfigStack([...base, { type: "directory", path: foreign }], candidate, project).ok, false, "a non-ancestor directory is still a foreign source");
+  rmSync(ancestor, { recursive: true, force: true });
+  assert.equal(inspectV2ConfigStack(base, candidate, project).ok, false, "a vanished ancestor must not stay expected");
+});
+
 test("v2 agent identity rejects same-length prompt corruption and native mode loss", () => {
   const expected = { custom: { mode: "all", model: "kept", systemBytes: 4 } };
   const native = { custom: { system: "kept" } };

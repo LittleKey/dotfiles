@@ -69,8 +69,17 @@ function extractArray(body) {
 export function inspectV2ConfigStack(layers, candidateDir, projectDir) {
   const documents = (dir) => ["opencode.json", "opencode.jsonc"]
     .map((name) => join(dir, name)).filter(existsSync).map((path) => `DOC ${path}`);
-  const expected = [`DOC ${join(candidateDir, "opencode.json")}`, `DIR ${candidateDir}`,
-    ...documents(projectDir)];
+  const expected = [`DOC ${join(candidateDir, "opencode.json")}`, `DIR ${candidateDir}`];
+  // v2.1.0 walks ancestor directories for `.opencode` folders (project
+  // hierarchy), listing them between the global root and the project's own
+  // layers, outermost first. An EXISTING ancestor layer is therefore a
+  // legitimate source; a nonexistent or foreign one still fails below.
+  const ancestorLayers = [];
+  for (let dir = dirname(projectDir); dir !== dirname(dir); dir = dirname(dir)) {
+    const local = join(dir, ".opencode");
+    if (existsSync(local)) ancestorLayers.unshift(...documents(local), `DIR ${local}`);
+  }
+  expected.push(...documents(projectDir), ...ancestorLayers);
   const localDir = join(projectDir, ".opencode");
   if (existsSync(localDir)) expected.push(...documents(localDir), `DIR ${localDir}`);
   const stack = layers.map((layer) => `${layer.type === "document" ? "DOC" : layer.type === "directory" ? "DIR" : "UNKNOWN"} ${layer.path}`);

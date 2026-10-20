@@ -37,6 +37,9 @@ import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, st
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+// NOTE: no static import of ../lib/*.mjs here — lib modules must resolve
+// their node:fs bindings through the mock facade installed in before();
+// use the `libs` object (dynamic imports) inside tests/helpers instead.
 
 const RUNTIME = dirname(dirname(fileURLToPath(import.meta.url))); // .../opencode/runtime
 
@@ -118,17 +121,41 @@ function buildCandidate(name, filesSpec) {
 const V2_HOST = { flavor: "v2", version: "2.0.20", executable: "test://exe", runtimeTested: "2.0.20", minCompatible: "2.0.20" };
 
 // Fake omoPlugin artifact with an EXECUTABLE payload, mirroring the packaged
-// native CLI binaries in the real v1 stage (bin/ + entry).
+// native CLI binaries in the real v2 stage (bin/ + entry at dist/server/).
 function fakeOmoArtifact(name) {
   const artifact = join(S, name);
-  mkdirSync(join(artifact, "server", "dist", "server"), { recursive: true });
+  mkdirSync(join(artifact, "dist", "server"), { recursive: true });
   mkdirSync(join(artifact, "bin"), { recursive: true });
   writeFileSync(join(artifact, "omo-council.mjs"), "export const council = true;\n");
   writeFileSync(join(artifact, "omo-delivery.mjs"), "export const delivery = true;\n");
-  writeFileSync(join(artifact, "server", "dist", "server", "index.js"), 'import { council } from "../../../omo-council.mjs";\nexport default { id: "oh-my-opencode-slim" };\n');
+  writeFileSync(join(artifact, "dist", "server", "index.js"), 'import { council } from "../../omo-council.mjs";\nexport default { id: "oh-my-opencode-slim" };\n');
   writeFileSync(join(artifact, "bin", "native-tool"), "#!/bin/sh\necho fake-native\n");
   chmodSync(join(artifact, "bin", "native-tool"), 0o755);
+  addStockSkillFarm(artifact);
   return artifact;
+}
+
+// The pinned omoPlugin component requires the stock-skill resources under
+// src/skills/<name>/SKILL.md (vendored as the skills/ link farm on stage).
+function addStockSkillFarm(artifact) {
+  for (const skill of libs.stage.STOCK_INHERITED_SKILLS) {
+    mkdirSync(join(artifact, "src", "skills", skill), { recursive: true });
+    writeFileSync(join(artifact, "src", "skills", skill, "SKILL.md"), `---\nname: ${skill}\ndescription: fake stock skill fixture\n---\nbody\n`);
+  }
+  writeFileSync(join(artifact, "src", "skills", "clonedeps", "codemap.md"), "fake codemap resource\n");
+}
+
+// Sibling components with both flavor entries (v1 index.v1.mjs, v2 index.js).
+function fakeSiblings() {
+  const out = {};
+  for (const [key, dirName] of [["claudeAdvisor", "ca-fixture"], ["supervisor", "sup-fixture"]]) {
+    const dir = join(S, dirName);
+    mkdirSync(join(dir, "lib"), { recursive: true });
+    writeFileSync(join(dir, "index.v1.mjs"), 'export default {};\n');
+    writeFileSync(join(dir, "index.js"), 'export default {};\n');
+    out[key] = dir;
+  }
+  return out;
 }
 
 test("stage records every copied file's own mode in the manifest, and activation installs it (exec 0755 lands 0755)", () => {
@@ -137,7 +164,7 @@ test("stage records every copied file's own mode in the manifest, and activation
   mkdirSync(outDir, { recursive: true });
   const result = libs.stage.stage({
     flavor: "v2", profile, profilePath, profileSha256, host: V2_HOST,
-    outDir, explicit: { omoPlugin: fakeOmoArtifact("omo-fake-t1") },
+    outDir, explicit: { omoPlugin: fakeOmoArtifact("omo-fake-t1"), ...fakeSiblings() },
   });
   const cand = result.candidateDir;
   const { manifest } = libs.manifest.readStageManifest(cand);

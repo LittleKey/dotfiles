@@ -35,24 +35,33 @@ function inventory(root, prefix = '') {
 /** Host/plugin/bcp fixtures for stage(); returns the explicit-components object. */
 function buildExplicit(temp, flavor) {
   const omo = join(temp, 'omo');
-  for (const entry of ['index/dist/index.js', 'server/dist/server/index.js']) {
+  for (const entry of ['dist/index.js', 'dist/server/index.js']) {
     mkdirSync(join(omo, entry, '..'), { recursive: true });
     writeFileSync(join(omo, entry), 'export default {};\n');
   }
   for (const name of STOCK_INHERITED_SKILLS) {
-    const dir = join(omo, 'server/src/skills', name);
+    const dir = join(omo, 'src/skills', name);
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, 'SKILL.md'), `# ${name}\n`);
   }
+  writeFileSync(join(omo, 'src/skills/clonedeps/codemap.md'), 'fake codemap resource\n');
   const vg = join(temp, 'vg');
   mkdirSync(vg);
   writeFileSync(join(vg, 'index.js'), 'export default {};\n');
-  writeFileSync(join(vg, 'v2-plugin.mjs'), 'export default {};\n');
+  const siblings = {};
+  for (const name of ['claude-advisor-fixture', 'supervisor-fixture']) {
+    const dir = join(temp, name);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, 'index.v1.mjs'), 'export default {};\n');
+    writeFileSync(join(dir, 'index.js'), 'export default {};\n');
+    siblings[name === 'claude-advisor-fixture' ? 'claudeAdvisor' : 'supervisor'] = dir;
+  }
   const bcp = join(temp, 'bcp.ts');
   writeFileSync(bcp, 'export default {};\n');
   return {
     [flavor === 'v1' ? 'omoPluginV1' : 'omoPlugin']: omo,
     [flavor === 'v1' ? 'vibeguardV1' : 'vibeguardV2']: vg, bcpPlugin: bcp,
+    ...siblings,
   };
 }
 
@@ -83,7 +92,7 @@ for (const flavor of ['v1', 'v2']) {
         for (const name of STOCK_INHERITED_SKILLS) {
           const skill = join(root, 'skills', name, 'SKILL.md');
           if (flavor === 'v1') assert.equal(readFileSync(skill, 'utf8'), `# ${name}\n`, `${name}: original artifact bytes`);
-          else assert.equal(existsSync(skill), false, `${name}: v2 does not shadow the artifact`);
+          else assert.equal(readFileSync(skill, 'utf8'), `# ${name}\n`, `${name}: vendored artifact bytes via the skills/ link farm (v2.1.0 lists skills from config-dir files only — A7 smoke)`);
         }
         for (const name of names) assert.deepEqual(inventory(join(root, 'skills', name)), expected[name], `${name}: complete bytes and modes`);
         for (const removed of REMOVED_SKILLS) assert.equal(existsSync(join(root, 'skills', removed)), false, `${removed}: removed skill is never staged`);
@@ -133,11 +142,16 @@ for (const flavor of ['v1', 'v2']) {
         assert.ok(existsSync(join(skillsRoot, name, 'SKILL.md')), `${name}: remaining personal skill persists in the stage`);
       }
       if (flavor === 'v2') {
-        assert.deepEqual(tops, expectedPersonalTops, 'v2 stages exactly the pinned personal skills and nothing else');
+        // v2 also vendors the artifact's stock skills as links (A7 smoke:
+        // v2.1.0 lists skills from config-dir files only), so v2 differs
+        // from v1 only in the omoPlugin staging dir name — same farm.
+        for (const stock of STOCK_INHERITED_SKILLS) assert.ok(tops.includes(stock), `v2 link farm exposes ${stock}`);
+        const personalTops = tops.filter((top) => !STOCK_INHERITED_SKILLS.includes(top) && top !== 'clonedeps').sort();
+        assert.deepEqual(personalTops, expectedPersonalTops, 'v2 personal entries are exactly the pinned skills (stock links aside)');
       } else {
         // v1 additionally projects the artifact's stock skills as links.
         for (const stock of STOCK_INHERITED_SKILLS) assert.ok(tops.includes(stock), `v1 link farm exposes ${stock}`);
-        const personalTops = tops.filter((top) => !STOCK_INHERITED_SKILLS.includes(top)).sort();
+        const personalTops = tops.filter((top) => !STOCK_INHERITED_SKILLS.includes(top) && top !== 'clonedeps').sort();
         assert.deepEqual(personalTops, expectedPersonalTops, 'v1 personal entries are exactly the pinned skills (stock links aside)');
       }
     } finally { rmSync(temp, { recursive: true, force: true }); }
