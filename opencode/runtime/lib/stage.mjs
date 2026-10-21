@@ -515,13 +515,6 @@ export function stage(opts) {
       components,
       files,
       renderedConfigSha256: sha256(renderedBytes),
-      ...(flavor === "v1" ? {
-        v1PermissionProjection: {
-          source: renderReport.omoPermissionSource,
-          roles: renderReport.omoPermissionRoles,
-          skipped: renderReport.omoPermissionSkipped,
-        },
-      } : {}),
       ...(productionPrivate
         ? {
             privateProduction: {

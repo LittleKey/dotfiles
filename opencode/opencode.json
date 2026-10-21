@@ -609,6 +609,15 @@
     },
     "general": {
       "disable": true
+    },
+    "oracle": {
+      "mode": "subagent"
+    },
+    "explorer": {
+      "mode": "subagent"
+    },
+    "observer": {
+      "mode": "subagent"
     }
   }
 }

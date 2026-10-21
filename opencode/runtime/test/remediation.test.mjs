@@ -100,7 +100,7 @@ function stageV1(omoV1Dir, pinned = loadProfile(join(RUNTIME, "profile.json"))) 
   });
 }
 
-test("v1 staging projects the pinned OMO input despite a conflicting host-source sibling", () => {
+test("v1 staging copies the pinned OMO config without projecting role permissions into the host", () => {
   const pinned = loadProfile(join(RUNTIME, "profile.json"));
   const dir = join(S, "pinned-permissions");
   mkdirSync(dir);
@@ -113,10 +113,10 @@ test("v1 staging projects the pinned OMO input despite a conflicting host-source
   pinned.profile.inputs.omoConfig = { kind: "file", source: omo, sha256: sha256File(omo) };
   const result = stageV1(writeFakeOmoV1(), pinned);
   const rendered = JSON.parse(readFileSync(join(result.candidateDir, "opencode.json"), "utf8"));
-  assert.equal(rendered.agent.oracle.permission.edit, "deny");
-  assert.equal(rendered.agent.oracle.permission.write, "deny");
+  assert.equal(rendered.agent.oracle, undefined);
+  assert.deepEqual(rendered.agent.explorer, { disable: false }, "legacy alias compatibility adds no permissions");
   assert.equal(readFileSync(join(result.candidateDir, "oh-my-opencode-slim.json"), "utf8"), readFileSync(omo, "utf8"));
-  assert.deepEqual(result.manifest.v1PermissionProjection.source, { path: omo, sha256: sha256File(omo), resolvedVia: "inputs.omoConfig" });
+  assert.equal(result.manifest.v1PermissionProjection, undefined);
   // Mutating the unrelated live sibling cannot alter the next staged output.
   writeFileSync(join(dir, "oh-my-opencode-slim.json"), "not JSON");
   const again = stageV1(writeFakeOmoV1(), pinned);
@@ -342,7 +342,7 @@ test("GOAL2 end-to-end on a staged v1 candidate: rendered agent root carries the
   // staged candidate must show BOTH the preserved builtin intent and the
   // canonical OMO explorer pin
   assert.equal(rendered.agent.explore.disable, true, "builtin explore stays disabled (source intent preserved)");
-  assert.equal(rendered.agent.explorer.disable, false, "canonical OMO explorer pin present → default OMO Explorer dispatch restored");
+  assert.deepEqual(rendered.agent.explorer, { mode: "subagent" }, "explicit role mode survives without added permissions");
   assert.equal(rendered.agent.plan.disable, true, "plan stays disabled verbatim");
   assert.equal(rendered.agent.general.disable, true, "general stays disabled verbatim");
 });

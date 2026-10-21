@@ -48,7 +48,7 @@ It is not a second collection of builtin-role append prompts.
 | Content | Maintenance source | Runtime responsibility |
 | --- | --- | --- |
 | Five builtin appends: designer, explorer, librarian, oracle, orchestrator | [`../oh-my-opencode-slim/*_append.md`](../oh-my-opencode-slim/) | Check `inputs.omoPromptDir.files` hashes and stage accepted files byte-identically. |
-| Native Lark Operator definition | [`assets/agents/lark-operator.md`](assets/agents/lark-operator.md) | Preserve its full body and host-specific native registration; builtin appends do not supply this role. |
+| Native Lark Operator definition | [`assets/agents/lark-operator.md`](assets/agents/lark-operator.md) | Stage `agents/lark-operator.md` with its body and `mode: all`; keep the model in OMO config and do not emit a duplicate inline system. |
 | Installable skills and companion files | `generated/skills/` | Package the pinned skill inputs, preserving bytes and executable modes. These are skill files, not role appends. |
 | Prompt filtering | `lib/prompts.mjs` | Exclude retired Council overrides and backup files; no append body is embedded here. |
 
@@ -57,6 +57,14 @@ in this dotfiles checkout. Candidate and installed copies are outputs, and their
 hash inventories are verification metadata, not independently maintained prose.
 The repository-owned `profile.json` inputs point at the main checkout rather
 than the former phase-1 worktree.
+
+OMO role models, skills and MCP selections are maintained only in
+`../oh-my-opencode-slim.json`. Role boundaries are expressed in the prompts;
+this profile adds no per-role tool-permission overrides and does not replicate
+the plugin's default restrictions into host configuration. Host settings retain
+only `mode: subagent` for Oracle, Explorer and Observer: fresh OpenCode 2.1.1
+instances otherwise register these roles as primary agents. The v1 renderer
+also retains its minimal legacy alias enablement where required.
 
 For consistent append content across machines:
 

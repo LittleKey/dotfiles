@@ -9,43 +9,13 @@
         "skills": [
           "*",
           "!lark-*",
-          "!lark-approval",
-          "!lark-apps",
-          "!lark-attendance",
-          "!lark-base",
-          "!lark-calendar",
-          "!lark-contact",
-          "!lark-doc",
-          "!lark-drive",
-          "!lark-event",
-          "!lark-im",
-          "!lark-mail",
-          "!lark-markdown",
-          "!lark-meeting",
-          "!lark-okr",
-          "!lark-openapi-explorer",
-          "!lark-shared",
-          "!lark-sheets",
-          "!lark-slides",
-          "!lark-task",
-          "!lark-whiteboard",
-          "!lark-wiki",
-          "!lark-workflow-meeting-summary",
-          "!lark-workflow-standup-report",
           "!designing-work-loops",
-          "!lark-worklog",
           "!managing-lark-project-folder",
           "!yogo-products"
         ],
         "mcps": [
           "gh_grep"
-        ],
-        "permission": {
-          "task": {
-            "*": "allow"
-          },
-          "apply_patch": "allow"
-        }
+        ]
       },
       "oracle": {
         "model": "openai/gpt-6-astra",
@@ -53,44 +23,18 @@
         "skills": [
           "find-code-simplifications"
         ],
-        "mcps": [],
-        "permission": {
-          "edit": "deny",
-          "write": "deny",
-          "apply_patch": "deny",
-          "ast_grep_replace": "deny"
-        }
-      },
-      "librarian": {
-        "model": "openai/gpt-5.6-luna",
-        "variant": "high",
-        "skills": [],
-        "mcps": [
-          "context7",
-          "gh_grep"
-        ],
-        "permission": {
-          "edit": "deny",
-          "apply_patch": "deny"
-        }
+        "mcps": []
       },
       "explorer": {
         "model": "newapi/glm-5.3-flash",
         "variant": "max",
         "skills": [],
-        "mcps": [],
-        "permission": {
-          "edit": "deny",
-          "apply_patch": "deny"
-        }
+        "mcps": []
       },
       "designer": {
         "model": "newapi/kimi-k2.7",
         "skills": [],
-        "mcps": [],
-        "permission": {
-          "apply_patch": "allow"
-        }
+        "mcps": []
       },
       "fixer": {
         "model": "newapi/glm-5.3-flash",
@@ -98,20 +42,13 @@
         "skills": [
           "use-modern-go"
         ],
-        "mcps": [],
-        "permission": {
-          "apply_patch": "allow"
-        }
+        "mcps": []
       },
       "observer": {
         "model": "newapi/glm-5.3-flash",
         "variant": "max",
         "skills": [],
-        "mcps": [],
-        "permission": {
-          "edit": "deny",
-          "apply_patch": "deny"
-        }
+        "mcps": []
       },
       "council": {
         "model": "openai/gpt-6.1-sol",
@@ -141,15 +78,7 @@
       ],
       "mcps": [],
       "description": "Create/edit formal product, technical and management documents; review expression, structure, consistency and audience fit; exclude internal agent plans/state.",
-      "orchestratorPrompt": "- Use document-writer with MODE: WRITE for formal document creation/body edits, or MODE: REVIEW for expression, structure, document-internal consistency, audience fit and readability.\n- Keep internal agent plans/state in the main session and independent platform work with lark-operator. Apply the main-session document/review policy for dispatch and acceptance.",
-      "permission": {
-        "task": "deny",
-        "question": "deny",
-        "webfetch": "deny",
-        "websearch": "deny",
-        "gh_grep_*": "deny",
-        "context7_*": "deny"
-      }
+      "orchestratorPrompt": "- Use document-writer with MODE: WRITE for formal document creation/body edits, or MODE: REVIEW for expression, structure, document-internal consistency, audience fit and readability.\n- Keep internal agent plans/state in the main session and independent platform work with lark-operator. Apply the main-session document/review policy for dispatch and acceptance."
     },
     "lark-operator": {
       "model": "newapi/glm-5.3",
@@ -185,23 +114,7 @@
       ],
       "mcps": [],
       "description": "Handle independent Lark reads and platform operations, excluding formal document writing and local file maintenance.",
-      "orchestratorPrompt": "Use lark-operator for independent Lark reads/actions; never run platform skills directly. Route local Lark skill files, including lark-skill-maker work, to fixer; operator supplies platform facts and authorized validation only.",
-      "permission": {
-        "bash": "allow",
-        "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "edit": "deny",
-        "write": "deny",
-        "apply_patch": "deny",
-        "ast_grep_replace": "deny",
-        "task": "deny",
-        "question": "deny",
-        "webfetch": "allow",
-        "websearch": "deny",
-        "gh_grep_*": "deny",
-        "context7_*": "deny"
-      }
+      "orchestratorPrompt": "Use lark-operator for independent Lark reads/actions; never run platform skills directly. Route local Lark skill files, including lark-skill-maker work, to fixer; operator supplies platform facts and authorized validation only."
     }
   },
   "council": {

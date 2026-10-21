@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 
 import { loadProfile, verifyAllInputs, verifyExplicit, RefusalError } from "../lib/inputs.mjs";
 import { stage, StageRefusal, STOCK_INHERITED_SKILLS, refuseStockSkillShadow } from "../lib/stage.mjs";
-import { renderV2, renderV1, frontmatterBody, personalCore } from "../lib/render.mjs";
+import { renderV2, renderV1, personalCore } from "../lib/render.mjs";
 import { launcherEnv } from "../lib/hostenv.mjs";
 import { planActivation, activate, rollback, adopt } from "../lib/activate.mjs";
 import { readStageManifest } from "../lib/manifest.mjs";
@@ -90,7 +90,7 @@ test("v1 loaded selection: canonical symlink aliases match; duplicate or outside
   assert.equal(inspectV1PluginSelection(["file:///missing-owned-plugin.js"], root, profile, staged).ok, false);
 });
 
-test("render v2: personal value preservation — models, exact body, mode:all, native agents root only, no credentials; explorer pin retired (no inline system)", () => {
+test("render v2: personal settings preserved without duplicating native agent files", () => {
   const { profile } = loadProfile(join(RUNTIME, "profile.json"));
   const inputs = personalInputs(profile);
   // the profile no longer pins a full explorer prompt replacement (phase-1
@@ -110,16 +110,14 @@ test("render v2: personal value preservation — models, exact body, mode:all, n
   assert.deepEqual(rendered.providers.newapi.models, src.providers.newapi.models, "all 15 personal models preserved");
   assert.equal(rendered.providers.newapi.options.baseURL, src.providers.newapi.options.baseURL);
   assert.deepEqual(Object.keys(rendered.providers.newapi.options), ["baseURL"], "provider options carry baseURL only");
-  // explicit personal agents preserved exactly
-  assert.equal(rendered.agents["lark-operator"].mode, "all", "lark mode:all preserved (native-v2 retention fixture)");
-  assert.equal(rendered.agents["lark-operator"].system, frontmatterBody(readFileSync(inputs.larkOperatorPrompt.resolved.path, "utf8")));
-  assert.equal(Buffer.byteLength(rendered.agents["lark-operator"].system), 3235, "lark system bytes match the pinned live snapshot");
-  // explorer: no inline system rendered at all when the input is absent
-  // (upstream default + explorer_append.md applies via the OMO prompt
-  // lookup); v2 gets NO canonical pin — the plugin snapshots the draft
-  // before config agents exist, so no rendered entry can prevent the
-  // builtin-explore alias clobber on v2 (blocker, see remediation.test.mjs).
-  assert.equal(rendered.agents.explorer, undefined, "no inline explorer system, no v2 pin");
+  // The staged native file owns Lark's body and mode; the OMO config owns
+  // its model. The JSON renderer must not duplicate either definition.
+  assert.equal(rendered.agents["lark-operator"], undefined);
+  // Current V2 needs explicit dispatch modes. Prompts and permissions stay
+  // with OMO; the host carries only the mode required by native registration.
+  for (const id of ["explorer", "oracle", "observer"]) {
+    assert.deepEqual(rendered.agents[id], { mode: "subagent" });
+  }
   // vocabulary: native agents root only, legacy conversions
   assert.equal(rendered.agent, undefined, "no legacy agent root on v2");
   assert.equal(rendered.agents.build.disabled, false);
