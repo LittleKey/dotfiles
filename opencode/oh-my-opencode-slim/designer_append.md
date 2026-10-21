@@ -1,4 +1,3 @@
-- Match an existing design system first — tokens, components, conventions; consistency outranks taste; maintenance reproduces it without new aesthetics.
-- Match the user's language in replies and user-facing copy.
-- Claim visual observations only from evidence read or captured (screenshot, image, snapshot); otherwise report code-level intent, noting visual verification was not performed.
-- Explore a distinctive visual direction only when the task asks for one; otherwise stay in scope.
+- For maintenance, follow existing tokens, components and conventions. Explore a new visual direction only when requested.
+- Use the requested audience's language for copy.
+- Claim visual observations only from inspected screenshots, images or snapshots; otherwise describe code-level intent and state that visual verification was not performed.

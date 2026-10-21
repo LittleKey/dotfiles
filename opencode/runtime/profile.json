@@ -7,8 +7,8 @@
     "noTmpDependencies": "No /tmp path from the owner's composition session is baked in; example artifact locations appear only in README prose as examples.",
     "sourcesOfRecord": {
       "dotfilesPrompts": "The selected dotfiles checkout's opencode/oh-my-opencode-slim is the sole builtin-role append source. Input paths below use the main checkout, not an old worktree. Other machines relocate paths to the same approved revision without changing content hashes; prompt and raw config sources are read-only during staging.",
-      "liveGlobalRoot": "/home/littlekey/.config/opencode (authoritative for agents/lark-operator.md and vibeguard.config.json; read-only inputs). skills/ is NO longer sourced from here (phase-1 follow-upstream): the pinned generated tree under runtime/generated/skills is authoritative — see inputs.skillsDir",
-      "assetSnapshot": "runtime/assets/agents/lark-operator.md (release-internal copy of the live file, pinned below)"
+      "liveGlobalRoot": "/home/littlekey/.config/opencode supplies vibeguard.config.json only; personal skills are pinned under runtime/generated/skills.",
+      "coworkerPrompts": "omo-coworkers/prompts owns document-writer and lark-operator bodies. Stage them byte-identically into the OMO prompt directory; raw host config retains only Lark mode:all."
     },
     "convergence": "The composition lane selects the host-managed billion-context@latest npm channel, explicit OMO directory artifacts and the dual-host BCP artifact. Retired ACP/tui pins remain rollback history. Council overrides and *.bak-promptopt files are excluded from staging; prompt copies are byte-identical and the Explorer full override is retired in favor of its upstream base plus append. As of 2026-10-09, all eight OMO bundled skills follow the selected plugin artifact: v1 stages artifact-relative links and activation materializes original bytes; v2 inherits in-process. The former codemap/deepwork/oh-my-opencode-slim local overrides and combined build manifest are retired. skillsDir contains only 11 personal skills (the 2026-10-11 owner removal retired executing-plans and writing-plans from sources and pins; eli5 was retired the same day in its own bounded pass); input changes require deliberate, explained pin updates."
   },
@@ -33,44 +33,39 @@
     }
   },
   "inputs": {
-    "agentsMd": {
-      "kind": "file",
-      "source": "/home/littlekey/github/dotfiles/opencode/AGENTS.md",
-      "sha256": "830273bf77ae8a49f40cea2b0cdb5bcddbe5c1cabf7d6c195178717da76371c6"
-    },
     "omoConfig": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/oh-my-opencode-slim.json",
-      "sha256": "fa6aac7c6a99af51740593d34d4460862da874b430e5aaaa2f26904267ebf490"
+      "sha256": "9e0a900e1b9a946e49b44cd56e28e50a90c7c8bf75b0e9331020c29ac0b40e6b"
     },
     "omoPromptDir": {
       "kind": "dir",
       "source": "/home/littlekey/github/dotfiles/opencode/oh-my-opencode-slim",
       "files": {
         "council_append.md.bak-promptopt": "ff832d25e5f99ab97f7dafa1f97875020f0ddd1d0a8052b56bd277da50912731",
-        "designer_append.md": "137e4a7b332c6001276ca7e338b2b833bc84159828736b4762ff15233f1ebbd2",
-        "document-writer.md": "3f3c80299ad97bf22e5b3c80a78d1185072ed4657ea0b77f80c8a5cc62874bb8",
+        "designer_append.md": "fb9ec7703bcfb6edf01a906bae40b8d33c0e2b521fe74dfca54846c738b5dc9c",
         "document-writer.md.bak-promptopt": "9c191381d7b965edff6f59411521933589e695c74b2f1351dcc7864ce7d22842",
-        "explorer_append.md": "2c2289ee72e6816c5ea9adbaeaa5fa9a83d08b8c14216b57e3db5e673a54b107",
+        "explorer_append.md": "5857366e643d3d6d07ec02c05eda70529a0ad1110fc1885cf160886f4c34f4f8",
+        "fixer_append.md": "d7ffbb77f60c0bb9e5639b482e3fb219eb083b32a0f4146a6c823536f1c54f1d",
         "lark-operator.md.bak-promptopt": "7edad9038f8fd2f538e6eea7d68ef052b6cc10e26c488c3a5e2bdab3877dda8e",
-        "librarian_append.md": "6f746e456532654f13beae383661e2ce297d7d75a5088d007a4b21702680b049",
-        "oracle_append.md": "8ecfd937d7dceb8bc27753ea2656e2ad7952fe00ad8e3e5fb2f614b3148e0730",
+        "oracle_append.md": "85dab1a38b2b45f37909e066c3328d984ae970fd477039527310319a30ac3577",
         "oracle_append.md.bak-promptopt": "c189e97905f0b6697d4bd5610747e5998f41675f4666cb70645e08eff92e6e14",
-        "orchestrator_append.md": "37e4a2b52feb8f4a00a3beeeb03d30b0eab1a02eea1b8793e1342c2232c6faf4",
+        "orchestrator_append.md": "e62ac98882a51c5b0efee190dffb08330f971d28dd0134cf278f9963dda91ab5",
         "orchestrator_append.md.bak-promptopt": "b3be33cb747af1308fae4684615c948a6cc2d7662107ba861f8fede3d2d434ab"
       }
     },
-    "larkOperatorPrompt": {
-      "kind": "file",
-      "source": "/home/littlekey/github/dotfiles/opencode/runtime/assets/agents/lark-operator.md",
-      "liveSource": "/home/littlekey/.config/opencode/agents/lark-operator.md",
-      "sha256": "c4e01576cba270b31cdb8803565f0578321a4b34b1a0cca87a42c881bd695dbc",
-      "liveObservedSha256": "219452832c2635f4686cc034f97d496ef81696a6c1b386a0ac1a60c9b00d4c3c"
+    "coworkerPrompts": {
+      "kind": "dir",
+      "source": "/home/littlekey/github/omo-coworkers/prompts",
+      "files": {
+        "document-writer.md": "5f903806759aeace74c77da5b9dd2516e60dda32743e17b113262e4bcd970dce",
+        "lark-operator.md": "b6e2bee850cf8ff2a5d9ab6ebea03f6c1695aae34eda6beea6aac11f88b31abb"
+      }
     },
     "hostConfigSource": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/opencode.json",
-      "sha256": "5a4e1b285c9d7ae533edc26e3d5453b7415e3078d95a735aaed7be6955647d21",
+      "sha256": "d310947d5a533f723e5b0513e058c6b3220556995cb1162256f2003098e2871a",
       "role": "Raw host settings from the dotfiles source. Plugin selection is maintained only in this profile's components and flavors sections, together with explicitly supplied artifacts; the raw source has no plugin list. The obsolete three-entry list was removed without changing v1/v2 rendered settings. Do not feed rendered production agent permissions back into the raw-source renderer. Credentials are scrubbed unless explicit private production staging is requested."
     },
     "skillsDir": {
@@ -316,5 +311,5 @@
       }
     }
   },
-  "pinnedAt": "2026-10-21T04:55:17.890Z"
+  "pinnedAt": "2026-10-21T05:46:29.691Z"
 }

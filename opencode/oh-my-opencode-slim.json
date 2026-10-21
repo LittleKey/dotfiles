@@ -32,7 +32,7 @@
         "mcps": []
       },
       "designer": {
-        "model": "newapi/kimi-k2.7",
+        "model": "newapi/glm-5.3",
         "skills": [],
         "mcps": []
       },
@@ -78,7 +78,7 @@
       ],
       "mcps": [],
       "description": "Create/edit formal product, technical and management documents; review expression, structure, consistency and audience fit; exclude internal agent plans/state.",
-      "orchestratorPrompt": "- Use document-writer with MODE: WRITE for formal document creation/body edits, or MODE: REVIEW for expression, structure, document-internal consistency, audience fit and readability.\n- Keep internal agent plans/state in the main session and independent platform work with lark-operator. Apply the main-session document/review policy for dispatch and acceptance."
+      "orchestratorPrompt": "Use document-writer for formal documents: MODE: WRITE for creation/body edits; MODE: REVIEW for wording, structure, internal consistency, audience fit and readability. Reuse a suitable writer for revisions, never to independently review its own output. Keep internal plans/state in the main session; independent platform work goes to lark-operator. Follow the main-session review policy."
     },
     "lark-operator": {
       "model": "newapi/glm-5.3",
@@ -114,7 +114,7 @@
       ],
       "mcps": [],
       "description": "Handle independent Lark reads and platform operations, excluding formal document writing and local file maintenance.",
-      "orchestratorPrompt": "Use lark-operator for independent Lark reads/actions; never run platform skills directly. Route local Lark skill files, including lark-skill-maker work, to fixer; operator supplies platform facts and authorized validation only."
+      "orchestratorPrompt": "Delegate independent Lark reads/actions to lark-operator; do not run platform skills yourself. Send local skill-file work (including lark-skill-maker) to fixer; operator supplies facts and authorized validation."
     }
   },
   "council": {
@@ -152,7 +152,7 @@
       "permissionMode": "reject",
       "timeoutMs": 3600000,
       "prompt": "You are the transport wrapper for the external claude advisor. Call acp_run exactly once with agent \"claude\" and prompt equal to the complete user task, preserving its text exactly. Supply exactly those two arguments. The external advisor reads referenced project files itself. Return its answer faithfully. Surface tool failures clearly. Keep your outgoing prompt in ASCII English.",
-      "orchestratorPrompt": "@claude is a principal software advisor for a fresh perspective beyond the current approach or an oracle recommendation.\nEligible work: architecture escalations, independent second opinions on software designs, reframing stuck technical problems, and reviews of consequential correctness, maintainability, reversibility, or resource tradeoffs. These categories define this lane's complete scope; other work stays with the current agent or another suitable specialist.\nWrite one short ASCII-English task with the decision question, current approach, and important uncertainty. Begin the task text with a \"Task: <short title>\" line in ASCII English; it is used as the retention title. Include this advisor instruction: Examine the objective and framing first, challenge the highest-leverage assumption, recommend the simplest sound direction, and explain the decisive tradeoff. Return English advice in at most 400 words with Recommendation, Reframing, Evidence and uncertainty, and Next check.\nUse ASCII project-relative paths for supporting files. For board evidence, read the selected records with board_get, then export them verbatim with the board_export tool into .opencode/bcp/exports/. Include the resulting paths in the task. The original file contents may use any language. Ask Claude to read their content fields as evidence, cite the files actually used, and state any missing evidence.\nKeep the direct prompt within 524288 bytes and use at most three board records per consultation. Budget one consultation per decision; prepare a fresh short question for a follow-up."
+      "orchestratorPrompt": "Use @claude only for architecture escalations, independent design second opinions, reframing stuck technical problems, or consequential correctness/maintainability/reversibility/resource tradeoffs; seek a fresh perspective beyond the current approach or Oracle advice.\nDispatch ASCII English, at most 524288 bytes, starting \"Task: <short title>\" (retention title). Give the decision, approach and uncertainty. Ask Claude to challenge the objective/framing and highest-leverage assumption, recommend the simplest sound direction and explain the decisive tradeoff. Require English advice within 400 words: Recommendation; Reframing; Evidence and uncertainty; Next check.\nProvide ASCII project-relative evidence paths. For up to three board records, board_get then board_export verbatim into .opencode/bcp/exports/; pass the returned paths. Ask Claude to read their content fields, cite files used and disclose missing evidence; file contents may use any language. One consultation per decision; follow-ups need a fresh short question."
     }
   },
   "disabled_agents": []

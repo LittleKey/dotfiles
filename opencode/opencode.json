@@ -1,8 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "compaction": {
-    "auto": false
-  },
   "model": "newapi/glm-5.3",
   "default_agent": "orchestrator",
   "permission": {
@@ -20,9 +17,9 @@
   },
   "providers": {
     "newapi": {
-      "npm": "@ai-sdk/openai-compatible",
       "name": "newapi",
-      "options": {
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
         "baseURL": "http://10.126.126.10:3000/v1"
       },
       "models": {
@@ -32,39 +29,60 @@
             "context": 1050000,
             "output": 128000
           },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
           "capabilities": {
-            "tool_calling": true,
-            "reasoning": true,
-            "vision": true
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
-          "pricing": {
+          "variants": [
+            {
+              "id": "none",
+              "settings": {
+                "reasoningEffort": "none"
+              }
+            },
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
+              }
+            },
+            {
+              "id": "medium",
+              "settings": {
+                "reasoningEffort": "medium"
+              }
+            },
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
+              }
+            },
+            {
+              "id": "xhigh",
+              "settings": {
+                "reasoningEffort": "xhigh"
+              }
+            },
+            {
+              "id": "max",
+              "settings": {
+                "reasoningEffort": "max"
+              }
+            }
+          ],
+          "cost": {
             "input": 0,
             "output": 0
-          },
-          "reasoning": true,
-          "variants": {
-            "none": {
-              "reasoningEffort": "none"
-            },
-            "low": {
-              "reasoningEffort": "low"
-            },
-            "medium": {
-              "reasoningEffort": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh"
-            },
-            "max": {
-              "reasoningEffort": "max"
-            }
           }
         },
         "gpt-5.6-terra": {
@@ -73,39 +91,60 @@
             "context": 1050000,
             "output": 128000
           },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
           "capabilities": {
-            "tool_calling": true,
-            "reasoning": true,
-            "vision": true
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
-          "pricing": {
+          "variants": [
+            {
+              "id": "none",
+              "settings": {
+                "reasoningEffort": "none"
+              }
+            },
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
+              }
+            },
+            {
+              "id": "medium",
+              "settings": {
+                "reasoningEffort": "medium"
+              }
+            },
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
+              }
+            },
+            {
+              "id": "xhigh",
+              "settings": {
+                "reasoningEffort": "xhigh"
+              }
+            },
+            {
+              "id": "max",
+              "settings": {
+                "reasoningEffort": "max"
+              }
+            }
+          ],
+          "cost": {
             "input": 0,
             "output": 0
-          },
-          "reasoning": true,
-          "variants": {
-            "none": {
-              "reasoningEffort": "none"
-            },
-            "low": {
-              "reasoningEffort": "low"
-            },
-            "medium": {
-              "reasoningEffort": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh"
-            },
-            "max": {
-              "reasoningEffort": "max"
-            }
           }
         },
         "gpt-5.6-sol": {
@@ -114,39 +153,60 @@
             "context": 1050000,
             "output": 128000
           },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
           "capabilities": {
-            "tool_calling": true,
-            "reasoning": true,
-            "vision": true
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
-          "pricing": {
+          "variants": [
+            {
+              "id": "none",
+              "settings": {
+                "reasoningEffort": "none"
+              }
+            },
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
+              }
+            },
+            {
+              "id": "medium",
+              "settings": {
+                "reasoningEffort": "medium"
+              }
+            },
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
+              }
+            },
+            {
+              "id": "xhigh",
+              "settings": {
+                "reasoningEffort": "xhigh"
+              }
+            },
+            {
+              "id": "max",
+              "settings": {
+                "reasoningEffort": "max"
+              }
+            }
+          ],
+          "cost": {
             "input": 0,
             "output": 0
-          },
-          "reasoning": true,
-          "variants": {
-            "none": {
-              "reasoningEffort": "none"
-            },
-            "low": {
-              "reasoningEffort": "low"
-            },
-            "medium": {
-              "reasoningEffort": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh"
-            },
-            "max": {
-              "reasoningEffort": "max"
-            }
           }
         },
         "gpt-6-astra": {
@@ -155,36 +215,54 @@
             "context": 1050000,
             "output": 128000
           },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
           "capabilities": {
-            "tool_calling": true,
-            "reasoning": true,
-            "vision": true
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
-          "pricing": {
+          "variants": [
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
+              }
+            },
+            {
+              "id": "medium",
+              "settings": {
+                "reasoningEffort": "medium"
+              }
+            },
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
+              }
+            },
+            {
+              "id": "xhigh",
+              "settings": {
+                "reasoningEffort": "xhigh"
+              }
+            },
+            {
+              "id": "max",
+              "settings": {
+                "reasoningEffort": "max"
+              }
+            }
+          ],
+          "cost": {
             "input": 0,
             "output": 0
-          },
-          "reasoning": true,
-          "variants": {
-            "low": {
-              "reasoningEffort": "low"
-            },
-            "medium": {
-              "reasoningEffort": "medium"
-            },
-            "high": {
-              "reasoningEffort": "high"
-            },
-            "xhigh": {
-              "reasoningEffort": "xhigh"
-            },
-            "max": {
-              "reasoningEffort": "max"
-            }
           }
         },
         "deepseek-flash": {
@@ -194,42 +272,63 @@
             "output": 384000
           },
           "capabilities": {
-            "tool_calling": true,
-            "reasoning": true,
-            "vision": false
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
           },
-          "pricing": {
-            "input": 0,
-            "output": 0
-          },
-          "reasoning": true,
-          "variants": {
-            "none": {
-              "thinking": {
-                "type": "disabled"
+          "variants": [
+            {
+              "id": "none",
+              "body": {
+                "thinking": {
+                  "type": "disabled"
+                }
               }
             },
-            "low": {
-              "thinking": {
-                "type": "enabled"
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
               },
-              "reasoningEffort": "low"
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
             },
-            "high": {
-              "thinking": {
-                "type": "enabled"
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
               },
-              "reasoningEffort": "high"
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
             },
-            "max": {
-              "thinking": {
-                "type": "enabled"
+            {
+              "id": "max",
+              "settings": {
+                "reasoningEffort": "max"
               },
-              "reasoningEffort": "max"
-            },
-            "medium": {
-              "disabled": true
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
             }
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0
           }
         },
         "deepseek-v4-flash": {
@@ -239,42 +338,63 @@
             "output": 384000
           },
           "capabilities": {
-            "tool_calling": true,
-            "reasoning": true,
-            "vision": false
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
           },
-          "pricing": {
-            "input": 0,
-            "output": 0
-          },
-          "reasoning": true,
-          "variants": {
-            "none": {
-              "thinking": {
-                "type": "disabled"
+          "variants": [
+            {
+              "id": "none",
+              "body": {
+                "thinking": {
+                  "type": "disabled"
+                }
               }
             },
-            "low": {
-              "thinking": {
-                "type": "enabled"
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
               },
-              "reasoningEffort": "low"
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
             },
-            "high": {
-              "thinking": {
-                "type": "enabled"
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
               },
-              "reasoningEffort": "high"
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
             },
-            "max": {
-              "thinking": {
-                "type": "enabled"
+            {
+              "id": "max",
+              "settings": {
+                "reasoningEffort": "max"
               },
-              "reasoningEffort": "max"
-            },
-            "medium": {
-              "disabled": true
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
             }
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0
           }
         },
         "deepseek-v4-pro": {
@@ -284,42 +404,63 @@
             "output": 384000
           },
           "capabilities": {
-            "tool_calling": true,
-            "reasoning": true,
-            "vision": false
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
           },
-          "pricing": {
-            "input": 0,
-            "output": 0
-          },
-          "reasoning": true,
-          "variants": {
-            "none": {
-              "thinking": {
-                "type": "disabled"
+          "variants": [
+            {
+              "id": "none",
+              "body": {
+                "thinking": {
+                  "type": "disabled"
+                }
               }
             },
-            "low": {
-              "thinking": {
-                "type": "enabled"
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
               },
-              "reasoningEffort": "low"
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
             },
-            "high": {
-              "thinking": {
-                "type": "enabled"
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
               },
-              "reasoningEffort": "high"
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
             },
-            "max": {
-              "thinking": {
-                "type": "enabled"
+            {
+              "id": "max",
+              "settings": {
+                "reasoningEffort": "max"
               },
-              "reasoningEffort": "max"
-            },
-            "medium": {
-              "disabled": true
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
             }
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0
           }
         },
         "glm-5.3": {
@@ -330,33 +471,54 @@
           },
           "capabilities": {
             "tools": true,
-            "input": ["text"],
-            "output": ["text"]
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ],
+            "reasoning": {
+              "supported": true
+            }
           },
-          "pricing": {
+          "variants": [
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
+              },
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
+            },
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
+              },
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
+            },
+            {
+              "id": "max",
+              "settings": {
+                "reasoningEffort": "max"
+              },
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
+            }
+          ],
+          "cost": {
             "input": 0,
             "output": 0
-          },
-          "reasoning": true,
-          "variants": {
-            "low": {
-              "thinking": {
-                "type": "enabled"
-              },
-              "reasoningEffort": "low"
-            },
-            "high": {
-              "thinking": {
-                "type": "enabled"
-              },
-              "reasoningEffort": "high"
-            },
-            "max": {
-              "thinking": {
-                "type": "enabled"
-              },
-              "reasoningEffort": "max"
-            }
           }
         },
         "glm-5.3-flash": {
@@ -365,39 +527,57 @@
             "context": 1048576,
             "output": 128000
           },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
           "capabilities": {
-            "tool_calling": true,
-            "reasoning": true,
-            "vision": true
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
-          "pricing": {
+          "variants": [
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
+              },
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
+            },
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
+              },
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
+            },
+            {
+              "id": "max",
+              "settings": {
+                "reasoningEffort": "max"
+              },
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
+            }
+          ],
+          "cost": {
             "input": 0,
             "output": 0
-          },
-          "reasoning": true,
-          "variants": {
-            "low": {
-              "thinking": {
-                "type": "enabled"
-              },
-              "reasoningEffort": "low"
-            },
-            "high": {
-              "thinking": {
-                "type": "enabled"
-              },
-              "reasoningEffort": "high"
-            },
-            "max": {
-              "thinking": {
-                "type": "enabled"
-              },
-              "reasoningEffort": "max"
-            }
           }
         },
         "kimi-k2.7": {
@@ -407,11 +587,18 @@
             "output": 32000
           },
           "capabilities": {
-            "tool_calling": true,
-            "reasoning": false,
-            "vision": false
+            "reasoning": {
+              "supported": false
+            },
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
           },
-          "pricing": {
+          "cost": {
             "input": 0,
             "output": 0
           }
@@ -422,30 +609,42 @@
             "context": 1048576,
             "output": 32000
           },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
           "capabilities": {
-            "tool_calling": true,
-            "reasoning": true,
-            "vision": true
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
-          "pricing": {
+          "variants": [
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
+              }
+            },
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
+              }
+            },
+            {
+              "id": "max",
+              "settings": {
+                "reasoningEffort": "max"
+              }
+            }
+          ],
+          "cost": {
             "input": 0,
             "output": 0
-          },
-          "reasoning": true,
-          "variants": {
-            "low": {
-              "reasoningEffort": "low"
-            },
-            "high": {
-              "reasoningEffort": "high"
-            },
-            "max": {
-              "reasoningEffort": "max"
-            }
           }
         },
         "kimi-k3": {
@@ -454,30 +653,42 @@
             "context": 1000000,
             "output": 32000
           },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
           "capabilities": {
-            "tool_calling": true,
-            "reasoning": true,
-            "vision": true
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
-          "pricing": {
+          "variants": [
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
+              }
+            },
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
+              }
+            },
+            {
+              "id": "max",
+              "settings": {
+                "reasoningEffort": "max"
+              }
+            }
+          ],
+          "cost": {
             "input": 0,
             "output": 0
-          },
-          "reasoning": true,
-          "variants": {
-            "low": {
-              "reasoningEffort": "low"
-            },
-            "high": {
-              "reasoningEffort": "high"
-            },
-            "max": {
-              "reasoningEffort": "max"
-            }
           }
         },
         "MiniMax-M3": {
@@ -486,32 +697,41 @@
             "context": 512000,
             "output": 128000
           },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
           "capabilities": {
-            "tool_calling": true,
-            "reasoning": true,
-            "vision": true
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
-          "pricing": {
-            "input": 0,
-            "output": 0
-          },
-          "reasoning": true,
-          "variants": {
-            "none": {
-              "thinking": {
-                "type": "disabled"
+          "variants": [
+            {
+              "id": "none",
+              "body": {
+                "thinking": {
+                  "type": "disabled"
+                }
               }
             },
-            "thinking": {
-              "thinking": {
-                "type": "adaptive"
-              },
-              "reasoning_split": true
+            {
+              "id": "thinking",
+              "body": {
+                "thinking": {
+                  "type": "adaptive"
+                },
+                "reasoning_split": true
+              }
             }
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0
           }
         },
         "mimo-v2.5-pro": {
@@ -521,35 +741,38 @@
             "output": 128000
           },
           "capabilities": {
-            "tool_calling": true,
-            "reasoning": true,
-            "vision": false
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
           },
-          "pricing": {
+          "variants": [
+            {
+              "id": "none",
+              "body": {
+                "thinking": {
+                  "type": "disabled"
+                }
+              }
+            },
+            {
+              "id": "thinking",
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
+            }
+          ],
+          "cost": {
             "input": 0,
             "output": 0
-          },
-          "reasoning": true,
-          "variants": {
-            "none": {
-              "thinking": {
-                "type": "disabled"
-              }
-            },
-            "thinking": {
-              "thinking": {
-                "type": "enabled"
-              }
-            },
-            "low": {
-              "disabled": true
-            },
-            "medium": {
-              "disabled": true
-            },
-            "high": {
-              "disabled": true
-            }
           }
         },
         "mimo-v2.5": {
@@ -558,44 +781,47 @@
             "context": 1000000,
             "output": 128000
           },
-          "modalities": {
-            "input": ["text", "image"],
-            "output": ["text"]
-          },
           "capabilities": {
-            "tool_calling": true,
-            "reasoning": true,
-            "vision": true
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
           },
-          "pricing": {
+          "variants": [
+            {
+              "id": "none",
+              "body": {
+                "thinking": {
+                  "type": "disabled"
+                }
+              }
+            },
+            {
+              "id": "thinking",
+              "body": {
+                "thinking": {
+                  "type": "enabled"
+                }
+              }
+            }
+          ],
+          "cost": {
             "input": 0,
             "output": 0
-          },
-          "reasoning": true,
-          "variants": {
-            "none": {
-              "thinking": {
-                "type": "disabled"
-              }
-            },
-            "thinking": {
-              "thinking": {
-                "type": "enabled"
-              }
-            },
-            "low": {
-              "disabled": true
-            },
-            "medium": {
-              "disabled": true
-            },
-            "high": {
-              "disabled": true
-            }
           }
         }
       }
     }
+  },
+  "compaction": {
+    "auto": false
   },
   "agent": {
     "build": {
@@ -618,6 +844,37 @@
     },
     "observer": {
       "mode": "subagent"
+    },
+    "lark-operator": {
+      "mode": "all"
+    },
+    "claude": {
+      "mode": "subagent"
+    },
+    "council": {
+      "mode": "all"
+    },
+    "designer": {
+      "mode": "subagent"
+    },
+    "document-writer": {
+      "mode": "subagent"
+    },
+    "fixer": {
+      "mode": "subagent"
     }
-  }
+  },
+  "plugins": [
+    "billion-context@latest",
+    {
+      "package": "/home/littlekey/.config/opencode/managed-plugins/supervisor",
+      "options": {
+        "mode": "inject"
+      }
+    }
+  ],
+  "disabled_providers": [
+    "minimax-coding-plan",
+    "minimax-cn-coding-plan"
+  ]
 }

@@ -92,19 +92,20 @@ export function personalCore(sourceConfig, opts = {}) {
     const providers = {};
     for (const [pid, prov] of Object.entries(sourceConfig[root])) {
       const copy = { ...prov };
-      if (copy.options && typeof copy.options === "object" && !Array.isArray(copy.options)) {
+      for (const container of ["options", "settings"]) {
+        if (!copy[container] || typeof copy[container] !== "object" || Array.isArray(copy[container])) continue;
         const options = {};
-        for (const [key, value] of Object.entries(copy.options)) {
+        for (const [key, value] of Object.entries(copy[container])) {
           if (CREDENTIAL_KEY.test(key)) {
             const sink = opts.preserveCredentials ? preservedCredentialKeys : droppedCredentialKeys;
-            sink.push(`provider.${pid}.options.${key}`);
+            sink.push(`provider.${pid}.${container}.${key}`);
             if (!opts.preserveCredentials) continue;
             options[key] = value;
             continue;
           }
           options[key] = value;
         }
-        copy.options = options;
+        copy[container] = options;
       }
       for (const key of Object.keys(copy)) {
         if (key !== "options" && CREDENTIAL_KEY.test(key)) {
@@ -201,11 +202,11 @@ function convertLegacyPermissionToV2(rendered, srcPath) {
 
 /**
  * Render the v2 native profile (fixture-faithful + preserved personal policy).
- * inputs.resolved entries: agentsMd (unused in JSON), omoConfig (unused in
+ * inputs.resolved entries: omoConfig (unused in
  * JSON — copied verbatim), explorerPrompt (OPTIONAL — when absent, no inline
  * explorer `system` is rendered and upstream default + explorer_append.md
  * applies), hostConfigSource. Lark's prompt and mode live in the staged
- * agents/lark-operator.md, not a second inline agent definition.
+ * the OMO prompt directory, not a second inline/native agent definition.
  * inputs.preserveCredentials: private production staging — keep credential-
  * named provider keys verbatim (report records KEY NAMES only).
  * inputs.pluginReplacements: [{spec, relEntry}] — staged component overrides;
@@ -342,6 +343,28 @@ function applyLegacyAliasPins(legacy) {
  * OMO role configuration is consumed only by the plugin, never copied into
  * the host config or expanded into additional permission rules here.
  */
+function legacyProvider(provider) {
+  if (!provider.package) return provider;
+  if (provider.package !== "@opencode/ai/providers/openai-compatible") {
+    throw new Error(`v1 provider package conversion is not defined: ${provider.package}`);
+  }
+  const { package: _, settings, models = {}, ...rest } = provider;
+  return {
+    ...rest, npm: "@ai-sdk/openai-compatible", options: settings,
+    models: Object.fromEntries(Object.entries(models).map(([id, model]) => {
+      const { capabilities = {}, settings: options, variants, ...fields } = model;
+      return [id, {
+        ...fields,
+        modalities: { input: capabilities.input, output: capabilities.output },
+        tool_call: capabilities.tools,
+        reasoning: capabilities.reasoning?.supported ?? false,
+        ...(options ? { options } : {}),
+        ...(variants ? { variants: Object.fromEntries(variants.map(({ id, settings, body }) => [id, { ...settings, ...body }])) } : {}),
+      }];
+    })),
+  };
+}
+
 export function renderV1(inputs, pluginEntries, report = {}) {
   const src = JSON.parse(readFileSync(inputs.hostConfigSource.resolved.path, "utf8"));
   if (src.agents && Object.keys(src.agents).length > 0) {
@@ -360,7 +383,7 @@ export function renderV1(inputs, pluginEntries, report = {}) {
   // candidates keep their model catalog. A source with BOTH roots is
   // refused inside personalCore.
   if (core.providers && !core.provider) {
-    core.provider = core.providers;
+    core.provider = Object.fromEntries(Object.entries(core.providers).map(([id, provider]) => [id, legacyProvider(provider)]));
     delete core.providers;
   }
   const legacy = {};

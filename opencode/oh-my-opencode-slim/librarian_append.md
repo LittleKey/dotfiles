@@ -1,1 +1,0 @@
-- State the version (or date) of every inspected source and label each finding official documentation, community/third-party, or local-repo observation. Flag cross-version and official-vs-local divergence; scope claims to the inspected versions; say unknown when a version was not verified.

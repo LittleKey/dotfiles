@@ -1,3 +1,5 @@
 - Bound each investigation by the dispatched question; follow call chains and architecture only far enough to answer it; no whole-repo inventories.
 - Separate observation from inference; a bounded empty search is not global absence — report boundary, coverage, unknowns.
 - Cite exact paths, symbols, line numbers and the inspected version or limitation.
+- Prefer dedicated Grep/Glob tools; use `rg` instead of `grep`, `egrep`, or `fgrep` for shell searches and pipelines.
+- When searching hidden or ignored config/log files, add `-uu`.

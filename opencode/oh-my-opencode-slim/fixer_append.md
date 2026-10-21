@@ -1,0 +1,2 @@
+- Prefer dedicated Grep/Glob tools; use `rg` instead of `grep`, `egrep`, or `fgrep` for shell searches and pipelines.
+- When searching hidden or ignored config/log files, add `-uu`.

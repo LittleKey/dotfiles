@@ -100,7 +100,6 @@ test("render v2: personal settings preserved without duplicating native agent fi
   assert.equal("explorerPrompt" in profile.inputs, false, "profile pins no explorerPrompt input anymore");
   const rendered = renderV2({
     hostConfigSource: inputs.hostConfigSource,
-    larkOperatorPrompt: inputs.larkOperatorPrompt,
     stockPlugins: profile.flavors.v2.stockPlugins,
   });
   // original models preserved verbatim
@@ -108,11 +107,10 @@ test("render v2: personal settings preserved without duplicating native agent fi
   assert.equal(rendered.default_agent, "orchestrator");
   const src = JSON.parse(readFileSync(inputs.hostConfigSource.resolved.path, "utf8"));
   assert.deepEqual(rendered.providers.newapi.models, src.providers.newapi.models, "all 15 personal models preserved");
-  assert.equal(rendered.providers.newapi.options.baseURL, src.providers.newapi.options.baseURL);
-  assert.deepEqual(Object.keys(rendered.providers.newapi.options), ["baseURL"], "provider options carry baseURL only");
-  // The staged native file owns Lark's body and mode; the OMO config owns
-  // its model. The JSON renderer must not duplicate either definition.
-  assert.equal(rendered.agents["lark-operator"], undefined);
+  assert.equal(rendered.providers.newapi.settings.baseURL, src.providers.newapi.settings.baseURL);
+  assert.deepEqual(Object.keys(rendered.providers.newapi.settings), ["baseURL"], "provider settings carry baseURL only");
+  // Custom bodies and models belong to the OMO inputs; only native mode remains.
+  assert.deepEqual(rendered.agents["lark-operator"], { mode: "all" });
   // Current V2 needs explicit dispatch modes. Prompts and permissions stay
   // with OMO; the host carries only the mode required by native registration.
   for (const id of ["explorer", "oracle", "observer"]) {
@@ -142,8 +140,8 @@ test("render v2: personal settings preserved without duplicating native agent fi
   // no credentials in connection fields (prompt prose may legitimately contain
   // words like NEEDS_AUTHORIZATION — scan provider/options and file-level keys,
   // not free text)
-  assert.ok(rendered.providers.newapi.options, "provider options kept");
-  assert.deepEqual(Object.keys(rendered.providers.newapi.options), ["baseURL"], "provider options carry baseURL only — never auth material");
+  assert.ok(rendered.providers.newapi.settings, "provider settings kept");
+  assert.deepEqual(Object.keys(rendered.providers.newapi.settings), ["baseURL"], "provider settings carry baseURL only — never auth material");
   assert.ok(!("apiKey" in rendered.providers.newapi), "no apiKey on provider");
   const flat = JSON.stringify(rendered);
   for (const banned of ["auth.json", '"apiKey"', '"accessToken"', '"refreshToken"']) {
@@ -224,6 +222,35 @@ test("provider roots: native plural 'providers' is scrubbed shape-preserving, v1
     /BOTH legacy 'provider' and native 'providers'/,
     "a split root is the drift bug the consolidation fixed — refuse it"
   );
+});
+
+test("native provider settings are scrubbed and V1 retains model capabilities and variant bodies", () => {
+  const source = {
+    providers: { custom: {
+      package: "@opencode/ai/providers/openai-compatible",
+      settings: { baseURL: "http://localhost:1234/v1", apiKey: "never-stage-this" },
+      models: { vision: {
+        name: "Vision", limit: { context: 1000, output: 100 },
+        capabilities: { tools: true, input: ["text", "image"], output: ["text"], reasoning: { supported: true } },
+        variants: [{ id: "high", settings: { reasoningEffort: "high" }, body: { thinking: { type: "enabled" } } }],
+      } },
+    } },
+  };
+  const path = join(S, "native-provider.json");
+  writeFileSync(path, JSON.stringify(source));
+  const inputs = { hostConfigSource: { resolved: { path } } };
+  const v2 = renderV2(inputs);
+  assert.deepEqual(v2.providers.custom.models, source.providers.custom.models);
+  assert.deepEqual(v2.providers.custom.settings, { baseURL: "http://localhost:1234/v1" });
+  assert.equal(renderV2({ ...inputs, preserveCredentials: true }).providers.custom.settings.apiKey, "never-stage-this");
+  const v1 = renderV1(inputs, []);
+  assert.equal(v1.provider.custom.npm, "@ai-sdk/openai-compatible");
+  assert.equal(v1.provider.custom.package, undefined);
+  assert.deepEqual(v1.provider.custom.options, { baseURL: "http://localhost:1234/v1" });
+  assert.deepEqual(v1.provider.custom.models.vision.modalities, { input: ["text", "image"], output: ["text"] });
+  assert.equal(v1.provider.custom.models.vision.tool_call, true);
+  assert.equal(v1.provider.custom.models.vision.reasoning, true);
+  assert.deepEqual(v1.provider.custom.models.vision.variants.high, { reasoningEffort: "high", thinking: { type: "enabled" } });
 });
 
 test("personalCore/renderV2: unrelated user settings and provider options are preserved; credential-named keys are dropped BY NAME and recorded", () => {
@@ -464,13 +491,19 @@ test("stage v2 (fake plugin artifact): full candidate + manifest; refusal when r
   assert.ok(Object.isFrozen(result.env), "stage env must be read-only for workers");
   assert.ok(Object.isFrozen(result.notes), "stage notes must be read-only for workers");
   assert.ok(existsSync(join(cand, "opencode.json")));
-  assert.ok(existsSync(join(cand, "AGENTS.md")));
+  assert.ok(!existsSync(join(cand, "AGENTS.md")), "no global AGENTS.md is staged (owner removed the file)");
   assert.ok(existsSync(join(cand, "oh-my-opencode-slim.json")));
   // 2026-10-06 owner repin: the full explorer prompt is retired from the
   // sources — upstream default + explorer_append.md applies (no inline copy)
   assert.ok(!existsSync(join(cand, "oh-my-opencode-slim", "explorer.md")), "explorer.md is not staged (source deleted; upstream lookup applies)");
   assert.ok(existsSync(join(cand, "oh-my-opencode-slim", "explorer_append.md")), "explorer_append.md is staged byte-identically");
-  assert.ok(existsSync(join(cand, "agents", "lark-operator.md")));
+  assert.ok(!existsSync(join(cand, "agents", "lark-operator.md")), "no native prompt shadow");
+  assert.equal(JSON.parse(readFileSync(join(cand, "opencode.json"), "utf8")).agents["lark-operator"].mode, "all");
+  for (const role of ["document-writer", "lark-operator"]) {
+    assert.equal(readFileSync(join(cand, "oh-my-opencode-slim", `${role}.md`), "utf8"),
+      readFileSync(join(inputs.coworkerPrompts.resolved.path, `${role}.md`), "utf8"), "custom bodies come from their owning repository");
+  }
+  assert.ok(!existsSync(join(cand, "oh-my-opencode-slim", "librarian_append.md")), "retired alias append is absent");
   assert.ok(existsSync(join(cand, "skills")));
   // Council-replacement prompts and pre-optimization .bak files are never staged
   for (const excluded of ["council.md", "council_append.md", "council_append.md.bak-promptopt", "document-writer.md.bak-promptopt", "lark-operator.md.bak-promptopt", "oracle_append.md.bak-promptopt", "orchestrator_append.md.bak-promptopt"]) {

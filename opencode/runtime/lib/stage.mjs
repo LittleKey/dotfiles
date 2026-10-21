@@ -212,9 +212,8 @@ export function stage(opts) {
       record(relPath, source, sourceSha, extra);
     };
 
-    // personal core files
-    cpSync(inputs.agentsMd.resolved.path, join(tmp, "AGENTS.md"));
-    recordStaged("AGENTS.md", inputs.agentsMd.resolved.path, inputs.agentsMd.resolved.sha256, join(tmp, "AGENTS.md"));
+    // personal core files. No global AGENTS.md is staged: the owner removed it
+    // entirely on 2026-10-21; there is no machine-global instruction policy.
     cpSync(inputs.omoConfig.resolved.path, join(tmp, "oh-my-opencode-slim.json"));
     recordStaged("oh-my-opencode-slim.json", inputs.omoConfig.resolved.path, inputs.omoConfig.resolved.sha256, join(tmp, "oh-my-opencode-slim.json"));
     const promptDir = join(tmp, "oh-my-opencode-slim");
@@ -237,9 +236,16 @@ export function stage(opts) {
       cpSync(sourceAbs, destAbs);
       recordStaged(`oh-my-opencode-slim/${rel}`, inputs.omoPromptDir.resolved.path, sha, destAbs);
     }
-    mkdirSync(join(tmp, "agents"), { recursive: true });
-    cpSync(inputs.larkOperatorPrompt.resolved.path, join(tmp, "agents", "lark-operator.md"));
-    recordStaged("agents/lark-operator.md", inputs.larkOperatorPrompt.resolved.path, inputs.larkOperatorPrompt.resolved.sha256, join(tmp, "agents", "lark-operator.md"));
+    // Custom role bodies have one source of record, shared with coworkers-install.
+    // Do not stage native markdown shadows: Lark's mode:all lives in host config.
+    for (const role of ["document-writer", "lark-operator"]) {
+      const rel = `${role}.md`;
+      const source = join(inputs.coworkerPrompts.resolved.path, rel);
+      const dest = join(promptDir, rel);
+      if (existsSync(dest)) throw new Error(`duplicate custom prompt source: ${rel}`);
+      cpSync(source, dest);
+      recordStaged(`oh-my-opencode-slim/${rel}`, source, inputs.coworkerPrompts.resolved.files[rel], dest);
+    }
     const skillsDir = join(tmp, "skills");
     mkdirSync(skillsDir, { recursive: true });
     let stagedSkillCount = 0;
@@ -430,8 +436,6 @@ export function stage(opts) {
       rendered = renderV2(
         {
           ...renderInputs,
-          explorerPrompt: inputs.explorerPrompt,
-          larkOperatorPrompt: inputs.larkOperatorPrompt,
           stockPlugins: profile.flavors.v2.stockPlugins ?? [],
           pluginConfigEntries,
         },

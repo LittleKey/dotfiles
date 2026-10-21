@@ -47,24 +47,36 @@ It is not a second collection of builtin-role append prompts.
 
 | Content | Maintenance source | Runtime responsibility |
 | --- | --- | --- |
-| Five builtin appends: designer, explorer, librarian, oracle, orchestrator | [`../oh-my-opencode-slim/*_append.md`](../oh-my-opencode-slim/) | Check `inputs.omoPromptDir.files` hashes and stage accepted files byte-identically. |
-| Native Lark Operator definition | [`assets/agents/lark-operator.md`](assets/agents/lark-operator.md) | Stage `agents/lark-operator.md` with its body and `mode: all`; keep the model in OMO config and do not emit a duplicate inline system. |
+| Five builtin appends: designer, explorer, fixer, oracle, orchestrator | [`../oh-my-opencode-slim/*_append.md`](../oh-my-opencode-slim/) | Check `inputs.omoPromptDir.files` hashes and stage accepted files byte-identically. The shadowed librarian alias append is retired. |
+| Document Writer and Lark Operator bodies | `omo-coworkers/prompts/`, pinned by `inputs.coworkerPrompts` | Stage both bodies byte-identically into `oh-my-opencode-slim/`. No native markdown or inline system duplicates; Lark's `mode: all` is host metadata. |
 | Installable skills and companion files | `generated/skills/` | Package the pinned skill inputs, preserving bytes and executable modes. These are skill files, not role appends. |
 | Prompt filtering | `lib/prompts.mjs` | Exclude retired Council overrides and backup files; no append body is embedded here. |
 
-The `document-writer` package no longer mirrors the five appends. Edit them only
+The `document-writer` package no longer mirrors the builtin appends. Edit them only
 in this dotfiles checkout. Candidate and installed copies are outputs, and their
 hash inventories are verification metadata, not independently maintained prose.
 The repository-owned `profile.json` inputs point at the main checkout rather
 than the former phase-1 worktree.
 
+There is no managed global `AGENTS.md`: the owner removed it on 2026-10-21
+and the runtime stages no machine-global instruction file. Shell-search
+guidance is scoped to the Explorer and Fixer appends; there is no global
+language policy.
+
 OMO role models, skills and MCP selections are maintained only in
 `../oh-my-opencode-slim.json`. Role boundaries are expressed in the prompts;
 this profile adds no per-role tool-permission overrides and does not replicate
 the plugin's default restrictions into host configuration. Host settings retain
-only `mode: subagent` for Oracle, Explorer and Observer: fresh OpenCode 2.1.1
-instances otherwise register these roles as primary agents. The v1 renderer
-also retains its minimal legacy alias enablement where required.
+`mode: all` for Lark Operator and Council, and `mode: subagent` for Oracle,
+Explorer, Observer, Claude, Designer, Document Writer and Fixer. Fresh OpenCode
+2.1.1 instances otherwise register these roles as primary agents. Do not encode
+mode-only overrides in native Markdown: empty bodies shadow OMO prompts. The v1
+renderer also retains its minimal legacy alias enablement where required.
+
+The host source uses native V2 provider definitions, including model variants
+and capabilities. V2 keeps these definitions unchanged; V1 renders the personal
+OpenAI-compatible provider into its legacy vocabulary. Probe staging scrubs
+credential-named keys in both legacy `options` and native `settings`.
 
 For consistent append content across machines:
 
