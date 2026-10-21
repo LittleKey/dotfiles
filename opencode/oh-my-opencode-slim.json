@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/oh-my-opencode-slim@2.2.25/oh-my-opencode-slim.schema.json",
+  "$schema": "https://unpkg.com/oh-my-opencode-slim@3.0.4/oh-my-opencode-slim.schema.json",
   "preset": "newapi",
   "presets": {
     "newapi": {
@@ -114,7 +114,7 @@
         }
       },
       "council": {
-        "model": "openai/gpt-5.6-sol",
+        "model": "openai/gpt-6.1-sol",
         "variant": "xhigh",
         "skills": [],
         "mcps": []
@@ -123,12 +123,11 @@
   },
   "agents": {
     "document-writer": {
-      "model": "newapi/glm-5.3-flash",
+      "model": "newapi/deepseek-flash",
       "variant": "max",
       "skills": [
         "maintaining-product-engineering-docs",
         "domain-modeling",
-        "humanizer",
         "lark-doc",
         "lark-markdown",
         "lark-sheets",
@@ -209,10 +208,6 @@
     "default_preset": "default",
     "presets": {
       "default": {
-        "kimi-k3": {
-          "model": "newapi/kimi-k3",
-          "variant": "max"
-        },
         "glm-5.3": {
           "model": "newapi/glm-5.3",
           "variant": "max"
@@ -221,11 +216,30 @@
           "model": "openai/gpt-6-astra",
           "variant": "xhigh"
         },
-        "deepseek-v4-pro": {
-          "model": "newapi/deepseek-v4-pro",
-          "variant": "max"
+        "gpt-6.1-sol": {
+          "model": "openai/gpt-6.1-sol",
+          "variant": "xhigh"
         }
       }
+    }
+  },
+  "acpAgents": {
+    "claude": {
+      "command": "/home/littlekey/.local/share/pnpm/claude-agent-acp",
+      "args": [],
+      "env": {
+        "ANTHROPIC_MODEL": "claude-opus-5-5",
+        "CLAUDE_CODE_DISABLE_CLAUDE_MDS": "1",
+        "CLAUDE_CODE_DISABLE_BUNDLED_SKILLS": "1",
+        "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS": "0",
+        "CLAUDE_CODE_EFFORT_LEVEL": "xhigh"
+      },
+      "description": "Principal advisor for software architecture, reframing, and consequential design reviews.",
+      "wrapperModel": "newapi/glm-5.3-flash",
+      "permissionMode": "reject",
+      "timeoutMs": 3600000,
+      "prompt": "You are the transport wrapper for the external claude advisor. Call acp_run exactly once with agent \"claude\" and prompt equal to the complete user task, preserving its text exactly. Supply exactly those two arguments. The external advisor reads referenced project files itself. Return its answer faithfully. Surface tool failures clearly. Keep your outgoing prompt in ASCII English.",
+      "orchestratorPrompt": "@claude is a principal software advisor for a fresh perspective beyond the current approach or an oracle recommendation.\nEligible work: architecture escalations, independent second opinions on software designs, reframing stuck technical problems, and reviews of consequential correctness, maintainability, reversibility, or resource tradeoffs. These categories define this lane's complete scope; other work stays with the current agent or another suitable specialist.\nWrite one short ASCII-English task with the decision question, current approach, and important uncertainty. Begin the task text with a \"Task: <short title>\" line in ASCII English; it is used as the retention title. Include this advisor instruction: Examine the objective and framing first, challenge the highest-leverage assumption, recommend the simplest sound direction, and explain the decisive tradeoff. Return English advice in at most 400 words with Recommendation, Reframing, Evidence and uncertainty, and Next check.\nUse ASCII project-relative paths for supporting files. For board evidence, read the selected records with board_get, then export them verbatim with the board_export tool into .opencode/bcp/exports/. Include the resulting paths in the task. The original file contents may use any language. Ask Claude to read their content fields as evidence, cite the files actually used, and state any missing evidence.\nKeep the direct prompt within 524288 bytes and use at most three board records per consultation. Budget one consultation per decision; prepare a fresh short question for a follow-up."
     }
   },
   "disabled_agents": []

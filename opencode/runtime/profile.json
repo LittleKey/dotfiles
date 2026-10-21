@@ -41,7 +41,7 @@
     "omoConfig": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/oh-my-opencode-slim.json",
-      "sha256": "4477be72cc3cf55d5b9d205121b520ef0efc50b588395d0b9eaf935f05ff3eea"
+      "sha256": "011129b96a2e19ce2c97d51921de4a9371b04e98d3b0d82ca2e2c0758a0efb37"
     },
     "omoPromptDir": {
       "kind": "dir",
@@ -65,12 +65,12 @@
       "source": "/home/littlekey/github/dotfiles/opencode/runtime/assets/agents/lark-operator.md",
       "liveSource": "/home/littlekey/.config/opencode/agents/lark-operator.md",
       "sha256": "ac21bbf61fa77ad25662f1934abef35f71e3fc0b3fa35003f7ac46c1a3d0d7fe",
-      "liveObservedSha256": "ac21bbf61fa77ad25662f1934abef35f71e3fc0b3fa35003f7ac46c1a3d0d7fe"
+      "liveObservedSha256": "219452832c2635f4686cc034f97d496ef81696a6c1b386a0ac1a60c9b00d4c3c"
     },
     "hostConfigSource": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/opencode.json",
-      "sha256": "ef4e18a4fe20e9fca6350bcbb506b28a150a1128d5e9ea500f490a544bb8d45b",
+      "sha256": "693d58cb139789b16b284a191eecfa6256f93735ca65fa796009d53a1b772bd1",
       "role": "Raw host settings from the dotfiles source. Plugin selection is maintained only in this profile's components and flavors sections, together with explicitly supplied artifacts; the raw source has no plugin list. The obsolete three-entry list was removed without changing v1/v2 rendered settings. Do not feed rendered production agent permissions back into the raw-source renderer. Credentials are scrubbed unless explicit private production staging is requested."
     },
     "skillsDir": {
@@ -316,5 +316,5 @@
       }
     }
   },
-  "pinnedAt": "2026-10-20T12:02:16.172Z"
+  "pinnedAt": "2026-10-21T04:07:42.650Z"
 }

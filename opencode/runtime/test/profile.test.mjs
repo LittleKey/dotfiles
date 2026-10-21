@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 
 import { loadProfile, verifyAllInputs, verifyExplicit, RefusalError } from "../lib/inputs.mjs";
 import { stage, StageRefusal, STOCK_INHERITED_SKILLS, refuseStockSkillShadow } from "../lib/stage.mjs";
-import { renderV2, renderV1, frontmatterBody } from "../lib/render.mjs";
+import { renderV2, renderV1, frontmatterBody, personalCore } from "../lib/render.mjs";
 import { launcherEnv } from "../lib/hostenv.mjs";
 import { planActivation, activate, rollback, adopt } from "../lib/activate.mjs";
 import { readStageManifest } from "../lib/manifest.mjs";
@@ -107,9 +107,9 @@ test("render v2: personal value preservation — models, exact body, mode:all, n
   assert.equal(rendered.model, "newapi/glm-5.3");
   assert.equal(rendered.default_agent, "orchestrator");
   const src = JSON.parse(readFileSync(inputs.hostConfigSource.resolved.path, "utf8"));
-  assert.deepEqual(rendered.provider.newapi.models, src.provider.newapi.models, "all 15 personal models preserved");
-  assert.equal(rendered.provider.newapi.options.baseURL, src.provider.newapi.options.baseURL);
-  assert.deepEqual(Object.keys(rendered.provider.newapi.options), ["baseURL"], "provider options carry baseURL only");
+  assert.deepEqual(rendered.providers.newapi.models, src.providers.newapi.models, "all 15 personal models preserved");
+  assert.equal(rendered.providers.newapi.options.baseURL, src.providers.newapi.options.baseURL);
+  assert.deepEqual(Object.keys(rendered.providers.newapi.options), ["baseURL"], "provider options carry baseURL only");
   // explicit personal agents preserved exactly
   assert.equal(rendered.agents["lark-operator"].mode, "all", "lark mode:all preserved (native-v2 retention fixture)");
   assert.equal(rendered.agents["lark-operator"].system, frontmatterBody(readFileSync(inputs.larkOperatorPrompt.resolved.path, "utf8")));
@@ -144,9 +144,9 @@ test("render v2: personal value preservation — models, exact body, mode:all, n
   // no credentials in connection fields (prompt prose may legitimately contain
   // words like NEEDS_AUTHORIZATION — scan provider/options and file-level keys,
   // not free text)
-  assert.ok(rendered.provider.newapi.options, "provider options kept");
-  assert.deepEqual(Object.keys(rendered.provider.newapi.options), ["baseURL"], "provider options carry baseURL only — never auth material");
-  assert.ok(!("apiKey" in rendered.provider.newapi), "no apiKey on provider");
+  assert.ok(rendered.providers.newapi.options, "provider options kept");
+  assert.deepEqual(Object.keys(rendered.providers.newapi.options), ["baseURL"], "provider options carry baseURL only — never auth material");
+  assert.ok(!("apiKey" in rendered.providers.newapi), "no apiKey on provider");
   const flat = JSON.stringify(rendered);
   for (const banned of ["auth.json", '"apiKey"', '"accessToken"', '"refreshToken"']) {
     assert.ok(!flat.includes(banned), `rendered config must not contain ${banned}`);
@@ -191,6 +191,41 @@ test("render v1: legacy agent root only, compaction intent, stock spec first, pl
   ]);
   assert.ok(!JSON.stringify(rendered).includes("/tmp/opencode"), "no /tmp paths baked in");
   assert.ok(!JSON.stringify(rendered).includes("file://"), "no absolute file URLs baked in (relocatability)");
+});
+
+test("provider roots: native plural 'providers' is scrubbed shape-preserving, v1 render converts plural→singular, carrying both roots is refused", () => {
+  const pluralSrcPath = join(S, "plural-providers.json");
+  writeFileSync(pluralSrcPath, JSON.stringify({
+    $schema: "https://opencode.ai/config.json",
+    model: "newapi/glm-5.3",
+    providers: {
+      prov: { options: { baseURL: "http://10.0.0.1:3000/v1", apiKey: "sk-secret" }, apiKey: "sk-top" },
+    },
+  }));
+  const larkPromptPath = join(S, "lark-min.md");
+  writeFileSync(larkPromptPath, "---\ndescription: minimal lark fixture\nmode: all\n---\nfixture body\n");
+  const report = {};
+  const renderedV2 = renderV2(
+    { hostConfigSource: { resolved: { path: pluralSrcPath } }, stockPlugins: [], larkOperatorPrompt: { resolved: { path: larkPromptPath } } },
+    report
+  );
+  assert.ok(renderedV2.providers?.prov, "plural root survives v2 render (consolidation 7e3549f shape)");
+  assert.equal(renderedV2.providers.prov.options.baseURL, "http://10.0.0.1:3000/v1", "non-credential options kept under the plural root");
+  assert.ok(!("apiKey" in renderedV2.providers.prov.options), "credential-named option dropped from the plural root");
+  assert.ok(!("apiKey" in renderedV2.providers.prov), "provider-level credential dropped from the plural root");
+  assert.ok(renderedV2.provider === undefined, "no legacy singular root invented on v2 output");
+  assert.deepEqual(report.droppedCredentialKeys, ["provider.prov.options.apiKey", "provider.prov.apiKey"], "sink names keep the provider. prefix across both root shapes");
+
+  const renderedV1 = renderV1({ hostConfigSource: { resolved: { path: pluralSrcPath } }, stockPlugins: [] }, [], {});
+  assert.ok(renderedV1.provider?.prov, "v1 render converts plural→singular for the v1 host vocabulary");
+  assert.equal(renderedV1.providers, undefined, "plural root does not leak into a v1 candidate");
+  assert.ok(!("apiKey" in renderedV1.provider.prov), "conversion happens after credential scrubbing");
+
+  assert.throws(
+    () => personalCore({ provider: { a: {} }, providers: { b: {} } }),
+    /BOTH legacy 'provider' and native 'providers'/,
+    "a split root is the drift bug the consolidation fixed — refuse it"
+  );
 });
 
 test("personalCore/renderV2: unrelated user settings and provider options are preserved; credential-named keys are dropped BY NAME and recorded", () => {

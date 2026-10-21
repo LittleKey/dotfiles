@@ -77,9 +77,21 @@ export function personalCore(sourceConfig, opts = {}) {
   delete out.agent;
   delete out.agents;
   delete out.compaction;
-  if (out.provider) {
+  // Both provider roots are supported SHAPE-PRESERVING: the legacy singular
+  // `provider` (v1 host vocabulary) and the native plural `providers`
+  // (consolidation 7e3549f). Carrying BOTH is refused — a split root is how
+  // model lists drift from their overrides (the exact bug the consolidation
+  // fixed). Credential sink names keep the `provider.` prefix for both
+  // shapes so reports stay stable across the vocabulary change.
+  const providerRoots = ["provider", "providers"].filter((root) => out[root]);
+  if (providerRoots.length === 2) {
+    throw new Error(
+      "host config source carries BOTH legacy 'provider' and native 'providers' roots — refusing to blend (consolidate to one root)"
+    );
+  }
+  for (const root of providerRoots) {
     const providers = {};
-    for (const [pid, prov] of Object.entries(sourceConfig.provider)) {
+    for (const [pid, prov] of Object.entries(sourceConfig[root])) {
       const copy = { ...prov };
       if (copy.options && typeof copy.options === "object" && !Array.isArray(copy.options)) {
         const options = {};
@@ -105,7 +117,7 @@ export function personalCore(sourceConfig, opts = {}) {
       }
       providers[pid] = copy;
     }
-    out.provider = providers;
+    out[root] = providers;
   }
   return { core: out, droppedCredentialKeys, preservedCredentialKeys };
 }
@@ -624,6 +636,15 @@ export function renderV1(inputs, pluginEntries, report = {}) {
   else report.droppedCredentialKeys.push(...droppedCredentialKeys);
   if (report.preservedCredentialKeys === undefined) report.preservedCredentialKeys = preservedCredentialKeys;
   else report.preservedCredentialKeys.push(...preservedCredentialKeys);
+  // The pinned host source may carry the native plural 'providers' root
+  // (key consolidation 7e3549f); a v1 host reads the legacy singular
+  // 'provider'. Convert plural→singular AFTER credential scrubbing so v1
+  // candidates keep their model catalog. A source with BOTH roots is
+  // refused inside personalCore.
+  if (core.providers && !core.provider) {
+    core.provider = core.providers;
+    delete core.providers;
+  }
   const legacy = {};
   for (const [id, val] of Object.entries(src.agent ?? {})) {
     const keys = Object.keys(val ?? {}).sort();
