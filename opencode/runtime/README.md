@@ -244,6 +244,7 @@ oprofile pin                                   re-pin input hashes (deliberate o
 oprofile stage  --flavor v1|v2 --opencode <exe> [--out <dir>]
                 [--omo-plugin <dir>] [--omo-v1-plugin <dir>] [--bcp-plugin <file>]
                 [--vibeguard-plugin <dir>] [--vibeguard-v1 <dir>]
+                [--stale-reasoning <dir>]
 oprofile verify --stage <dir> --opencode <exe> [--project <dir>] [--cache-dir <dir>]
 oprofile plan-activation --stage <dir> --into <root>
 oprofile activate --stage <dir> --into <root> [--replace]

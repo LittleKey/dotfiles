@@ -202,6 +202,20 @@
       "testedIdentity": "omo-coworkers claude-advisor with v2.1.0 delegation-tool coverage: guard.mjs DELEGATION_TOOLS {task, subagent} (subagent_type=claude checkpoint for both names; acp_run unchanged), re-pinned 2026-10-20 after fix-2; guard suite 18/18. ",
       "note": "Per-flavor entry map (v1 index.v1.mjs vs v2 index.js sibling files in one dir) — stage.mjs resolves entry/testedEntrySha256 by flavor. stagingDir plugins/claude-advisor mirrors the live deployed dir name so activation replaces it in place (a differently named managed dir would leave the live tree discovered as a twin). v1: the explicit plugin entry references the lane's discovery shim plugins/claude-advisor/index.js (re-exporting ./index.v1.mjs) — one load path. v2: DISCOVERY ONLY via the staged index.js — NO rendered config entry, because a config entry plus discovery would load the plugin twice (matches the live deploy). Takes no options. Entry selection is pinned explicitly per flavor (v1 index.v1.mjs / v2 index.js); index.mjs-vs-index.js discovery precedence is UNRESOLVED (A7 smoke 2026-10-20: smoke host preferred index.mjs, live host loaded index.js with both present) — stage.mjs refuses any staged dir exposing index.mjs at its discovery root."
     },
+    "staleReasoning": {
+      "kind": "artifact-dir",
+      "entry": "index.js",
+      "flavors": [
+        "v2"
+      ],
+      "required": "always",
+      "provideFlag": "--stale-reasoning <dir>",
+      "stagingDir": "plugins/stale-reasoning",
+      "testedEntrySha256": "95b0c7fbd72f6f5ba11f46b015c51a05c6cad94f7e682befdd3cbd9cbb28f6ac",
+      "expectActivePluginId": "stale-reasoning",
+      "testedIdentity": "dotfiles source tree opencode/plugins/stale-reasoning — index.js ({id:'stale-reasoning'} setup entry; upstream index.mjs renamed to index.js for the v2 discovery path, package.json exports updated), FORK.md, package.json, LICENSE. Local fork of Raindrops-dev/opencode-stale-reasoning.",
+      "note": "v2-only recovery plugin for invalid_encrypted_content session poisoning (v2.1.x full-replay drain + upstream account-affinity switch; root-cause evidence 2026-10-23). Discovery-only under plugins/ (no v2Options → no config entry; omoPlugin/vibeguardV2/claude-advisor precedent — an array entry plus discovery would twin). Upstream v2.0.24 design (http.request/http.response hooks) is inert on v2.1.2: drain replay bypasses those hooks and the retry-hook error shape lost .status — see FORK.md for the three-path rewrite (retry-hook marking + context-hook request-side stripping + fetch wrapper) and the verified end-to-end revival (ses_e9b804e0affeT2aXsqlY4m4Ghg, 26 encrypted parts stripped, 2026-10-23). Entry named index.js at the staged root: index.mjs-vs-index.js discovery precedence is unresolved and refused by stage.mjs. Debug log /tmp/opencode/stale-debug.log when the plugin's dbg() fires."
+    },
     "supervisor": {
       "kind": "artifact-dir",
       "entry": {
@@ -303,7 +317,8 @@
           "vibeguard-privacy-v2",
           "billion-context-opencode-native",
           "claude-advisor",
-          "supervisor"
+          "supervisor",
+          "stale-reasoning"
         ],
         "forbidIds": [
           "acp"
