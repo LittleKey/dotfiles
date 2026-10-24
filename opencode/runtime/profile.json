@@ -65,7 +65,7 @@
     "hostConfigSource": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/opencode.json",
-      "sha256": "d310947d5a533f723e5b0513e058c6b3220556995cb1162256f2003098e2871a",
+      "sha256": "8dc0c7fb9c2b6726f2640a1e3e655a3ef76a4f6b75df94b8bef1976113813e6f",
       "role": "Raw host settings from the dotfiles source. Plugin selection is maintained only in this profile's components and flavors sections, together with explicitly supplied artifacts; the raw source has no plugin list. The obsolete three-entry list was removed without changing v1/v2 rendered settings. Do not feed rendered production agent permissions back into the raw-source renderer. Credentials are scrubbed unless explicit private production staging is requested."
     },
     "skillsDir": {
@@ -330,5 +330,5 @@
       }
     }
   },
-  "pinnedAt": "2026-10-21T05:46:29.691Z"
+  "pinnedAt": "2026-10-24T16:30:39.018Z"
 }
