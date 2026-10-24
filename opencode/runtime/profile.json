@@ -231,13 +231,17 @@
       "stagingDir": "managed-plugins/supervisor",
       "testedEntrySha256": {
         "v1": "590967f09b886eeeff4e56ff4c1ca4fff3c894b6c82f86c0f32889d6144a41ae",
-        "v2": "cdea2ea35283edd9ae726def7240d6bcba8d464549779febef65b17d17934b23"
+        "v2": "067785346a588cd66d6a62ce4fe704f87aae727c8673997b33a5734cd586da4e"
       },
       "v1Options": {
         "mode": "inject"
       },
       "v2Options": {
-        "mode": "inject"
+        "mode": "inject",
+        "memory": {
+          "enable": true,
+          "delivery": "inject"
+        }
       },
       "expectActivePluginId": "supervisor",
       "testedIdentity": "omo-coworkers source tree /home/littlekey/github/omo-coworkers/plugins/supervisor — index.v1.mjs (v1 factory SupervisorNudge; upstream renamed index.mjs → index.v1.mjs on 2026-10-20, bytes unchanged) and index.js (v2 {id:'supervisor'} setup entry) sharing lib/runtime.mjs verbatim; lib/, test/ and README.md staged with the tree.",

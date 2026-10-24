@@ -867,9 +867,13 @@
   "plugins": [
     "billion-context@latest",
     {
-      "package": "/home/littlekey/.config/opencode/managed-plugins/supervisor",
+      "package": "./managed-plugins/supervisor",
       "options": {
-        "mode": "inject"
+        "mode": "inject",
+        "memory": {
+          "enable": true,
+          "delivery": "inject"
+        }
       }
     }
   ],
