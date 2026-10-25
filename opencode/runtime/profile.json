@@ -165,9 +165,9 @@
       ],
       "required": "explicit",
       "provideFlag": "--vibeguard-plugin <dir>",
-      "testedEntrySha256": "ff27701734653d0d9ef1b7c62caeed9f50bb1efd5324e8c7b6f02a701e82598c",
+      "testedEntrySha256": "f388a7a7a1e9b6b5466d2be4a6294961cf07c606776e780ff7f66e2952cdb30a",
       "expectActivePluginId": "vibeguard-privacy-v2",
-      "testedIdentity": "builder-emitted privacy package (builder.mjs output deployed at plugins/vibeguardV2/) — v2 entry index.js (bytes identical to src/privacy/v2-plugin.mjs, hash ff2770… unchanged), v1 sibling entry v1-plugin.js, shared stream-restore.mjs, vibeguard/ engine dir, manifest.json, package.json. The entry occupies the discovery path itself, so staging writes NO shim.",
+      "testedIdentity": "builder-emitted privacy package (opencode-bcp integrations/community builder.mjs output deployed at plugins/vibeguardV2/) — v2 entry index.js bytes identical to opencode-bcp/integrations/community/src/privacy/v2-plugin.mjs at commit 29e4a71 (freeze nested tool-call arguments in v2 placeholder redaction; hash f388a7a7…, live since 2026-10-20), v1 sibling entry v1-plugin.js, shared stream-restore.mjs, vibeguard/ engine dir, manifest.json, package.json. The entry occupies the discovery path itself, so staging writes NO shim.",
       "note": "Real deployed layout (2026-10-20): the v2 entry is index.js at the package root (previously v2-plugin.mjs + a generated shim — superseded). Stage the whole built package directory; --vibeguard-plugin points at it. Discovery-only in v2 (no config entry). Actual HTTP/SSE privacy checks passed; WebSocket limits remain explicit."
     },
     "vibeguardV1": {
