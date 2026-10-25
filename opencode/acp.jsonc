@@ -1,11 +1,12 @@
 {
-    "$schema": "https://raw.githubusercontent.com/Opencode-DCP/opencode-dynamic-context-pruning/master/dcp.schema.json",
+    "$schema": "https://raw.githubusercontent.com/ranxianglei/opencode-acp/master/dcp.schema.json",
+    "allowSubAgents": true,
     "compress": {
         "maxContextLimit": 200000,
-        "minContextLimit": 100000
+        "minContextLimit": 100000,
+        "summaryBuffer": true
     },
     "experimental": {
-        "allowSubAgents": true,
         "customPrompts": false
     }
 }

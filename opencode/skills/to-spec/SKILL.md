@@ -1,10 +1,10 @@
 ---
 name: to-spec
-description: "Turn the current conversation into a spec and publish it to the project issue tracker: no interview, just synthesis of what you've already discussed."
+description: "Turn the current conversation into a spec and publish it to the project issue tracker: no standing interview — synthesize what you've already discussed, and ask only when a key fact is missing."
 disable-model-invocation: true
 ---
 
-This skill takes the current conversation context and codebase understanding and produces a spec. Do NOT interview the user; just synthesize what you already know.
+This skill takes the current conversation context and codebase understanding and produces a spec. Do not run a standing interview: synthesize what you already know. Ask the user only when a key fact the spec depends on is missing from the conversation and cannot be derived from the codebase.
 
 The issue tracker and triage label vocabulary should have been provided to you. If not, tell the user to run `/setup-matt-pocock-skills`.
 
@@ -14,7 +14,7 @@ The issue tracker and triage label vocabulary should have been provided to you. 
 
 2. Sketch out the seams at which you're going to test the feature. Existing seams should be preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better - the ideal number is one.
 
-Check with the user that these seams match their expectations.
+If the seams are already settled in the conversation, proceed without re-confirming them; raise them with the user only when you are proposing new seams the discussion has not covered, and fold that into the missing-key-facts rule above rather than a fixed confirmation step.
 
 3. Write the spec using the template below, then publish it to the project issue tracker. Apply the `ready-for-agent` triage label - no need for additional triage.
 
@@ -30,7 +30,7 @@ The solution to the problem, from the user's perspective.
 
 ## User Stories
 
-A LONG, numbered list of user stories. Each user story should be in the format of:
+A numbered list of user stories. Each user story should be in the format of:
 
 1. As an <actor>, I want a <feature>, so that <benefit>
 
@@ -38,7 +38,7 @@ A LONG, numbered list of user stories. Each user story should be in the format o
 1. As a mobile bank customer, I want to see balance on my accounts, so that I can make better informed decisions about my spending
 </user-story-example>
 
-This list of user stories should be extremely extensive and cover all aspects of the feature.
+Scale the spec to the problem: cover the feature's real scope, and keep every section proportionate. A small, well-understood change gets a short spec; do not pad it with boilerplate or an inflated story list to satisfy a template.
 
 ## Implementation Decisions
 

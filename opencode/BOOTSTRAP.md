@@ -39,3 +39,10 @@ that has ONLY opencode v2 installed.
   is the older DCP schema — refresh when touching ACP config.
 - supervisor memory store lives OUTSIDE dotfiles (`~/.local/share/opencode-supervisor/memory/`);
   back it up separately (it is the approved-rule corpus).
+
+## 2026-10-25 配置同步
+- acp.jsonc 同步为 live 版(ranxianglei/opencode-acp schema + summaryBuffer)。
+- skills 补齐: grilling(上游)/to-spec SKILL.md(live 新版)/writing-for-agents(自 .agents/skills 收编, 原位置已删)。
+- oh-my-opencode-slim/ 补 document-writer.md + lark-operator.md。
+- 新增 cli.json(light 主题/CLI 插件 pin) + tui.json。
+- 用户已删除 ~/.config/opencode/AGENTS.md: user-global 静态发布目标文件若未来需要, 须先手工创建(D8 禁止插件建文件)。
