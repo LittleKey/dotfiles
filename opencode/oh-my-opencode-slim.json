@@ -13,16 +13,12 @@
           "!managing-lark-project-folder",
           "!yogo-products"
         ],
-        "mcps": [
-          "gh_grep"
-        ]
+        "mcps": ["gh_grep"]
       },
       "oracle": {
         "model": "openai/gpt-6-astra",
         "variant": "xhigh",
-        "skills": [
-          "find-code-simplifications"
-        ],
+        "skills": ["find-code-simplifications"],
         "mcps": []
       },
       "explorer": {
@@ -32,16 +28,15 @@
         "mcps": []
       },
       "designer": {
-        "model": "newapi/glm-5.3",
+        "model": "openai/gpt-6-astra",
+        "variant": "medium",
         "skills": [],
         "mcps": []
       },
       "fixer": {
         "model": "newapi/glm-5.3-flash",
         "variant": "max",
-        "skills": [
-          "use-modern-go"
-        ],
+        "skills": ["use-modern-go"],
         "mcps": []
       },
       "observer": {
