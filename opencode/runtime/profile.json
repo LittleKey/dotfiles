@@ -112,7 +112,7 @@
     "vibeguardConfig": {
       "kind": "file",
       "source": "/home/littlekey/.config/opencode/vibeguard.config.json",
-      "sha256": "5c46dda042b0286e04abacacac41e13b73e9408751e9ccd3314ef86c7618b2ba",
+      "sha256": "c112ed79fc36c25fb798f734564a532f3ec19e6b51e4ab66c686a370bce82626",
       "role": "v1 flavor extra"
     }
   },
@@ -330,5 +330,5 @@
       }
     }
   },
-  "pinnedAt": "2026-10-24T16:30:39.018Z"
+  "pinnedAt": "2026-10-25T05:59:10.075Z"
 }
