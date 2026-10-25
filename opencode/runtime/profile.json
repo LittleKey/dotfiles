@@ -36,7 +36,7 @@
     "omoConfig": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/oh-my-opencode-slim.json",
-      "sha256": "9e0a900e1b9a946e49b44cd56e28e50a90c7c8bf75b0e9331020c29ac0b40e6b"
+      "sha256": "6a2c77310bdf06c5659e2fde0d4add4162495a1f72768a4c07874825d0a94dc6"
     },
     "omoPromptDir": {
       "kind": "dir",
@@ -44,9 +44,11 @@
       "files": {
         "council_append.md.bak-promptopt": "ff832d25e5f99ab97f7dafa1f97875020f0ddd1d0a8052b56bd277da50912731",
         "designer_append.md": "fb9ec7703bcfb6edf01a906bae40b8d33c0e2b521fe74dfca54846c738b5dc9c",
+        "document-writer.md": "5f903806759aeace74c77da5b9dd2516e60dda32743e17b113262e4bcd970dce",
         "document-writer.md.bak-promptopt": "9c191381d7b965edff6f59411521933589e695c74b2f1351dcc7864ce7d22842",
         "explorer_append.md": "5857366e643d3d6d07ec02c05eda70529a0ad1110fc1885cf160886f4c34f4f8",
         "fixer_append.md": "d7ffbb77f60c0bb9e5639b482e3fb219eb083b32a0f4146a6c823536f1c54f1d",
+        "lark-operator.md": "b6e2bee850cf8ff2a5d9ab6ebea03f6c1695aae34eda6beea6aac11f88b31abb",
         "lark-operator.md.bak-promptopt": "7edad9038f8fd2f538e6eea7d68ef052b6cc10e26c488c3a5e2bdab3877dda8e",
         "oracle_append.md": "85dab1a38b2b45f37909e066c3328d984ae970fd477039527310319a30ac3577",
         "oracle_append.md.bak-promptopt": "c189e97905f0b6697d4bd5610747e5998f41675f4666cb70645e08eff92e6e14",
@@ -330,5 +332,5 @@
       }
     }
   },
-  "pinnedAt": "2026-10-25T06:16:01.027Z"
+  "pinnedAt": "2026-10-25T09:03:05.739Z"
 }
