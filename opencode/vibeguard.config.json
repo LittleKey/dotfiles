@@ -1,0 +1,69 @@
+{
+  "enabled": true,
+  "debug": false,
+  "patterns": {
+    "regex": [
+      {
+        "category": "aws-access-key",
+        "pattern": "AKIA[0-9A-Z]{16}"
+      },
+      {
+        "category": "aws-secret-key",
+        "pattern": "(?i)aws(.{0,20})?(secret|sk).{0,5}[=:][\"']?[A-Za-z0-9/+=]{40}"
+      },
+      {
+        "category": "openai-api-key",
+        "pattern": "sk-(?:proj|svcacct|acct|none)-[A-Za-z0-9_-]{20,}|sk-[A-Za-z0-9]{20,}"
+      },
+      {
+        "category": "anthropic-api-key",
+        "pattern": "sk-ant-[A-Za-z0-9\\-]{20,}"
+      },
+      {
+        "category": "github-token",
+        "pattern": "ghp_[A-Za-z0-9]{36}"
+      },
+      {
+        "category": "github-fine-grained-token",
+        "pattern": "github_pat_[A-Za-z0-9_]{82}"
+      },
+      {
+        "category": "slack-token",
+        "pattern": "xox[baprs]-[A-Za-z0-9\\-]{10,}"
+      },
+      {
+        "category": "google-api-key",
+        "pattern": "AIza[0-9A-Za-z\\-_]{35}"
+      },
+      {
+        "category": "stripe-key",
+        "pattern": "(?:sk|pk|rk)_(?:test|live)?_[A-Za-z0-9]{20,}"
+      },
+      {
+        "category": "private-key",
+        "pattern": "-----BEGIN ([A-Z ]*PRIVATE KEY)-----[\\s\\S]*?-----END \\1-----|-----BEGIN [A-Z ]*PRIVATE KEY-----"
+      },
+      {
+        "category": "jwt",
+        "pattern": "eyJ[A-Za-z0-9_-]+\\.eyJ[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+"
+      },
+      {
+        "category": "bearer-token",
+        "pattern": "Bearer\\s+[A-Za-z0-9\\-._~+/]{20,}"
+      },
+      {
+        "category": "basic-auth",
+        "pattern": "(?i)[a-z0-9._%+-]+:[^\\s@]+@[a-z0-9.-]+"
+      },
+      {
+        "category": "db-connection",
+        "pattern": "(?i)\\b(?:postgres(?:ql)?|mysql|mariadb|mongodb(?:\\+srv)?|redis|amqp|mssql)://[^\\s\\\"'`<>]+"
+      },
+      {
+        "category": "ssh-private-key-block",
+        "pattern": "-----BEGIN OPENSSH PRIVATE KEY-----"
+      }
+    ]
+  },
+  "allowedDomains": []
+}

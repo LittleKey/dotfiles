@@ -111,9 +111,9 @@
     },
     "vibeguardConfig": {
       "kind": "file",
-      "source": "/home/littlekey/.config/opencode/vibeguard.config.json",
+      "source": "/home/littlekey/github/dotfiles/opencode/vibeguard.config.json",
       "sha256": "647dbe7f4412ee4ad8b11bf73f21c96a14ad0861f97d7497de87c989805067a8",
-      "role": "v1 flavor extra"
+      "role": "v1+v2 copyExtra (vibeguard.config.json) — canonical repo copy, deployed to live root by activate"
     }
   },
   "components": {
@@ -330,5 +330,5 @@
       }
     }
   },
-  "pinnedAt": "2026-10-25T06:11:48.911Z"
+  "pinnedAt": "2026-10-25T06:16:01.027Z"
 }
