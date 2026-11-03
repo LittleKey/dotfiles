@@ -36,7 +36,7 @@
     "omoConfig": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/oh-my-opencode-slim.json",
-      "sha256": "6a2c77310bdf06c5659e2fde0d4add4162495a1f72768a4c07874825d0a94dc6"
+      "sha256": "493685fefd7fd55b972660cb4b1c4bb85b360c1b6e93ff26ae8468ff33d7ffcf"
     },
     "omoPromptDir": {
       "kind": "dir",
@@ -297,13 +297,13 @@
     "v2": {
       "agents": {
         "orchestrator": {
-          "model": "glm-5.3"
+          "model": "gpt-6.1-sol"
         },
         "explorer": {
-          "model": "glm-5.3-flash"
+          "model": "gpt-6.1-terra"
         },
         "lark-operator": {
-          "model": "glm-5.3",
+          "model": "glm-5.3-flash",
           "mode": "all",
           "systemBytes": 3235,
           "systemBytesNote": "UTF-8 bytes of the preserved body; JavaScript string length is not a byte count."

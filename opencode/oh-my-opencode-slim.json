@@ -4,8 +4,8 @@
   "presets": {
     "newapi": {
       "orchestrator": {
-        "model": "newapi/glm-5.3",
-        "variant": "max",
+        "model": "openai/gpt-6.1-sol",
+        "variant": "xhigh",
         "skills": [
           "*",
           "!lark-*",
@@ -22,8 +22,8 @@
         "mcps": []
       },
       "explorer": {
-        "model": "newapi/glm-5.3-flash",
-        "variant": "max",
+        "model": "openai/gpt-6.1-terra",
+        "variant": "medium",
         "skills": [],
         "mcps": []
       },
@@ -34,8 +34,8 @@
         "mcps": []
       },
       "fixer": {
-        "model": "newapi/glm-5.3-flash",
-        "variant": "max",
+        "model": "openai/gpt-6.1-terra",
+        "variant": "medium",
         "skills": ["use-modern-go"],
         "mcps": []
       },
@@ -76,7 +76,7 @@
       "orchestratorPrompt": "Use document-writer for formal documents: MODE: WRITE for creation/body edits; MODE: REVIEW for wording, structure, internal consistency, audience fit and readability. Reuse a suitable writer for revisions, never to independently review its own output. Keep internal plans/state in the main session; independent platform work goes to lark-operator. Follow the main-session review policy."
     },
     "lark-operator": {
-      "model": "newapi/glm-5.3",
+      "model": "newapi/glm-5.3-flash",
       "variant": "max",
       "skills": [
         "lark-approval",
