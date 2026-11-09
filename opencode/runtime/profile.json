@@ -36,7 +36,7 @@
     "omoConfig": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/oh-my-opencode-slim.json",
-      "sha256": "493685fefd7fd55b972660cb4b1c4bb85b360c1b6e93ff26ae8468ff33d7ffcf"
+      "sha256": "73b8ca1f7d59060550d7e69b4d14b3d8286aa56bd1256ad70c79cce7a8bffe83"
     },
     "omoPromptDir": {
       "kind": "dir",
@@ -300,7 +300,7 @@
           "model": "gpt-6.1-sol"
         },
         "explorer": {
-          "model": "gpt-6.1-terra"
+          "model": "glm-5.3-flash"
         },
         "lark-operator": {
           "model": "glm-5.3-flash",
