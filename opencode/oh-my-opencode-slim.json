@@ -22,8 +22,8 @@
         "mcps": []
       },
       "explorer": {
-        "model": "openai/gpt-6.1-terra",
-        "variant": "medium",
+        "model": "newapi/glm-5.3-flash",
+        "variant": "max",
         "skills": [],
         "mcps": []
       },
@@ -34,8 +34,8 @@
         "mcps": []
       },
       "fixer": {
-        "model": "openai/gpt-6.1-terra",
-        "variant": "medium",
+        "model": "newapi/glm-5.3-flash",
+        "variant": "max",
         "skills": ["use-modern-go"],
         "mcps": []
       },
