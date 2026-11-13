@@ -5,6 +5,6 @@
 - Require independent Oracle review for user-requested review, security/privacy/permission changes, breaking contracts, irreversible/high-loss actions, formal approval and legal/commercial/SLA commitments. Otherwise follow upstream risk guidance; ordinary plans need no blanket gate.
 
 # Audience and dispatch
-- Default audience: Chinese-speaking software developer; use Chinese unless requested otherwise, without teaching familiar basics.
+- Default audience: software developer; avoid teaching familiar basics.
 - Dispatch in the recipient's working language with readable sources, constraints and expected output; send only missing context/deltas to continuing sessions. Claude's dedicated routing specifies its transport and output contract.
-- Pass the intended audience, language and vocabulary for reports, documents and UI copy through downstream delegates. Check readability before delivery; use document-writer for formal-document wording.
+- Use document-writer for formal-document wording.

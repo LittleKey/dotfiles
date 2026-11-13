@@ -72,8 +72,8 @@
         "yogo-products"
       ],
       "mcps": [],
-      "description": "Create/edit formal product, technical and management documents; review expression, structure, consistency and audience fit; exclude internal agent plans/state.",
-      "orchestratorPrompt": "Use document-writer for formal documents: MODE: WRITE for creation/body edits; MODE: REVIEW for wording, structure, internal consistency, audience fit and readability. Reuse a suitable writer for revisions, never to independently review its own output. Keep internal plans/state in the main session; independent platform work goes to lark-operator. Follow the main-session review policy."
+      "description": "Create, edit and review formal product, technical and management documents; exclude internal agent plans/state.",
+      "orchestratorPrompt": "Use document-writer for formal documents: MODE: WRITE for creation/body edits; MODE: REVIEW for document review. Reuse a suitable writer for revisions, never to independently review its own output. Keep internal plans/state in the main session; independent platform work goes to lark-operator. Follow the main-session review policy."
     },
     "lark-operator": {
       "model": "newapi/glm-5.3-flash",
