@@ -34,7 +34,7 @@
         "mcps": []
       },
       "fixer": {
-        "model": "newapi/glm-5.3-flash",
+        "model": "opencode/gemini-4-argon",
         "variant": "max",
         "skills": ["use-modern-go"],
         "mcps": []
@@ -55,7 +55,7 @@
   },
   "agents": {
     "document-writer": {
-      "model": "newapi/deepseek-flash",
+      "model": "newapi/gemini-4-argon",
       "variant": "max",
       "skills": [
         "maintaining-product-engineering-docs",

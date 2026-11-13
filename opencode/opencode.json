@@ -463,6 +463,138 @@
             "output": 0
           }
         },
+        "gemini-4-argon": {
+          "name": "Gemini 4 Argon",
+          "limit": {
+            "context": 1048576,
+            "output": 32768
+          },
+          "capabilities": {
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": [
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
+              }
+            },
+            {
+              "id": "medium",
+              "settings": {
+                "reasoningEffort": "medium"
+              }
+            },
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
+              }
+            },
+            {
+              "id": "max",
+              "settings": {
+                "reasoningEffort": "high"
+              }
+            }
+          ]
+        },
+        "gemini-4-carbon": {
+          "name": "Gemini 4 Carbon",
+          "limit": {
+            "context": 1048576,
+            "output": 32768
+          },
+          "capabilities": {
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": [
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
+              }
+            },
+            {
+              "id": "medium",
+              "settings": {
+                "reasoningEffort": "medium"
+              }
+            },
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
+              }
+            }
+          ]
+        },
+        "gemini-4-hydrogen": {
+          "name": "Gemini 4 Hydrogen",
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          },
+          "capabilities": {
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "variants": [
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
+              }
+            },
+            {
+              "id": "medium",
+              "settings": {
+                "reasoningEffort": "medium"
+              }
+            },
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
+              }
+            },
+            {
+              "id": "xhigh",
+              "settings": {
+                "reasoningEffort": "xhigh"
+              }
+            }
+          ]
+        },
         "glm-5.3": {
           "name": "GLM-5.3",
           "limit": {
