@@ -4,8 +4,8 @@
   "presets": {
     "newapi": {
       "orchestrator": {
-        "model": "openai/gpt-6.1-sol",
-        "variant": "xhigh",
+        "model": "newapi/gemini-4-argon",
+        "variant": "medium",
         "skills": [
           "*",
           "!lark-*",
@@ -34,8 +34,8 @@
         "mcps": []
       },
       "fixer": {
-        "model": "opencode/gemini-4-argon",
-        "variant": "max",
+        "model": "openai/gpt-6.1-sol",
+        "variant": "low",
         "skills": ["use-modern-go"],
         "mcps": []
       },
@@ -56,7 +56,7 @@
   "agents": {
     "document-writer": {
       "model": "newapi/gemini-4-argon",
-      "variant": "max",
+      "variant": "high",
       "skills": [
         "maintaining-product-engineering-docs",
         "domain-modeling",

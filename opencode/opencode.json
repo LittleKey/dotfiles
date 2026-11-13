@@ -34,13 +34,8 @@
               "supported": true
             },
             "tools": true,
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": [
             {
@@ -96,13 +91,8 @@
               "supported": true
             },
             "tools": true,
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": [
             {
@@ -158,13 +148,8 @@
               "supported": true
             },
             "tools": true,
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": [
             {
@@ -220,13 +205,8 @@
               "supported": true
             },
             "tools": true,
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": [
             {
@@ -265,7 +245,7 @@
             "output": 0
           }
         },
-        "deepseek-flash": {
+        "deepseek-v4.1-flash": {
           "name": "DeepSeek-V4.1 Flash",
           "limit": {
             "context": 1024000,
@@ -276,12 +256,8 @@
               "supported": true
             },
             "tools": true,
-            "input": [
-              "text"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text"],
+            "output": ["text"]
           },
           "variants": [
             {
@@ -342,12 +318,8 @@
               "supported": true
             },
             "tools": true,
-            "input": [
-              "text"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text"],
+            "output": ["text"]
           },
           "variants": [
             {
@@ -408,12 +380,8 @@
               "supported": true
             },
             "tools": true,
-            "input": [
-              "text"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text"],
+            "output": ["text"]
           },
           "variants": [
             {
@@ -474,13 +442,8 @@
               "supported": true
             },
             "tools": true,
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": [
             {
@@ -520,13 +483,8 @@
               "supported": true
             },
             "tools": true,
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": [
             {
@@ -560,13 +518,8 @@
               "supported": true
             },
             "tools": true,
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": [
             {
@@ -603,12 +556,8 @@
           },
           "capabilities": {
             "tools": true,
-            "input": [
-              "text"
-            ],
-            "output": [
-              "text"
-            ],
+            "input": ["text"],
+            "output": ["text"],
             "reasoning": {
               "supported": true
             }
@@ -664,13 +613,8 @@
               "supported": true
             },
             "tools": true,
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": [
             {
@@ -723,12 +667,8 @@
               "supported": false
             },
             "tools": true,
-            "input": [
-              "text"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text"],
+            "output": ["text"]
           },
           "cost": {
             "input": 0,
@@ -746,13 +686,8 @@
               "supported": true
             },
             "tools": true,
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": [
             {
@@ -790,13 +725,8 @@
               "supported": true
             },
             "tools": true,
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": [
             {
@@ -834,13 +764,8 @@
               "supported": true
             },
             "tools": true,
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": [
             {
@@ -877,12 +802,8 @@
               "supported": true
             },
             "tools": true,
-            "input": [
-              "text"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text"],
+            "output": ["text"]
           },
           "variants": [
             {
@@ -918,13 +839,8 @@
               "supported": true
             },
             "tools": true,
-            "input": [
-              "text",
-              "image"
-            ],
-            "output": [
-              "text"
-            ]
+            "input": ["text", "image"],
+            "output": ["text"]
           },
           "variants": [
             {
@@ -1009,8 +925,5 @@
       }
     }
   ],
-  "disabled_providers": [
-    "minimax-coding-plan",
-    "minimax-cn-coding-plan"
-  ]
+  "disabled_providers": ["minimax-coding-plan", "minimax-cn-coding-plan"]
 }
