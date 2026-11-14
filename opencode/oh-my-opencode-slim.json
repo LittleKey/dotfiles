@@ -4,7 +4,7 @@
   "presets": {
     "newapi": {
       "orchestrator": {
-        "model": "newapi/gemini-4-argon",
+        "model": "openai/gpt-6.1-sol",
         "variant": "medium",
         "skills": [
           "*",
