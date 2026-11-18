@@ -238,15 +238,8 @@ test("GOAL1 v2 stage: stock skills vendor as the same link farm; supervisor keep
   const { profile, profilePath, profileSha256 } = loadProfile(join(RUNTIME, "profile.json"));
   const outDir = join(S, "v2-out");
   mkdirSync(outDir, { recursive: true });
-  // v2 fake artifact: package-root layout entry dist/server/index.js (the
-  // sibling dist/index.js v1 entry may coexist — only the pinned per-flavor
-  // entry matters) plus the src/skills farm. v2.1.0 lists skills from
-  // config-dir files only (A7 smoke 2026-10-20), so v2 vendors the artifact's
-  // stock skills exactly like v1 — in-process bundle registration is NOT a
-  // skill listing on v2.
-  const artifact = writeFakeOmoV1();
-  mkdirSync(join(artifact, "dist", "server"), { recursive: true });
-  writeFileSync(join(artifact, "dist", "server", "index.js"), 'export default { id: "oh-my-opencode-slim" };\n');
+  // Official V2 OMO is an npm selection; only sibling plugins are fixtures.
+  // The stock skill bytes come from the profile's pinned 3.0.7 resource tree.
   const vg2 = join(S, "vg2-fake");
   mkdirSync(vg2, { recursive: true });
   writeFileSync(join(vg2, "index.js"), 'export default { id: "vibeguard-privacy-v2" };\n');
@@ -258,19 +251,18 @@ test("GOAL1 v2 stage: stock skills vendor as the same link farm; supervisor keep
   writeFileSync(join(sup2, "index.js"), 'export default { id: "supervisor" };\n');
   const result = stage({
     flavor: "v2", profile, profilePath, profileSha256, host: HOST_V2, outDir,
-    explicit: { omoPlugin: artifact, vibeguardV2: vg2, claudeAdvisor: ca2, supervisor: sup2 },
+    explicit: { staleReasoning: vg2, vibeguardV2: vg2, claudeAdvisor: ca2, supervisor: sup2 },
   });
   const cand = result.candidateDir;
   for (const skill of STOCK_INHERITED_SKILLS) {
     const resolved = realpathSync(join(cand, "skills", skill, "SKILL.md"));
     assert.ok(
-      resolved.endsWith(join("plugins", "omoPlugin", "src", "skills", skill, "SKILL.md")),
-      `v2 vendors ${skill} as a link into the staged omoPlugin artifact (${resolved})`
+      resolved.endsWith(join("resources", "omo-stock", "skills", skill, "SKILL.md")),
+      `v2 vendors ${skill} from pinned stock resources, not an executable artifact (${resolved})`
     );
   }
-  // nested v2 entry → discovery shim at the package root, exactly the live
-  // layout the A5 smoke pinned (index.js → dist/server/index.js)
-  assert.equal(readFileSync(join(cand, "plugins", "omoPlugin", "index.js"), "utf8"), 'export {default} from "./dist/server/index.js";\n');
+  // No patched OMO executable or shim may enter a new V2 stage.
+  assert.equal(existsSync(join(cand, "plugins", "omoPlugin")), false);
   // supervisor: managed location (outside the plugins/ discovery root), v2
   // entry directly at index.js, config entry in the v2 object form so
   // v2Options reaches setup() via ctx.options
@@ -278,7 +270,7 @@ test("GOAL1 v2 stage: stock skills vendor as the same link farm; supervisor keep
   const rendered = JSON.parse(readFileSync(join(cand, "opencode.json"), "utf8"));
   const supEntry = (rendered.plugins ?? []).find((p) => typeof p === "object" && p.package === "./managed-plugins/supervisor");
   assert.ok(supEntry, "v2 renders the supervisor config entry");
-  assert.deepEqual(supEntry.options, { mode: "inject" }, "v2 object-form entry carries the plugin options");
+  assert.deepEqual(supEntry.options, profile.components.supervisor.v2Options, "v2 object-form entry carries all pinned plugin options");
   // components without v2Options (claude-advisor) stay discovery-only: no
   // twin config entry is invented
   assert.ok(
@@ -286,7 +278,9 @@ test("GOAL1 v2 stage: stock skills vendor as the same link farm; supervisor keep
     "claude-advisor stays discovery-only (no config twin)"
   );
   const { manifest } = readStageManifest(cand);
-  assert.equal(manifest.files.filter((f) => f.path.startsWith("skills/") && f.link).length, STOCK_INHERITED_SKILLS.length + 2, "v2 manifest records the vendored stock-skill links");
+  assert.equal(manifest.files.filter((f) => f.path.startsWith("skills/") && f.link).length,
+    Object.keys(profile.inputs.omoStockSkills307.files).filter(f => STOCK_INHERITED_SKILLS.includes(f.split("/")[0])).length,
+    "v2 manifest records every pinned stock-skill resource link");
 });
 
 test("GOAL2 v1 render pin: disabled legacy alias gains a minimal canonical pin; builtin flag untouched; no pin without the trigger", () => {

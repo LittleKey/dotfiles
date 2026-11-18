@@ -1,5 +1,5 @@
 # Handoff and review
-- Pass complete original references, task, scope, delta and checks. Recipients read the sources' evidence, constraints and limits; do not paste board output/manuals or rewrite retained reports.
+- Pass complete original references, task, scope, delta and checks. Recipients read the sources' evidence, constraints and limits; provide readable file-based evidence and retained reports unchanged; do not paste manuals or rewrite retained reports.
 - Bind acceptance to the inspected version and limits. Start independent review in a fresh non-author session; self-checks are not acceptance, and verdicts are not authorization.
 - Per objective/gate: one initial review plus at most two re-reviews, only after substantive corrections. Reuse the read-only reviewer or recover with a fresh reviewer and prior records; count across sessions. At exhaustion, escalate unresolved issues, never infer PASS.
 - Require independent Oracle review for user-requested review, security/privacy/permission changes, breaking contracts, irreversible/high-loss actions, formal approval and legal/commercial/SLA commitments. Otherwise follow upstream risk guidance; ordinary plans need no blanket gate.

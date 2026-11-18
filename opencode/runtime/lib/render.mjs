@@ -218,6 +218,16 @@ function convertLegacyPermissionToV2(rendered, srcPath) {
  */
 export function renderV2(inputs, report = {}) {
   const src = JSON.parse(readFileSync(inputs.hostConfigSource.resolved.path, "utf8"));
+  if ((inputs.stockPlugins ?? []).includes("oh-my-opencode-slim@3.0.7")) {
+    for (const key of ["plugin", "plugins"]) {
+      for (const entry of src[key] ?? []) {
+        const spec = typeof entry === "string" ? entry : Array.isArray(entry) ? entry[0] : entry.package;
+        if (/oh-my-opencode|omoPlugin|omo-delivery|blackboard|opencode-bcp/i.test(spec ?? "")) {
+          throw new Error(`OMO migration preflight: source ${key} contains an old or duplicate OMO/BCP entry — owner-backed handover required; nothing silently removed`);
+        }
+      }
+    }
+  }
   const { core, droppedCredentialKeys, preservedCredentialKeys } = personalCore(src, {
     preserveCredentials: Boolean(inputs.preserveCredentials),
   });

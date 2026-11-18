@@ -10,7 +10,7 @@
       "liveGlobalRoot": "/home/littlekey/.config/opencode supplies vibeguard.config.json only; personal skills are pinned under runtime/generated/skills.",
       "coworkerPrompts": "omo-coworkers/prompts owns document-writer and lark-operator bodies. Stage them byte-identically into the OMO prompt directory; raw host config retains only Lark mode:all."
     },
-    "convergence": "The composition lane selects the host-managed billion-context@latest npm channel, explicit OMO directory artifacts and the dual-host BCP artifact. Retired ACP/tui pins remain rollback history. Council overrides and *.bak-promptopt files are excluded from staging; prompt copies are byte-identical and the Explorer full override is retired in favor of its upstream base plus append. As of 2026-10-09, all eight OMO bundled skills follow the selected plugin artifact: v1 stages artifact-relative links and activation materializes original bytes; v2 inherits in-process. The former codemap/deepwork/oh-my-opencode-slim local overrides and combined build manifest are retired. skillsDir contains only 11 personal skills (the 2026-10-11 owner removal retired executing-plans and writing-plans from sources and pins; eli5 was retired the same day in its own bounded pass); input changes require deliberate, explained pin updates."
+    "convergence": "V2 selects official unpatched oh-my-opencode-slim@3.0.7 directly through the host package manager; no patched OMO or BCP artifact accepted. Same-release stock skills are pinned offline resources. V1 remains an explicitly legacy patched lane; no stock V1 support asserted. Personal prompts and role/Claude guard configuration remain separate preserved inputs."
   },
   "hosts": {
     "floors": {
@@ -36,7 +36,7 @@
     "omoConfig": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/oh-my-opencode-slim.json",
-      "sha256": "73b8ca1f7d59060550d7e69b4d14b3d8286aa56bd1256ad70c79cce7a8bffe83"
+      "sha256": "57c0a641658192f292f52bb28691d1ce4ba103e6386e13ed5355031161708015"
     },
     "omoPromptDir": {
       "kind": "dir",
@@ -52,7 +52,7 @@
         "lark-operator.md.bak-promptopt": "7edad9038f8fd2f538e6eea7d68ef052b6cc10e26c488c3a5e2bdab3877dda8e",
         "oracle_append.md": "85dab1a38b2b45f37909e066c3328d984ae970fd477039527310319a30ac3577",
         "oracle_append.md.bak-promptopt": "c189e97905f0b6697d4bd5610747e5998f41675f4666cb70645e08eff92e6e14",
-        "orchestrator_append.md": "e62ac98882a51c5b0efee190dffb08330f971d28dd0134cf278f9963dda91ab5",
+        "orchestrator_append.md": "c176d3e5d1b4f804370423829710cbc052f7c6d32b68c02de3cc362a29a1eae0",
         "orchestrator_append.md.bak-promptopt": "b3be33cb747af1308fae4684615c948a6cc2d7662107ba861f8fede3d2d434ab"
       }
     },
@@ -67,7 +67,7 @@
     "hostConfigSource": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/opencode.json",
-      "sha256": "8dc0c7fb9c2b6726f2640a1e3e655a3ef76a4f6b75df94b8bef1976113813e6f",
+      "sha256": "732b4d167c67d8a941086f6d8e1fa1b58112da8ff878f337c4c4323e826f30ee",
       "role": "Raw host settings from the dotfiles source. Plugin selection is maintained only in this profile's components and flavors sections, together with explicitly supplied artifacts; the raw source has no plugin list. The obsolete three-entry list was removed without changing v1/v2 rendered settings. Do not feed rendered production agent permissions back into the raw-source renderer. Credentials are scrubbed unless explicit private production staging is requested."
     },
     "skillsDir": {
@@ -116,23 +116,36 @@
       "source": "/home/littlekey/github/dotfiles/opencode/vibeguard.config.json",
       "sha256": "647dbe7f4412ee4ad8b11bf73f21c96a14ad0861f97d7497de87c989805067a8",
       "role": "v1+v2 copyExtra (vibeguard.config.json) — canonical repo copy, deployed to live root by activate"
+    },
+    "omoStockSkills307": {
+      "kind": "dir",
+      "source": "/home/littlekey/github/dotfiles/opencode/runtime/resources/omo-3.0.7/skills",
+      "files": {
+        "ai-estimates/SKILL.md": "84d821eefb21f2291edc68e39666778d87fe83d5ff80258e1ae879bc57b80111",
+        "clonedeps/README.md": "40fef0d08b95211d69819475d1617e613230ced3cc125c272d439bf58343b99a",
+        "clonedeps/SKILL.md": "e6f7e3e6717f6d3a22a824eacb2988b5e6cf4758f4b69b9d326c8d325690f205",
+        "clonedeps/codemap.md": "852d7e1b556f1ae43b696b4fcef1ff8b797830cf97e4e8567ecc850b035fe83b",
+        "codemap/README.md": "fab8e2159592b290b5615f2b234082f5c1d4283a538df9f9542afa841c76fa0b",
+        "codemap/SKILL.md": "d03151f3243902c1624a7353cb47db93f7dc59f21122982d79539483eda5f1ee",
+        "codemap/codemap.md": "eb16c36c04ef8a927b7391565ac5e18c210ac2e3bbff2b803159f9c71cd55f6b",
+        "codemap/scripts/codemap.mjs": "a6e59ec16f7b7e5de185a9cf35933c23e94dfaab3389a99eed66a7ece3c1fdb5",
+        "codemap/scripts/codemap.test.ts": "bd94813c7545a1fe0fa46f2c8967cb7b3d8531b78e7ff313d923cabad996d569",
+        "codemap.md": "3120ed092fc8d06766037ac031a9e5d170376d7e7febb9db3a559bdb0a986381",
+        "deanchor/SKILL.md": "3eef2b5c116848ea84272b78d9fc6e90757b2f31f93187ac6c021a82eb751667",
+        "deepwork/SKILL.md": "e03abf772c6c5fa44bddc34ff1db2da857983122f3c3cfa267b4571463da33ab",
+        "oh-my-opencode-slim/SKILL.md": "423d9104dbd0cb85def94cec4fffb644ea99fda5d43450fb387c581a47846a08",
+        "reflect/SKILL.md": "cf4730ba9345b508ebac3f8f2422b3a1e08a00845423eb5afe1d352056cbf877",
+        "simplify/README.md": "30e479208ff37a348388284f434fde6b9ca9cbf704c56f21781b6175021cc7ad",
+        "simplify/SKILL.md": "29e126c20e8310fad21bd0db5fe4225c88538aa8585b1efbc9726a684643cf10",
+        "simplify/codemap.md": "e8659ed4db1cbbf5b814d172db35306c172f88ef24c34abbe8c53ae62cc75281",
+        "step-back/SKILL.md": "a27b861ced691f0d05d77fd46d6c1abea1826ddcfcc3a6acc78913887d5308c7",
+        "verification-planning/SKILL.md": "993a20c2eb6393a832dacdf473937663846c581262d8abddbe23f0268d928236",
+        "worktrees/SKILL.md": "09c9b694ff3450e96d078ff687f25dae6238202972fdc62a6769605531bc22f6"
+      },
+      "role": "Unmodified src/skills from official npm oh-my-opencode-slim@3.0.7; offline resources only, not an executable plugin. LICENSE adjacent. Runtime discovery still requires isolated host evidence."
     }
   },
   "components": {
-    "omoPlugin": {
-      "kind": "artifact-dir",
-      "entry": "dist/server/index.js",
-      "flavors": [
-        "v2"
-      ],
-      "required": "always",
-      "provideFlag": "--omo-plugin <built-plugin-dir>",
-      "stockSkillsRoot": "src/skills",
-      "testedEntrySha256": "316a832e46053ec7c83ec14b60aef44ff40f022ced64edc9903de079968563ab",
-      "testedIdentity": "oh-my-opencode-slim 3.0.6 artifact v2 entry (2026-10-26; built from opencode-bcp 2fdbb56 via /tmp/opencode/omo-306-build/v2-plugin, deployed to plugins/omoPlugin; ARTIFACT.json version 3.0.6, sourceHead 2fdbb561…, server entry 316a832e…, helper omo-delivery.mjs ce4344c4… unchanged; live-process health check 14 agents / 11 tools / 2 mcps on host 2.1.4). Supersedes the 3.0.5 G1-approved artifact-r2 entry hash b3fe0082…. oh-my-opencode-slim 3.0.5 G1-approved artifact-r2 v2 entry (package-root layout, 2026-10-20; /home/littlekey/github/opencode-bcp/.slim/omo-3.0.5-upgrade-20261020/artifact-r2/omoPlugin, ARTIFACT.json version 3.0.5, sourceHead b938df0cdd…; helper omo-delivery.mjs ce4344c47d41dec4dbc4b5fe1d8a49b764d0ffb0941757577161518f77421c99). Re-pin supersedes the 3.0.1 monorepo-layout entry path server/dist/server/index.js (owner candidate root omo-candidates-upstream-council no longer on disk; hash 2640dc072afdd9fdb60338c9458ff66418d38c3977a9173c4b06e500a3384e7c historical) and the stale artifact-r1 build 0708dbc0a51681e9dccc94ce415758a05c1807db5748daaa0010f0fe1e5fde8b. The bundle still imports ../../omo-delivery.mjs via relative layout, so the artifact MUST be a directory copy — an entry-file copy alone is not installable. 3.0.1 provenance: owner candidate root omo-candidates-upstream-council, 2026-10-01 build; upstream Council guidance stands unmodified in that build. Supersedes the pre-convergence build a781e9779696e82826d28f8d84bde1c7ebed12f8ddc42c5fb1dd5bf45a9fad32.",
-      "candidateNote": "3.0.4 artifact-r3 server SHA-256 dfb98115965d3330aeeb2d8d5a1d560d13ef14a3a485afea5fde2bdd6bc16a29. Hash/build-only limits: independent artifact review passed as a bounded verdict (notification microtask race fix verified in both entries), but there is no v2 host acceptance in this upgrade. The 2026-10-12 post-restart metadata verification exercised the v1 index entry, not this v2 server entry. Supersedes the 3.0.3 revision-2 and historical first-build candidate notes; historical testedEntrySha256 remains separate.",
-      "expectActivePluginId": "oh-my-opencode-slim"
-    },
     "omoPluginV1": {
       "kind": "artifact-dir",
       "entry": "dist/index.js",
@@ -150,8 +163,7 @@
     "bcpPlugin": {
       "kind": "artifact-file",
       "flavors": [
-        "v1",
-        "v2"
+        "v1"
       ],
       "required": "explicit",
       "acceptance": "deferred",
@@ -256,6 +268,20 @@
       "compression": "local-plugins/dist/acp.js (upstream opencode-acp 1.18.2 + local fixes, sha256 f397a374b6b5b1116a75583b30ba3fb34dfc7777d8fb67032cc3bf02a213be2b) + acp.jsonc",
       "omo": "local-plugins/dist/omo.js (2.2.25 patch layer, sha256 86d31ede93836fdfebd5b5e630b5903bd0a6280acb155ca4c62e011d5e970fc3) + tui.json npm spec oh-my-opencode-slim@2.2.25",
       "note": "acp.jsonc and tui.json were removed from this profile's pinned inputs by the convergence decision; their content remains in production for rollback"
+    },
+    "patchedV2OMO": {
+      "kind": "artifact-dir",
+      "entry": "dist/server/index.js",
+      "flavors": [
+        "v2"
+      ],
+      "required": "always",
+      "provideFlag": "--omo-plugin <built-plugin-dir>",
+      "stockSkillsRoot": "src/skills",
+      "testedEntrySha256": "316a832e46053ec7c83ec14b60aef44ff40f022ced64edc9903de079968563ab",
+      "testedIdentity": "oh-my-opencode-slim 3.0.6 artifact v2 entry (2026-10-26; built from opencode-bcp 2fdbb56 via /tmp/opencode/omo-306-build/v2-plugin, deployed to plugins/omoPlugin; ARTIFACT.json version 3.0.6, sourceHead 2fdbb561…, server entry 316a832e…, helper omo-delivery.mjs ce4344c4… unchanged; live-process health check 14 agents / 11 tools / 2 mcps on host 2.1.4). Supersedes the 3.0.5 G1-approved artifact-r2 entry hash b3fe0082…. oh-my-opencode-slim 3.0.5 G1-approved artifact-r2 v2 entry (package-root layout, 2026-10-20; /home/littlekey/github/opencode-bcp/.slim/omo-3.0.5-upgrade-20261020/artifact-r2/omoPlugin, ARTIFACT.json version 3.0.5, sourceHead b938df0cdd…; helper omo-delivery.mjs ce4344c47d41dec4dbc4b5fe1d8a49b764d0ffb0941757577161518f77421c99). Re-pin supersedes the 3.0.1 monorepo-layout entry path server/dist/server/index.js (owner candidate root omo-candidates-upstream-council no longer on disk; hash 2640dc072afdd9fdb60338c9458ff66418d38c3977a9173c4b06e500a3384e7c historical) and the stale artifact-r1 build 0708dbc0a51681e9dccc94ce415758a05c1807db5748daaa0010f0fe1e5fde8b. The bundle still imports ../../omo-delivery.mjs via relative layout, so the artifact MUST be a directory copy — an entry-file copy alone is not installable. 3.0.1 provenance: owner candidate root omo-candidates-upstream-council, 2026-10-01 build; upstream Council guidance stands unmodified in that build. Supersedes the pre-convergence build a781e9779696e82826d28f8d84bde1c7ebed12f8ddc42c5fb1dd5bf45a9fad32.",
+      "candidateNote": "3.0.4 artifact-r3 server SHA-256 dfb98115965d3330aeeb2d8d5a1d560d13ef14a3a485afea5fde2bdd6bc16a29. Hash/build-only limits: independent artifact review passed as a bounded verdict (notification microtask race fix verified in both entries), but there is no v2 host acceptance in this upgrade. The 2026-10-12 post-restart metadata verification exercised the v1 index entry, not this v2 server entry. Supersedes the 3.0.3 revision-2 and historical first-build candidate notes; historical testedEntrySha256 remains separate.",
+      "expectActivePluginId": "oh-my-opencode-slim"
     }
   },
   "flavors": {
@@ -276,18 +302,21 @@
           "input": "vibeguardConfig",
           "as": "vibeguard.config.json"
         }
-      ]
+      ],
+      "legacyNote": "Legacy patched OMO 3.0.5 only; stock 3.0.7 on V1 is not established or selected. BCP remains explicitly legacy."
     },
     "v2": {
       "stockPlugins": [
-        "billion-context@latest"
+        "billion-context@latest",
+        "oh-my-opencode-slim@3.0.7"
       ],
       "copyExtras": [
         {
           "input": "vibeguardConfig",
           "as": "vibeguard.config.json"
         }
-      ]
+      ],
+      "stockSkillsInput": "omoStockSkills307"
     }
   },
   "expected": {
@@ -319,7 +348,6 @@
       "plugins": {
         "expectActive": [
           "oh-my-opencode-slim",
-          "opencode-bcp",
           "vibeguard-privacy-v2",
           "billion-context-opencode-native",
           "claude-advisor",
@@ -327,7 +355,8 @@
           "stale-reasoning"
         ],
         "forbidIds": [
-          "acp"
+          "acp",
+          "opencode-bcp"
         ]
       }
     }

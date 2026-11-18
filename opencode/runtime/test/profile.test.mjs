@@ -103,7 +103,7 @@ test("render v2: personal settings preserved without duplicating native agent fi
     stockPlugins: profile.flavors.v2.stockPlugins,
   });
   // original models preserved verbatim
-  assert.equal(rendered.model, "newapi/glm-5.3");
+  assert.deepEqual(rendered.model, JSON.parse(readFileSync(inputs.hostConfigSource.resolved.path, "utf8")).model);
   assert.equal(rendered.default_agent, "orchestrator");
   const src = JSON.parse(readFileSync(inputs.hostConfigSource.resolved.path, "utf8"));
   assert.deepEqual(rendered.providers.newapi.models, src.providers.newapi.models, "all 15 personal models preserved");
@@ -120,7 +120,7 @@ test("render v2: personal settings preserved without duplicating native agent fi
   assert.equal(rendered.agent, undefined, "no legacy agent root on v2");
   assert.equal(rendered.agents.build.disabled, false);
   assert.equal(rendered.agents.plan.disabled, true);
-  assert.deepEqual(rendered.plugins, ["billion-context@latest"], "native transport still requires the external compression plugin");
+  assert.deepEqual(rendered.plugins, ["billion-context@latest", "oh-my-opencode-slim@3.0.7"], "compression and pinned official OMO are both explicit npm selections");
   // compaction intent preserved on v2 (verified native route precondition)
   assert.equal(rendered.compaction.auto, false, "compaction.auto=false preserved on v2 (native self-spawn route)");
   // personal permission policy migrated to native v2 permissions — one
@@ -433,19 +433,9 @@ test("inputs: drift, missing and unpinned-extra inputs refuse with precise reaso
   assert.equal(resolved.ok.resolved.sha256, sha256File(srcFile));
 });
 
-function fakeOmoPluginArtifact() {
-  const dir = join(S, "omo-artifact");
-  mkdirSync(join(dir, "dist/server"), { recursive: true });
-  writeFileSync(join(dir, "omo-council.mjs"), "export const council = true;\n");
-  writeFileSync(join(dir, "omo-delivery.mjs"), "export const delivery = true;\n");
-  writeFileSync(join(dir, "dist/server/index.js"), 'import { council } from "../../omo-council.mjs";\nexport default { id: "oh-my-opencode-slim" };\n');
-  addStockSkillDirs(dir);
-  return dir;
-}
-
 // Sibling components (claude-advisor, supervisor) with both flavor entries —
 // v1 index.v1.mjs (nested entry → discovery shim) and v2 index.js.
-function fakeSiblingComponents() {
+function fakeSiblingComponents(flavor = "v2") {
   const out = {};
   for (const [key, dirName] of [["claudeAdvisor", "ca-artifact"], ["supervisor", "sup-artifact"]]) {
     const dir = join(S, dirName);
@@ -453,6 +443,12 @@ function fakeSiblingComponents() {
     writeFileSync(join(dir, "index.v1.mjs"), 'export default {};\n');
     writeFileSync(join(dir, "index.js"), 'export default {};\n');
     out[key] = dir;
+  }
+  if (flavor === "v2") {
+    const dir = join(S, "stale-fixture");
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, "index.js"), "export default {};\n");
+    out.staleReasoning = dir;
   }
   return out;
 }
@@ -471,7 +467,7 @@ function addStockSkillDirs(artifactDir) {
   writeFileSync(join(artifactDir, "src", "skills", "clonedeps", "codemap.md"), "fake codemap resource\n");
 }
 
-test("stage v2 (fake plugin artifact): full candidate + manifest; refusal when required artifact missing", () => {
+test("stage v2 stock OMO: full candidate + manifest; refusal when required sibling artifact missing", () => {
   const { profile, profilePath, profileSha256 } = loadProfile(join(RUNTIME, "profile.json"));
   const host = { flavor: "v2", version: "2.0.20", executable: "test://exe", runtimeTested: "2.0.20", minCompatible: "2.0.20" };
   const outDir = join(S, "stage-v2");
@@ -480,12 +476,12 @@ test("stage v2 (fake plugin artifact): full candidate + manifest; refusal when r
   // missing required explicit component → refusal, NOTHING written
   assert.throws(
     () => stage({ flavor: "v2", profile, profilePath, profileSha256, host, outDir, explicit: {} }),
-    (err) => err instanceof StageRefusal && err.report.some((l) => l.includes("omoPlugin") && l.includes("--omo-plugin"))
+     (err) => err instanceof StageRefusal && err.report.some((l) => l.includes("claudeAdvisor") && l.includes("--claude-advisor"))
   );
   assert.deepEqual(readdirSync(outDir), [], "refusal must leave the output dir empty");
 
   // supplied artifact → success
-  const result = stage({ flavor: "v2", profile, profilePath, profileSha256, host, outDir, explicit: { omoPlugin: fakeOmoPluginArtifact(), ...fakeSiblingComponents() } });
+  const result = stage({ flavor: "v2", profile, profilePath, profileSha256, host, outDir, explicit: { ...fakeSiblingComponents() } });
   const inputs = personalInputs(profile);
   const cand = result.candidateDir;
   assert.ok(Object.isFrozen(result.env), "stage env must be read-only for workers");
@@ -519,11 +515,9 @@ test("stage v2 (fake plugin artifact): full candidate + manifest; refusal when r
   // sources — the plugin's prompt lookup applies it in-process on v2.
   assert.ok(!existsSync(join(inputs.omoPromptDir.resolved.path, "orchestrator.md")), "orchestrator.md is deleted from the pinned sources");
   assert.ok(!existsSync(join(cand, "oh-my-opencode-slim", "orchestrator.md")), "orchestrator.md is not staged (upstream lookup applies)");
-  assert.equal(result.components.omoPlugin.status, "staged-differs-from-tested", "fake artifact recorded honestly against the tested reference");
-  assert.equal(result.components.bcpPlugin.status, "absent-explicit", "privacy lane component explicitly absent, never fabricated");
-  // v2 entry shim imports RELATIVELY (relocatable candidate)
-  const v2Shim = readFileSync(join(cand, "plugins", "omoPlugin", "index.js"), "utf8");
-  assert.equal(v2Shim, 'export {default} from "./dist/server/index.js";\n', "v2 shim re-exports the nested entry via a relative specifier");
+  assert.equal(result.components.omoPlugin, undefined, "official npm selection has no local executable artifact");
+  assert.equal(result.components.bcpPlugin, undefined, "BCP belongs only to the explicitly legacy V1 lane");
+  assert.equal(existsSync(join(cand, "plugins", "omoPlugin")), false);
   const { manifest } = readStageManifest(cand);
   assert.equal(manifest.flavor, "v2");
   assert.ok(manifest.files.length > 20, "manifest lists every staged file");
@@ -544,11 +538,11 @@ test("stage v2 (fake plugin artifact): full candidate + manifest; refusal when r
     if (generated) assert.ok(!bytes.includes("file://"), `${f.path} is generated and must not embed absolute file URLs`);
   }
   // repeat staging produces a second, independent candidate
-  const again = stage({ flavor: "v2", profile, profilePath, profileSha256, host, outDir, explicit: { omoPlugin: fakeOmoPluginArtifact(), ...fakeSiblingComponents() } });
+  const again = stage({ flavor: "v2", profile, profilePath, profileSha256, host, outDir, explicit: { ...fakeSiblingComponents() } });
   assert.notEqual(again.candidateDir, cand);
 });
 
-test("stage v2: invalid explicit artifact (bad entry) refuses; deferred bcp artifact records honestly", () => {
+test("stage v2: explicit retired OMO and BCP artifacts refuse without writes", () => {
   const { profile, profilePath, profileSha256 } = loadProfile(join(RUNTIME, "profile.json"));
   const host = { flavor: "v2", version: "2.0.20", executable: "test://exe", runtimeTested: "2.0.20", minCompatible: "2.0.20" };
   const outDir = join(S, "stage-v2b");
@@ -557,12 +551,14 @@ test("stage v2: invalid explicit artifact (bad entry) refuses; deferred bcp arti
   mkdirSync(badDir, { recursive: true });
   assert.throws(
     () => stage({ flavor: "v2", profile, profilePath, profileSha256, host, outDir, explicit: { omoPlugin: badDir, ...fakeSiblingComponents() } }),
-    (err) => err instanceof StageRefusal && err.report.some((l) => l.includes("entry"))
+     (err) => err instanceof StageRefusal && err.report.some((l) => l.includes("omoPlugin") && l.includes("no pinned profile definition"))
   );
   const fakeBcp = join(S, "fake-blackboard.ts");
   writeFileSync(fakeBcp, "export default {};\n");
-  const result = stage({ flavor: "v2", profile, profilePath, profileSha256, host, outDir, explicit: { omoPlugin: fakeOmoPluginArtifact(), bcpPlugin: fakeBcp, ...fakeSiblingComponents() } });
-  assert.equal(result.components.bcpPlugin.status, "staged-unverified", "privacy-lane artifact staged but never asserted complete");
+  assert.throws(() => stage({ flavor: "v2", profile, profilePath, profileSha256, host, outDir,
+    explicit: { bcpPlugin: fakeBcp, ...fakeSiblingComponents() } }),
+    error => error instanceof StageRefusal && error.report.some(line => line.includes("bcpPlugin")));
+  assert.deepEqual(readdirSync(outDir), [], "retired V2 artifacts refuse without writing candidates");
 });
 
 test("stage v1 composition: vibeguard directory entry is NOT shimmed (no self-re-export, single listing), omo v1 directory gets a re-export shim, stock compression spec is rendered first", () => {
@@ -592,7 +588,7 @@ test("stage v1 composition: vibeguard directory entry is NOT shimmed (no self-re
   const bcpFile = join(S, "fake-blackboard-v1.ts");
   writeFileSync(bcpFile, "export default {};\n");
 
-  const result = stage({ flavor: "v1", profile, profilePath, profileSha256, host, outDir, explicit: { vibeguardV1: vgDir, omoPluginV1: omoV1Dir, bcpPlugin: bcpFile, ...fakeSiblingComponents() } });
+  const result = stage({ flavor: "v1", profile, profilePath, profileSha256, host, outDir, explicit: { vibeguardV1: vgDir, omoPluginV1: omoV1Dir, bcpPlugin: bcpFile, ...fakeSiblingComponents("v1") } });
   const cand = result.candidateDir;
   assert.equal(result.components.vibeguardV1.status, "staged-differs-from-tested", "fake dependency dir recorded honestly against the pinned reference");
   assert.equal(result.components.omoPluginV1.status, "staged-differs-from-tested");
@@ -1064,7 +1060,7 @@ test("skills follow upstream: generated tree consistency, no stock-inherited sha
   const poisonOut = join(S, "poisoned-stage-out");
   mkdirSync(poisonOut, { recursive: true });
   assert.throws(
-    () => stage({ flavor: "v2", profile: poisonedProfile, profilePath, profileSha256, host: PRIVATE_TEST_HOST_V2, outDir: poisonOut, explicit: { omoPlugin: fakeOmoPluginArtifact(), ...fakeSiblingComponents() } }),
+    () => stage({ flavor: "v2", profile: poisonedProfile, profilePath, profileSha256, host: PRIVATE_TEST_HOST_V2, outDir: poisonOut, explicit: { ...fakeSiblingComponents() } }),
     (err) => err instanceof StageRefusal && err.report.some((l) => l.includes("clonedeps") && l.includes("shadow") && l.includes("plugin artifact"))
   );
   assert.deepEqual(readdirSync(poisonOut), [], "shadow refusal leaves the output dir empty");
@@ -1116,7 +1112,7 @@ test("production-private staging: credentials preserved ONLY in the 0600 opencod
   const outDir = join(dir, "out");
   mkdirSync(outDir, { recursive: true });
 
-  const priv = stage({ flavor: "v2", profile, profilePath, profileSha256, host: PRIVATE_TEST_HOST_V2, outDir, explicit: { omoPlugin: fakeOmoPluginArtifact(), ...fakeSiblingComponents() }, productionPrivate: true });
+  const priv = stage({ flavor: "v2", profile, profilePath, profileSha256, host: PRIVATE_TEST_HOST_V2, outDir, explicit: { ...fakeSiblingComponents() }, productionPrivate: true });
   const privCfg = readFileSync(join(priv.candidateDir, "opencode.json"), "utf8");
   assert.ok(privCfg.includes(SYNTH_API_KEY) && privCfg.includes(SYNTH_TOKEN), "private production staging keeps the synthetic credential values in the config");
   assert.equal(statSync(join(priv.candidateDir, "opencode.json")).mode & 0o777, 0o600, "the credential-bearing config is 0600 in the candidate");
@@ -1137,7 +1133,7 @@ test("production-private staging: credentials preserved ONLY in the 0600 opencod
   assert.ok(!JSON.stringify(priv.notes).includes(SYNTH_API_KEY), "worker notes never contain credential values");
 
   // default probe staging on the SAME synthetic source still scrubs
-  const probe = stage({ flavor: "v2", profile, profilePath, profileSha256, host: PRIVATE_TEST_HOST_V2, outDir, explicit: { omoPlugin: fakeOmoPluginArtifact(), ...fakeSiblingComponents() } });
+  const probe = stage({ flavor: "v2", profile, profilePath, profileSha256, host: PRIVATE_TEST_HOST_V2, outDir, explicit: { ...fakeSiblingComponents() } });
   const probeCfg = readFileSync(join(probe.candidateDir, "opencode.json"), "utf8");
   assert.ok(!probeCfg.includes(SYNTH_API_KEY) && !probeCfg.includes(SYNTH_TOKEN), "default probe staging keeps scrubbing credentials");
   const { manifest: probeManifest } = readStageManifest(probe.candidateDir);
@@ -1150,7 +1146,7 @@ test("relocatable candidate: moved stage + removed old staging dir; relative shi
   mkdirSync(dir, { recursive: true });
   const { profile, profilePath, profileSha256 } = privateProfileClone(dir);
   const outDir = join(dir, "candidates");
-  const priv = stage({ flavor: "v2", profile, profilePath, profileSha256, host: PRIVATE_TEST_HOST_V2, outDir, explicit: { omoPlugin: fakeOmoPluginArtifact(), ...fakeSiblingComponents() }, productionPrivate: true });
+  const priv = stage({ flavor: "v2", profile, profilePath, profileSha256, host: PRIVATE_TEST_HOST_V2, outDir, explicit: { ...fakeSiblingComponents() }, productionPrivate: true });
   const original = priv.candidateDir;
 
   // move the candidate to an UNRELATED root and remove the old staging dir
@@ -1159,7 +1155,7 @@ test("relocatable candidate: moved stage + removed old staging dir; relative shi
   renameSync(original, moved);
   rmSync(outDir, { recursive: true, force: true });
   assert.ok(!existsSync(original), "old stage location gone");
-  assert.equal(readFileSync(join(moved, "plugins", "omoPlugin", "index.js"), "utf8"), 'export {default} from "./dist/server/index.js";\n', "shim stays relative after the move");
+  assert.equal(readFileSync(join(moved, "plugins", "claude-advisor", "index.js"), "utf8"), 'export default {};\n', "remaining discovery entry survives relocation");
 
   // no staged file references the old staging location
   const { manifest } = readStageManifest(moved);
@@ -1217,9 +1213,9 @@ test("compression component (owner-frozen wrapper dir): staged copy replaces the
   // v2: npm spec removed (auto-discovery loads the staged copy) — no drift
   const outV2 = join(S, "comp-v2");
   mkdirSync(outV2, { recursive: true });
-  const resV2 = stage({ flavor: "v2", profile: withCompression(), profilePath, profileSha256, host: PRIVATE_TEST_HOST_V2, outDir: outV2, explicit: { omoPlugin: fakeOmoPluginArtifact(), compressionPlugin: frozenDir, ...fakeSiblingComponents() } });
+  const resV2 = stage({ flavor: "v2", profile: withCompression(), profilePath, profileSha256, host: PRIVATE_TEST_HOST_V2, outDir: outV2, explicit: { compressionPlugin: frozenDir, ...fakeSiblingComponents() } });
   const renderedV2 = JSON.parse(readFileSync(join(resV2.candidateDir, "opencode.json"), "utf8"));
-  assert.deepEqual(renderedV2.plugins, [{ package: "./managed-plugins/supervisor", options: { mode: "inject" } }], "stock npm spec removed — the host resolves only the staged frozen copy; the supervisor component keeps its v2Options config entry");
+  assert.deepEqual(renderedV2.plugins, [{ package: "./managed-plugins/supervisor", options: baseProfile.components.supervisor.v2Options }], "stock npm spec removed — the host resolves only the staged frozen copy; all supervisor options survive");
   const wrapperStaged = join(resV2.candidateDir, "plugins", "compressionPlugin", "index.js");
   assert.equal(readFileSync(wrapperStaged, "utf8"), readFileSync(join(frozenDir, "index.js"), "utf8"), "entry index.js staged as-is — no shim over the wrapper's own relative re-export");
   assert.ok(existsSync(join(resV2.candidateDir, "plugins", "compressionPlugin", "node_modules", "billion-context", "dist", "agent", "opencode-native.js")), "full dist + node_modules closure travels with the copy");
@@ -1242,7 +1238,7 @@ test("compression component (owner-frozen wrapper dir): staged copy replaces the
   addStockSkillDirs(omoV1Dir);
   const bcpFile = join(S, "comp-blackboard-v1.ts");
   writeFileSync(bcpFile, "export default {};\n");
-  const resV1 = stage({ flavor: "v1", profile: withCompression(), profilePath, profileSha256, host: hostV1, outDir: outV1, explicit: { compressionPlugin: frozenDir, vibeguardV1: vgDir, omoPluginV1: omoV1Dir, bcpPlugin: bcpFile, ...fakeSiblingComponents() } });
+  const resV1 = stage({ flavor: "v1", profile: withCompression(), profilePath, profileSha256, host: hostV1, outDir: outV1, explicit: { compressionPlugin: frozenDir, vibeguardV1: vgDir, omoPluginV1: omoV1Dir, bcpPlugin: bcpFile, ...fakeSiblingComponents("v1") } });
   const renderedV1 = JSON.parse(readFileSync(join(resV1.candidateDir, "opencode.json"), "utf8"));
   assert.deepEqual(renderedV1.plugin, [
     "./plugins/compressionPlugin/index.js",
@@ -1261,7 +1257,7 @@ test("compression component (owner-frozen wrapper dir): staged copy replaces the
   const unpinnedProfile = structuredClone(baseProfile);
   delete unpinnedProfile.components.compressionPlugin;
   assert.throws(
-    () => stage({ flavor: "v2", profile: unpinnedProfile, profilePath, profileSha256, host: PRIVATE_TEST_HOST_V2, outDir: outX, explicit: { omoPlugin: fakeOmoPluginArtifact(), compressionPlugin: frozenDir, ...fakeSiblingComponents() } }),
+    () => stage({ flavor: "v2", profile: unpinnedProfile, profilePath, profileSha256, host: PRIVATE_TEST_HOST_V2, outDir: outX, explicit: { compressionPlugin: frozenDir, ...fakeSiblingComponents() } }),
     (err) => err instanceof StageRefusal && err.report.some((l) => l.includes("compressionPlugin") && l.includes("no pinned profile definition"))
   );
   assert.deepEqual(readdirSync(outX), [], "refusal leaves the output dir empty");

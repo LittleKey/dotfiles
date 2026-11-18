@@ -433,16 +433,22 @@ export async function verify({ candidateDir, opencodeExe, flavor, projectDir, pr
         return !entry || Boolean(stagedComponents[entry[0]]?.staged);
       });
       let statuses = {};
+      let omoRegistrations = 0;
       const pluginDeadline = Date.now() + 20000;
       while (Date.now() < pluginDeadline) {
         const plg = await fetchJson(`http://127.0.0.1:${port}/api/plugin?location%5Bdirectory%5D=${encodeURIComponent(projectDir)}`, { headers: auth });
         const plugins = extractArray(plg.body) ?? [];
+        omoRegistrations = plugins.filter(p => (p.id ?? p.name) === "oh-my-opencode-slim").length;
         statuses = Object.fromEntries(plugins.map((p) => [p.id ?? p.name, p.state?.status ?? p.status ?? "unknown"]));
         if (expectedActiveIds.every((id) => statuses[id] === "active")) break;
         await new Promise((res) => setTimeout(res, 1000));
       }
       for (const id of expectedActiveIds) {
         check(`plugin-active:${id}`, statuses[id] === "active", `status=${JSON.stringify(statuses[id] ?? "absent")}`);
+      }
+      if (profile.flavors.v2.stockPlugins.includes("oh-my-opencode-slim@3.0.7")) {
+        check("stock-omo-single-registration", omoRegistrations === 1,
+          `${omoRegistrations} OMO registration(s); status does not establish installed package version or execution provenance`);
       }
       for (const id of profile.expected.v2.plugins.forbidIds ?? []) {
         check(`plugin-absent:${id}`, !(id in statuses), `registered statuses for ${id}: ${JSON.stringify(statuses[id] ?? "absent")} — single compression engine rule`);

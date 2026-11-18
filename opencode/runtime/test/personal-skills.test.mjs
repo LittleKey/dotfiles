@@ -58,9 +58,12 @@ function buildExplicit(temp, flavor) {
   }
   const bcp = join(temp, 'bcp.ts');
   writeFileSync(bcp, 'export default {};\n');
+  const recovery = join(temp, 'recovery');
+  mkdirSync(recovery);
+  writeFileSync(join(recovery, 'index.js'), 'export default {};\n');
   return {
-    [flavor === 'v1' ? 'omoPluginV1' : 'omoPlugin']: omo,
-    [flavor === 'v1' ? 'vibeguardV1' : 'vibeguardV2']: vg, bcpPlugin: bcp,
+    ...(flavor === 'v1' ? { omoPluginV1: omo, bcpPlugin: bcp } : { staleReasoning: recovery }),
+    [flavor === 'v1' ? 'vibeguardV1' : 'vibeguardV2']: vg,
     ...siblings,
   };
 }
@@ -92,7 +95,9 @@ for (const flavor of ['v1', 'v2']) {
         for (const name of STOCK_INHERITED_SKILLS) {
           const skill = join(root, 'skills', name, 'SKILL.md');
           if (flavor === 'v1') assert.equal(readFileSync(skill, 'utf8'), `# ${name}\n`, `${name}: original artifact bytes`);
-          else assert.equal(readFileSync(skill, 'utf8'), `# ${name}\n`, `${name}: vendored artifact bytes via the skills/ link farm (v2.1.0 lists skills from config-dir files only — A7 smoke)`);
+          else assert.equal(readFileSync(skill, 'utf8'),
+            readFileSync(join(pinned.profile.inputs.omoStockSkills307.source, name, 'SKILL.md'), 'utf8'),
+            `${name}: unchanged pinned official 3.0.7 resource bytes`);
         }
         for (const name of names) assert.deepEqual(inventory(join(root, 'skills', name)), expected[name], `${name}: complete bytes and modes`);
         for (const removed of REMOVED_SKILLS) assert.equal(existsSync(join(root, 'skills', removed)), false, `${removed}: removed skill is never staged`);
@@ -142,9 +147,8 @@ for (const flavor of ['v1', 'v2']) {
         assert.ok(existsSync(join(skillsRoot, name, 'SKILL.md')), `${name}: remaining personal skill persists in the stage`);
       }
       if (flavor === 'v2') {
-        // v2 also vendors the artifact's stock skills as links (A7 smoke:
-        // v2.1.0 lists skills from config-dir files only), so v2 differs
-        // from v1 only in the omoPlugin staging dir name — same farm.
+        // V2 exposes the separately pinned official resources as links;
+        // V1 keeps the legacy artifact's resources and the same farm contract.
         for (const stock of STOCK_INHERITED_SKILLS) assert.ok(tops.includes(stock), `v2 link farm exposes ${stock}`);
         const personalTops = tops.filter((top) => !STOCK_INHERITED_SKILLS.includes(top) && top !== 'clonedeps').sort();
         assert.deepEqual(personalTops, expectedPersonalTops, 'v2 personal entries are exactly the pinned skills (stock links aside)');

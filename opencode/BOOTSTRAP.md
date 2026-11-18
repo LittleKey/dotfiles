@@ -1,4 +1,35 @@
-# opencode v2 fresh-machine bootstrap (portability matrix)
+# opencode v2 fresh-machine bootstrap (stock OMO migration)
+
+## Current V2 lane
+
+- Select **`oh-my-opencode-slim@3.0.7`** directly in `plugins` through
+  `runtime/profile.json`. The host resolves the official, unpatched npm package.
+  Do not run the OMO installer afterward: that could change config or add another source.
+- No `--omo-plugin` or `--bcp-plugin` on V2. The old patched V2 component is
+  retained under `rollbacks.patchedV2OMO` only. V1 is explicitly legacy (patched
+  3.0.5 artifact); official 3.0.7 compatibility on V1 is not established here.
+- Same-release `src/skills` bytes are vendored unchanged under
+  `runtime/resources/omo-3.0.7/skills`, with upstream LICENSE and pinned input
+  hashes. These are offline resources, not a second executable plugin.
+- Preserve role presets, append prompts, ACP Claude routing and the separate
+  Claude guard component. Stage still requires the other declared component flags.
+- Before activation, back up and explicitly retire old OMO/BCP config entries
+  and discovered artifacts under **both** `plugin/` and `plugins/`. Migration
+  preflight refuses old/duplicate sources even with `--replace`; it never
+  silently deletes them. JSONC requiring reconciliation also refuses.
+- Run stage into a disk-backed candidate directory. Review `plan-activation` before
+  any separately authorized activation. No real deployment is performed by this change.
+- Required real acceptance: isolated V2 host with dedicated HOME/config/data/state/cache
+  and no production DB, official package resolution/version evidence, exactly one
+  OMO load and no BCP, preserved role models/prompts/modes, Claude ACP and guard
+  routing, skill listing and relocation checks. Metadata/fixture success is not
+  runtime, ACP, model, compression or privacy acceptance. Installing/resolving packages,
+  restarting production and paid calls require separate authorization.
+
+## Historical bootstrap snapshot (not current install instructions)
+
+The following records the previous patched/BCP deployment; do **not** execute its
+installer sequence for the current stock lane.
 
 Verified 2026-10-24 against live host + repos. Goal: replicate this plugin stack on a machine
 that has ONLY opencode v2 installed.

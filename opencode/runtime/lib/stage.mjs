@@ -169,7 +169,7 @@ export function stage(opts) {
   // verified component/profile definitions only — never a missing dependency
   // smuggled in as a path).
   for (const supplied of Object.keys(explicit)) {
-    if (!Object.prototype.hasOwnProperty.call(profile.components ?? {}, supplied)) {
+    if (!Object.prototype.hasOwnProperty.call(components, supplied)) {
       unknownExplicit.push(supplied);
       report.push(
         `explicit component '${supplied}' has no pinned profile definition — refusing (this lane stages only owner-pinned component definitions, never an unpinned dependency path)`
@@ -221,6 +221,12 @@ export function stage(opts) {
     const promptExcluded = [];
     for (const [rel, sha] of Object.entries(inputs.omoPromptDir.resolved.files)) {
       const sourceAbs = join(inputs.omoPromptDir.resolved.path, ...rel.split("/"));
+      if (["document-writer.md", "lark-operator.md"].includes(rel)) {
+        if (sha !== inputs.coworkerPrompts.resolved.files[rel]) {
+          throw new StageRefusal([`duplicate custom prompt source differs from coworker authority: ${rel}`]);
+        }
+        continue;
+      }
       if (isExcludedPromptFile(rel)) {
         // Private Council prompt replacements and *.bak-promptopt backups are
         // pinned (so source drift still refuses) but never staged: upstream
@@ -338,17 +344,28 @@ export function stage(opts) {
     // root inside the artifact is pinned on the component definition
     // (stockSkillsRoot) — adapt the component, not this staging logic.
     const STOCK_SKILL_COMPONENT = flavor === "v1" ? "omoPluginV1" : "omoPlugin";
-    const stockSkillRelBase = components[STOCK_SKILL_COMPONENT]?.relPath?.split("/").slice(0, -1).join("/") ?? `plugins/${STOCK_SKILL_COMPONENT}`;
-    const STOCK_SKILL_ROOT = profile.components?.[STOCK_SKILL_COMPONENT]?.stockSkillsRoot ?? "server/src/skills";
+    const stockInputName = profile.flavors[flavor].stockSkillsInput;
+    const stockInput = stockInputName ? inputs[stockInputName]?.resolved : null;
+    const stockSkillRelBase = stockInput ? "resources/omo-stock" : components[STOCK_SKILL_COMPONENT]?.relPath?.split("/").slice(0, -1).join("/") ?? `plugins/${STOCK_SKILL_COMPONENT}`;
+    const STOCK_SKILL_ROOT = stockInput ? "skills" : profile.components?.[STOCK_SKILL_COMPONENT]?.stockSkillsRoot ?? "server/src/skills";
     let stockSkillNote = null;
     {
       const skillComponent = components[STOCK_SKILL_COMPONENT];
-      if (!skillComponent?.staged) {
+      if (!skillComponent?.staged && !stockInput) {
         throw new StageRefusal([
           `${flavor} candidate has no staged component '${STOCK_SKILL_COMPONENT}' — the stock skill resources cannot be exposed (required: ${stockSkillRelBase}/${STOCK_SKILL_ROOT}/<skill>/SKILL.md for ${STOCK_INHERITED_SKILLS.join(", ")})`,
         ]);
       }
       const artifactSkillBase = join(tmp, ...stockSkillRelBase.split("/"), ...STOCK_SKILL_ROOT.split("/"));
+      if (stockInput) {
+        mkdirSync(artifactSkillBase, { recursive: true });
+        for (const [rel, hash] of Object.entries(stockInput.files)) {
+          const dest = join(artifactSkillBase, ...rel.split("/"));
+          mkdirSync(dirname(dest), { recursive: true });
+          cpSync(join(stockInput.path, ...rel.split("/")), dest);
+          recordStaged(`${stockSkillRelBase}/${STOCK_SKILL_ROOT}/${rel}`, stockInput.path, hash, dest);
+        }
+      }
       const missing = [];
       for (const skill of STOCK_INHERITED_SKILLS) {
         const srcDir = join(artifactSkillBase, skill);

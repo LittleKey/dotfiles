@@ -120,31 +120,6 @@ function buildCandidate(name, filesSpec) {
 
 const V2_HOST = { flavor: "v2", version: "2.0.20", executable: "test://exe", runtimeTested: "2.0.20", minCompatible: "2.0.20" };
 
-// Fake omoPlugin artifact with an EXECUTABLE payload, mirroring the packaged
-// native CLI binaries in the real v2 stage (bin/ + entry at dist/server/).
-function fakeOmoArtifact(name) {
-  const artifact = join(S, name);
-  mkdirSync(join(artifact, "dist", "server"), { recursive: true });
-  mkdirSync(join(artifact, "bin"), { recursive: true });
-  writeFileSync(join(artifact, "omo-council.mjs"), "export const council = true;\n");
-  writeFileSync(join(artifact, "omo-delivery.mjs"), "export const delivery = true;\n");
-  writeFileSync(join(artifact, "dist", "server", "index.js"), 'import { council } from "../../omo-council.mjs";\nexport default { id: "oh-my-opencode-slim" };\n');
-  writeFileSync(join(artifact, "bin", "native-tool"), "#!/bin/sh\necho fake-native\n");
-  chmodSync(join(artifact, "bin", "native-tool"), 0o755);
-  addStockSkillFarm(artifact);
-  return artifact;
-}
-
-// The pinned omoPlugin component requires the stock-skill resources under
-// src/skills/<name>/SKILL.md (vendored as the skills/ link farm on stage).
-function addStockSkillFarm(artifact) {
-  for (const skill of libs.stage.STOCK_INHERITED_SKILLS) {
-    mkdirSync(join(artifact, "src", "skills", skill), { recursive: true });
-    writeFileSync(join(artifact, "src", "skills", skill, "SKILL.md"), `---\nname: ${skill}\ndescription: fake stock skill fixture\n---\nbody\n`);
-  }
-  writeFileSync(join(artifact, "src", "skills", "clonedeps", "codemap.md"), "fake codemap resource\n");
-}
-
 // Sibling components with both flavor entries (v1 index.v1.mjs, v2 index.js).
 function fakeSiblings() {
   const out = {};
@@ -155,6 +130,13 @@ function fakeSiblings() {
     writeFileSync(join(dir, "index.js"), 'export default {};\n');
     out[key] = dir;
   }
+  const dir = join(S, "stale-fixture");
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "index.js"), 'export default {};\n');
+  out.staleReasoning = dir;
+  mkdirSync(join(out.claudeAdvisor, "bin"), { recursive: true });
+  writeFileSync(join(out.claudeAdvisor, "bin/native-tool"), "#!/bin/sh\necho fake-native\n");
+  chmodSync(join(out.claudeAdvisor, "bin/native-tool"), 0o755);
   return out;
 }
 
@@ -164,21 +146,21 @@ test("stage records every copied file's own mode in the manifest, and activation
   mkdirSync(outDir, { recursive: true });
   const result = libs.stage.stage({
     flavor: "v2", profile, profilePath, profileSha256, host: V2_HOST,
-    outDir, explicit: { omoPlugin: fakeOmoArtifact("omo-fake-t1"), ...fakeSiblings() },
+    outDir, explicit: fakeSiblings(),
   });
   const cand = result.candidateDir;
   const { manifest } = libs.manifest.readStageManifest(cand);
 
   // the executable payload is recorded with its own staged mode
-  const toolRel = "plugins/omoPlugin/bin/native-tool";
+  const toolRel = "plugins/claude-advisor/bin/native-tool";
   const tool = manifest.files.find((f) => f.path === toolRel);
   assert.ok(tool, "exec payload present in the manifest");
   assert.equal(tool.mode, "0755", `exec payload mode must be recorded (staged stat: ${modeOf(join(cand, ...toolRel.split("/")))})`);
   assert.equal(modeOf(join(cand, ...toolRel.split("/"))), "0755", "the staged copy itself keeps the exec bits");
 
-  // plain copies, the shim and the rendered config all carry modes too
-  assert.equal(manifest.files.find((f) => f.path === "plugins/omoPlugin/omo-council.mjs").mode, "0644");
-  assert.equal(manifest.files.find((f) => f.path === "plugins/omoPlugin/index.js").mode, "0644", "the re-export shim records its mode");
+  // Plain copied entries, pinned resources and rendered config carry modes too.
+  assert.equal(manifest.files.find((f) => f.path === "plugins/claude-advisor/index.js").mode, "0644");
+  assert.equal(manifest.files.find((f) => f.path === "resources/omo-stock/skills/deepwork/SKILL.md").mode, "0644");
   const cfg = manifest.files.find((f) => f.path === "opencode.json");
   assert.equal(cfg.mode, "0600", "rendered config records 0600 even on probe stages");
   assert.equal(modeOf(join(cand, "opencode.json")), "0600");

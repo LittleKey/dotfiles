@@ -41,8 +41,9 @@
 // distinct from the after-mode — falling back to the record's mode and then
 // the live file's current mode for older records.
 
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync } from "node:fs";
-import { join, dirname, relative, sep } from "node:path";
+import { existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, rmSync, statSync } from "node:fs";
+import { join, dirname, relative, sep, resolve, extname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { readStageManifest, readActiveAuthority, writeActiveAuthority, removeActiveAuthority } from "./manifest.mjs";
 import { atomicWriteFileSync, isSymlinkPath } from "./atomic.mjs";
 import { sha256, sha256File } from "./hash.mjs";
@@ -51,14 +52,65 @@ function managedFiles(manifest) {
   return manifest.files.filter((f) => f.path !== ".oprofile/profile-manifest.json");
 }
 
-function listFilesRecursive(dir) {
-  const out = [];
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const p = join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...listFilesRecursive(p));
-    else if (entry.isFile()) out.push(p);
+// Inspect loadable entries and their literal local dependency closure, not
+// every packaged test/fixture/document. Follow links (with cycle protection)
+// and bounded literal relative/absolute/file: dependencies. This is migration
+// preflight, NOT runtime uniqueness proof: computed imports and custom loaders
+// cannot be established by this textual scan and need isolated-host evidence.
+function suspiciousPluginSource(path) {
+  const marker = /oh-my-opencode-slim(?!\.json\b)|omo-delivery|opencode-bcp/;
+  const executable = /\.(?:[cm]?js|[cm]?ts)$/;
+  const visited = new Set();
+  function inspect(file) {
+    const canonical = realpathSync(file);
+    if (visited.has(canonical)) return false;
+    if (visited.size >= 512) return true; // bounded closure; owner review
+    visited.add(canonical);
+    if (statSync(canonical).isDirectory()) return inspectDirectory(canonical);
+    const isExecutable = executable.test(file) || executable.test(canonical);
+    if (!isExecutable && extname(canonical) !== ".json") return false;
+    const text = readFileSync(canonical, "utf8");
+    if (isExecutable && marker.test(text)) return true;
+    // Static imports/re-exports, literal dynamic imports and require().
+    for (const match of text.matchAll(/(?:\bfrom\s*|\bimport\s*(?:\(\s*)?|\brequire\s*\(\s*)["']([^"']+)["']/g)) {
+      const specifier = match[1];
+      if (!specifier.startsWith(".") && !specifier.startsWith("/") && !specifier.startsWith("file:")) continue;
+      // fileURLToPath rejects malformed escapes, non-local authorities and
+      // encoded path separators; unresolved paths refuse below.
+      const target = specifier.startsWith("file:")
+        ? fileURLToPath(specifier)
+        : resolve(dirname(canonical), specifier);
+      const resolved = [target, ...[".js", ".mjs", ".cjs", ".ts", ".json"].map(ext => target + ext)]
+        .find(candidate => existsSync(candidate));
+      if (!resolved) return true; // unknown executable closure: owner review
+      if (inspect(resolved)) return true;
+    }
+    return false;
   }
-  return out.sort();
+  function inspectDirectory(dir) {
+    const entries = new Set();
+    const packagePath = join(dir, "package.json");
+    if (existsSync(packagePath)) {
+      const pkg = JSON.parse(readFileSync(packagePath, "utf8"));
+      if (marker.test(pkg.name ?? "")) return true;
+      const addExports = value => {
+        if (typeof value === "string") entries.add(resolve(dir, value));
+        else if (value && typeof value === "object") Object.values(value).forEach(addExports);
+      };
+      for (const field of ["main", "module", "exports"]) addExports(pkg[field]);
+    }
+    for (const name of readdirSync(dir)) {
+      if (/^index\.(?:[cm]?js|[cm]?ts)$/.test(name)) entries.add(join(dir, name));
+    }
+    // No recognized entry metadata: do not trust a renamed loose executable.
+    if (!entries.size) {
+      for (const name of readdirSync(dir)) {
+        if (executable.test(name) && !/\.(?:test|spec)\./.test(name)) entries.add(join(dir, name));
+      }
+    }
+    return [...entries].some(entry => !existsSync(entry) || inspect(entry));
+  }
+  try { return inspect(path); } catch { return true; } // dangling links/unreadable provenance fail closed
 }
 
 /** Numeric mode for a write, from an optional manifest record mode string. */
@@ -132,6 +184,32 @@ export function planActivation({ candidateDir, liveRoot, replace = false }) {
   const { manifest, path: manifestPath } = readStageManifest(candidateDir);
   const existing = readActiveAuthority(liveRoot);
   const plan = { manifestPath, flavor: manifest.flavor, actions: [], conflicts: [], notes: [] };
+  const candidateConfigPath = join(candidateDir, "opencode.json");
+  const candidateConfig = existsSync(candidateConfigPath) ? JSON.parse(readFileSync(candidateConfigPath, "utf8")) : {};
+  if (manifest.flavor === "v2" && candidateConfig.plugins?.includes("oh-my-opencode-slim@3.0.7")) {
+    const refuse = (path) => plan.conflicts.push(`OMO migration preflight: ${path} may load an old/duplicate OMO or BCP source — owner must back up and retire it explicitly; nothing deleted (including with --replace)`);
+    for (const name of ["opencode.json", "opencode.jsonc"]) {
+      const path = join(liveRoot, name);
+      if (!existsSync(path)) continue;
+      try {
+        // JSONC needs explicit owner reconciliation, not a lossy rewrite.
+        const config = JSON.parse(readFileSync(path, "utf8"));
+        const entries = [...(config.plugin ?? []), ...(config.plugins ?? [])];
+        const omo = entries.map(e => typeof e === "string" ? e : Array.isArray(e) ? e[0] : e.package)
+          .filter(s => /oh-my-opencode|omoPlugin|omo-delivery|blackboard|opencode-bcp/i.test(s ?? ""));
+        if (omo.length && !(name === "opencode.json" && omo.length === 1 && omo[0] === "oh-my-opencode-slim@3.0.7")) refuse(path);
+      } catch { refuse(path); }
+    }
+    for (const root of ["plugin", "plugins"]) {
+      const dir = join(liveRoot, root);
+      if (!existsSync(dir)) continue;
+      // Tests shipped alongside known entries are not discovery entries.
+      for (const name of readdirSync(dir)) {
+        const path = join(dir, name);
+        if (/omo|blackboard|bcp/i.test(name) || suspiciousPluginSource(path)) refuse(path);
+      }
+    }
+  }
   // --replace intentionally skips ONLY the different-stage refusal below.
   // Every per-file guard in this plan (unmanaged or edited provenance,
   // symlinks, legacy plugin twins) still refuses — replace never overrides

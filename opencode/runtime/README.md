@@ -1,5 +1,13 @@
 # opencode personal-profile runtime
 
+**Migration scanner scope:** activation checks discovery entries, package
+provenance and their literal relative, absolute and `file:` import/re-export/
+require closures (at most 512 canonical paths). Malformed or unresolved local
+dependencies fail closed. Non-imported packaged tests are not executable
+provenance. Computed imports/custom loaders are outside this textual check:
+it is not comprehensive runtime uniqueness proof; isolated-host evidence is
+still required.
+
 **Portability:** this is an owner-specific profile with absolute source paths,
 external plugin inputs and installation-authority requirements. It is not a
 drop-in upgrade for a normal upstream installation on another machine. The
@@ -629,3 +637,19 @@ skill inheritance or instruction priority.
   refuses without it rather than fabricating a release.
 - No v1 host DB migration, no dual compression engines, no edits to
   hard-linked core/OMO JSON or prompt sources.
+# Current V2 selection: official OMO 3.0.7
+
+The personal profile now renders `oh-my-opencode-slim@3.0.7` as a direct
+host-managed npm spec. Do not supply `--omo-plugin` or `--bcp-plugin` on V2.
+Same-release pinned offline skills live in `runtime/resources/omo-3.0.7`;
+they are resources, not a plugin artifact. V1 stays explicitly legacy and
+requires its old patched artifact; no official V1 support is asserted.
+
+Before migration the owner must back up and explicitly retire old OMO/BCP
+entries and discovered artifacts from both `plugin/` and `plugins/`.
+`planActivation` refuses possible old/duplicate sources, including with
+`--replace`, without deleting anything. Source config OMO/BCP entries also
+refuse instead of being silently dropped by rendering.
+
+See `../BOOTSTRAP.md` for current isolated-host acceptance requirements.
+Historical artifact examples below are not the normal V2 installation path.
