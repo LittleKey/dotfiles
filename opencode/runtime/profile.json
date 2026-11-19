@@ -36,7 +36,7 @@
     "omoConfig": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/oh-my-opencode-slim.json",
-      "sha256": "57c0a641658192f292f52bb28691d1ce4ba103e6386e13ed5355031161708015"
+      "sha256": "daeb0b6c8cac0477a0f7a79c0a81dab3d875d0e6afe878644dccbefd511a5c41"
     },
     "omoPromptDir": {
       "kind": "dir",
@@ -44,7 +44,7 @@
       "files": {
         "council_append.md.bak-promptopt": "ff832d25e5f99ab97f7dafa1f97875020f0ddd1d0a8052b56bd277da50912731",
         "designer_append.md": "fb9ec7703bcfb6edf01a906bae40b8d33c0e2b521fe74dfca54846c738b5dc9c",
-        "document-writer.md": "5f903806759aeace74c77da5b9dd2516e60dda32743e17b113262e4bcd970dce",
+        "document-writer.md": "4c636c7c4ba7f27421e0fcaec7150672e09f1ddbe7825c33ab9906a954526502",
         "document-writer.md.bak-promptopt": "9c191381d7b965edff6f59411521933589e695c74b2f1351dcc7864ce7d22842",
         "explorer_append.md": "5857366e643d3d6d07ec02c05eda70529a0ad1110fc1885cf160886f4c34f4f8",
         "fixer_append.md": "d7ffbb77f60c0bb9e5639b482e3fb219eb083b32a0f4146a6c823536f1c54f1d",
@@ -60,14 +60,14 @@
       "kind": "dir",
       "source": "/home/littlekey/github/omo-coworkers/prompts",
       "files": {
-        "document-writer.md": "5f903806759aeace74c77da5b9dd2516e60dda32743e17b113262e4bcd970dce",
+        "document-writer.md": "4c636c7c4ba7f27421e0fcaec7150672e09f1ddbe7825c33ab9906a954526502",
         "lark-operator.md": "b6e2bee850cf8ff2a5d9ab6ebea03f6c1695aae34eda6beea6aac11f88b31abb"
       }
     },
     "hostConfigSource": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/opencode.json",
-      "sha256": "732b4d167c67d8a941086f6d8e1fa1b58112da8ff878f337c4c4323e826f30ee",
+      "sha256": "e93c491422563074bd3bbea08b3ad04ebce70f9162fc344bedc6772b536d3839",
       "role": "Raw host settings from the dotfiles source. Plugin selection is maintained only in this profile's components and flavors sections, together with explicitly supplied artifacts; the raw source has no plugin list. The obsolete three-entry list was removed without changing v1/v2 rendered settings. Do not feed rendered production agent permissions back into the raw-source renderer. Credentials are scrubbed unless explicit private production staging is requested."
     },
     "skillsDir": {
@@ -125,12 +125,12 @@
         "clonedeps/README.md": "40fef0d08b95211d69819475d1617e613230ced3cc125c272d439bf58343b99a",
         "clonedeps/SKILL.md": "e6f7e3e6717f6d3a22a824eacb2988b5e6cf4758f4b69b9d326c8d325690f205",
         "clonedeps/codemap.md": "852d7e1b556f1ae43b696b4fcef1ff8b797830cf97e4e8567ecc850b035fe83b",
+        "codemap.md": "3120ed092fc8d06766037ac031a9e5d170376d7e7febb9db3a559bdb0a986381",
         "codemap/README.md": "fab8e2159592b290b5615f2b234082f5c1d4283a538df9f9542afa841c76fa0b",
         "codemap/SKILL.md": "d03151f3243902c1624a7353cb47db93f7dc59f21122982d79539483eda5f1ee",
         "codemap/codemap.md": "eb16c36c04ef8a927b7391565ac5e18c210ac2e3bbff2b803159f9c71cd55f6b",
         "codemap/scripts/codemap.mjs": "a6e59ec16f7b7e5de185a9cf35933c23e94dfaab3389a99eed66a7ece3c1fdb5",
         "codemap/scripts/codemap.test.ts": "bd94813c7545a1fe0fa46f2c8967cb7b3d8531b78e7ff313d923cabad996d569",
-        "codemap.md": "3120ed092fc8d06766037ac031a9e5d170376d7e7febb9db3a559bdb0a986381",
         "deanchor/SKILL.md": "3eef2b5c116848ea84272b78d9fc6e90757b2f31f93187ac6c021a82eb751667",
         "deepwork/SKILL.md": "e03abf772c6c5fa44bddc34ff1db2da857983122f3c3cfa267b4571463da33ab",
         "oh-my-opencode-slim/SKILL.md": "423d9104dbd0cb85def94cec4fffb644ea99fda5d43450fb387c581a47846a08",
@@ -361,5 +361,5 @@
       }
     }
   },
-  "pinnedAt": "2026-10-25T09:03:05.739Z"
+  "pinnedAt": "2026-11-18T16:43:07.721Z"
 }
