@@ -221,12 +221,6 @@ export function stage(opts) {
     const promptExcluded = [];
     for (const [rel, sha] of Object.entries(inputs.omoPromptDir.resolved.files)) {
       const sourceAbs = join(inputs.omoPromptDir.resolved.path, ...rel.split("/"));
-      if (["document-writer.md", "lark-operator.md"].includes(rel)) {
-        if (sha !== inputs.coworkerPrompts.resolved.files[rel]) {
-          throw new StageRefusal([`duplicate custom prompt source differs from coworker authority: ${rel}`]);
-        }
-        continue;
-      }
       if (isExcludedPromptFile(rel)) {
         // Private Council prompt replacements and *.bak-promptopt backups are
         // pinned (so source drift still refuses) but never staged: upstream
@@ -241,16 +235,6 @@ export function stage(opts) {
       mkdirSync(dirname(destAbs), { recursive: true });
       cpSync(sourceAbs, destAbs);
       recordStaged(`oh-my-opencode-slim/${rel}`, inputs.omoPromptDir.resolved.path, sha, destAbs);
-    }
-    // Custom role bodies have one source of record, shared with coworkers-install.
-    // Do not stage native markdown shadows: Lark's mode:all lives in host config.
-    for (const role of ["document-writer", "lark-operator"]) {
-      const rel = `${role}.md`;
-      const source = join(inputs.coworkerPrompts.resolved.path, rel);
-      const dest = join(promptDir, rel);
-      if (existsSync(dest)) throw new Error(`duplicate custom prompt source: ${rel}`);
-      cpSync(source, dest);
-      recordStaged(`oh-my-opencode-slim/${rel}`, source, inputs.coworkerPrompts.resolved.files[rel], dest);
     }
     const skillsDir = join(tmp, "skills");
     mkdirSync(skillsDir, { recursive: true });

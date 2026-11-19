@@ -13,6 +13,12 @@
   hashes. These are offline resources, not a second executable plugin.
 - Preserve role presets, append prompts, ACP Claude routing and the separate
   Claude guard component. Stage still requires the other declared component flags.
+  Dotfiles `opencode/oh-my-opencode-slim/` alone owns the Document Writer and
+  Lark Operator bodies: staging copies those pinned local bytes unchanged,
+  without sibling coworkers prompts or native-agent shadows. The existing
+  `opencode/oh-my-opencode-slim.json` remains the personal OMO config; never
+  overwrite it with a generic coworkers overlay. Existing global skills/guard
+  migration collisions require explicit resolution, not automatic deactivation.
 - Before activation, back up and explicitly retire old OMO/BCP config entries
   and discovered artifacts under **both** `plugin/` and `plugins/`. Migration
   preflight refuses old/duplicate sources even with `--replace`; it never

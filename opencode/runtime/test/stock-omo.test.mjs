@@ -13,6 +13,10 @@ test("stock V2 stages offline resources without executable OMO/BCP artifacts; mi
   const root = mkdtempSync(fileURLToPath(new URL("../.stock-test-", import.meta.url)));
   try {
     const { profile, profileSha256 } = loadProfile(profilePath);
+    assert.equal(Object.hasOwn(profile.inputs, "coworkerPrompts"), false);
+    assert.equal(Object.hasOwn(profile.authority.sourcesOfRecord, "coworkerPrompts"), false);
+    assert.ok(!JSON.stringify(profile.inputs).includes("omo-coworkers/prompts"),
+      "staging has no sibling coworkers prompt input");
     const inputs = verifyAllInputs(profile);
     const explicit = {};
     for (const [name, definition] of Object.entries(profile.components)) {
@@ -33,6 +37,18 @@ test("stock V2 stages offline resources without executable OMO/BCP artifacts; mi
       host: { flavor: "v2", version: "2.1.4", executable: "/fixture-only" },
       outDir: join(root, "stages"), explicit };
     const result = stage(args);
+    assert.deepEqual(readFileSync(join(result.candidateDir, "oh-my-opencode-slim.json")),
+      readFileSync(inputs.omoConfig.resolved.path), "personal OMO config is never replaced by an overlay");
+    for (const role of ["document-writer", "lark-operator"]) {
+      const rel = `${role}.md`;
+      assert.deepEqual(readFileSync(join(result.candidateDir, "oh-my-opencode-slim", rel)),
+        readFileSync(join(inputs.omoPromptDir.resolved.path, rel)), "local role bytes remain exact");
+      assert.equal(existsSync(join(result.candidateDir, "agents", rel)), false, "no native shadow");
+      const record = result.manifest.files.find(file => file.path === `oh-my-opencode-slim/${rel}`);
+      assert.equal(record.source, inputs.omoPromptDir.resolved.path);
+      assert.equal(record.sha256, inputs.omoPromptDir.resolved.files[rel]);
+      assert.equal(record.transform, undefined);
+    }
     const config = JSON.parse(readFileSync(join(result.candidateDir, "opencode.json")));
     assert.deepEqual(config.plugins.filter(x => typeof x === "string"),
       ["billion-context@latest", "oh-my-opencode-slim@3.0.7"]);

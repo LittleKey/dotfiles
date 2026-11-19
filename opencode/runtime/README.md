@@ -56,7 +56,7 @@ It is not a second collection of builtin-role append prompts.
 | Content | Maintenance source | Runtime responsibility |
 | --- | --- | --- |
 | Five builtin appends: designer, explorer, fixer, oracle, orchestrator | [`../oh-my-opencode-slim/*_append.md`](../oh-my-opencode-slim/) | Check `inputs.omoPromptDir.files` hashes and stage accepted files byte-identically. The shadowed librarian alias append is retired. |
-| Document Writer and Lark Operator bodies | `omo-coworkers/prompts/`, pinned by `inputs.coworkerPrompts` | Stage both bodies byte-identically into `oh-my-opencode-slim/`. No native markdown or inline system duplicates; Lark's `mode: all` is host metadata. |
+| Document Writer and Lark Operator bodies | Local `opencode/oh-my-opencode-slim/`, pinned by `inputs.omoPromptDir` | Stage both bodies byte-identically through the ordinary prompt loop. No sibling prompt dependency, native markdown or inline system duplicates; Lark's `mode: all` is host metadata. |
 | Installable skills and companion files | `generated/skills/` | Package the pinned skill inputs, preserving bytes and executable modes. These are skill files, not role appends. |
 | Prompt filtering | `lib/prompts.mjs` | Exclude retired Council overrides and backup files; no append body is embedded here. |
 

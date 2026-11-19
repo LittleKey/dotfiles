@@ -6,9 +6,8 @@
     "pinProtocol": "oprofile pin re-reads every pinned source and rewrites the sha256/files fields. Deliberate owner action — stage refuses drifted inputs otherwise.",
     "noTmpDependencies": "No /tmp path from the owner's composition session is baked in; example artifact locations appear only in README prose as examples.",
     "sourcesOfRecord": {
-      "dotfilesPrompts": "The selected dotfiles checkout's opencode/oh-my-opencode-slim is the sole builtin-role append source. Input paths below use the main checkout, not an old worktree. Other machines relocate paths to the same approved revision without changing content hashes; prompt and raw config sources are read-only during staging.",
-      "liveGlobalRoot": "/home/littlekey/.config/opencode supplies vibeguard.config.json only; personal skills are pinned under runtime/generated/skills.",
-      "coworkerPrompts": "omo-coworkers/prompts owns document-writer and lark-operator bodies. Stage them byte-identically into the OMO prompt directory; raw host config retains only Lark mode:all."
+      "dotfilesPrompts": "The selected dotfiles checkout's opencode/oh-my-opencode-slim is the sole role-body and builtin-role append source, including document-writer and lark-operator. Input paths below use the main checkout, not an old worktree. Other machines relocate paths to the same approved revision without changing content hashes; prompt and raw config sources are read-only during staging.",
+      "liveGlobalRoot": "/home/littlekey/.config/opencode supplies vibeguard.config.json only; personal skills are pinned under runtime/generated/skills."
     },
     "convergence": "V2 selects official unpatched oh-my-opencode-slim@3.0.7 directly through the host package manager; no patched OMO or BCP artifact accepted. Same-release stock skills are pinned offline resources. V1 remains an explicitly legacy patched lane; no stock V1 support asserted. Personal prompts and role/Claude guard configuration remain separate preserved inputs."
   },
@@ -54,14 +53,6 @@
         "oracle_append.md.bak-promptopt": "c189e97905f0b6697d4bd5610747e5998f41675f4666cb70645e08eff92e6e14",
         "orchestrator_append.md": "c176d3e5d1b4f804370423829710cbc052f7c6d32b68c02de3cc362a29a1eae0",
         "orchestrator_append.md.bak-promptopt": "b3be33cb747af1308fae4684615c948a6cc2d7662107ba861f8fede3d2d434ab"
-      }
-    },
-    "coworkerPrompts": {
-      "kind": "dir",
-      "source": "/home/littlekey/github/omo-coworkers/prompts",
-      "files": {
-        "document-writer.md": "4c636c7c4ba7f27421e0fcaec7150672e09f1ddbe7825c33ab9906a954526502",
-        "lark-operator.md": "b6e2bee850cf8ff2a5d9ab6ebea03f6c1695aae34eda6beea6aac11f88b31abb"
       }
     },
     "hostConfigSource": {

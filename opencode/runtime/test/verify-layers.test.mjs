@@ -1,9 +1,24 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { inspectV2ConfigStack, inspectV2AgentMatrix } from "../lib/verify.mjs";
+
+// TMPDIR may live below a real user .opencode directory. Include those
+// legitimate outer layers explicitly, without deriving expectations from the
+// verifier under test or modifying any user files.
+function outerLayers(root) {
+  const dirs = [];
+  for (let dir = dirname(root); dir !== dirname(dir); dir = dirname(dir)) {
+    dirs.unshift(join(dir, ".opencode"));
+  }
+  return dirs.filter(existsSync).flatMap(path => [
+    ...["opencode.json", "opencode.jsonc"].map(name => join(path, name))
+      .filter(existsSync).map(path => ({ type: "document", path })),
+    { type: "directory", path },
+  ]);
+}
 
 test("v2 layers accept an empty project or its existing config and refuse missing, duplicate or foreign sources", (t) => {
   const root = mkdtempSync(join(tmpdir(), "ppl-layer-"));
@@ -13,19 +28,22 @@ test("v2 layers accept an empty project or its existing config and refuse missin
   mkdirSync(candidate);
   mkdirSync(project);
   writeFileSync(join(candidate, "opencode.json"), "{}");
-  const base = [{ type: "document", path: join(candidate, "opencode.json") }, { type: "directory", path: candidate }];
+  const candidateLayers = [{ type: "document", path: join(candidate, "opencode.json") }, { type: "directory", path: candidate }];
+  const outer = outerLayers(root);
+  const base = [...candidateLayers, ...outer];
   const doc = { type: "document", path: join(project, "opencode.json") };
   const check = (layers) => inspectV2ConfigStack(layers, candidate, project).ok;
   assert.equal(check(base), true);
   assert.equal(existsSync(doc.path), false, "verification must not create project config");
   assert.equal(check([...base, doc]), false, "a nonexistent project source is not allowed");
   writeFileSync(doc.path, "{}");
-  assert.equal(check([...base, doc]), true);
+  assert.equal(check([...candidateLayers, doc, ...outer]), true);
+  if (outer.length) assert.equal(check([...candidateLayers, doc]), false, "existing outer layers cannot disappear");
   assert.equal(check(base), false, "a present project config cannot silently disappear");
-  assert.equal(check([...base, doc, doc]), false);
-  assert.equal(check([...base, doc, { type: "directory", path: "/production/.config/opencode" }]), false);
-  assert.equal(check([base[1], base[0], doc]), false, "layer order remains checked");
-  assert.equal(check([{ ...base[0], type: "unknown" }, base[1], doc]), false);
+  assert.equal(check([...candidateLayers, doc, doc, ...outer]), false);
+  assert.equal(check([...candidateLayers, doc, ...outer, { type: "directory", path: "/production/.config/opencode" }]), false);
+  assert.equal(check([base[1], base[0], doc, ...outer]), false, "layer order remains checked");
+  assert.equal(check([{ ...base[0], type: "unknown" }, base[1], doc, ...outer]), false);
 });
 
 test("v2 layers accept existing ancestor .opencode directories between candidate and project", (t) => {
@@ -41,6 +59,7 @@ test("v2 layers accept existing ancestor .opencode directories between candidate
   const base = [
     { type: "document", path: join(candidate, "opencode.json") },
     { type: "directory", path: candidate },
+    ...outerLayers(root),
     { type: "directory", path: ancestor },
   ];
   assert.equal(inspectV2ConfigStack(base, candidate, project).ok, true, "an existing ancestor .opencode is a legitimate v2.1.0 project-chain layer");

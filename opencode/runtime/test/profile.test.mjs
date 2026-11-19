@@ -497,7 +497,7 @@ test("stage v2 stock OMO: full candidate + manifest; refusal when required sibli
   assert.equal(JSON.parse(readFileSync(join(cand, "opencode.json"), "utf8")).agents["lark-operator"].mode, "all");
   for (const role of ["document-writer", "lark-operator"]) {
     assert.equal(readFileSync(join(cand, "oh-my-opencode-slim", `${role}.md`), "utf8"),
-      readFileSync(join(inputs.coworkerPrompts.resolved.path, `${role}.md`), "utf8"), "custom bodies come from their owning repository");
+      readFileSync(join(inputs.omoPromptDir.resolved.path, `${role}.md`), "utf8"), "custom bodies come unchanged from dotfiles");
   }
   assert.ok(!existsSync(join(cand, "oh-my-opencode-slim", "librarian_append.md")), "retired alias append is absent");
   assert.ok(existsSync(join(cand, "skills")));
