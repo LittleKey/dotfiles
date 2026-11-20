@@ -64,10 +64,6 @@
     "skillsDir": {
       "kind": "dir",
       "files": {
-        "domain-modeling/ADR-FORMAT.md": "944c92aa790e8fbdc9199640b170979abb8a34ba8d0fe18c2a01a63bce140ca0",
-        "domain-modeling/CONTEXT-FORMAT.md": "17ab16ce783e4d2801ee52fd9acdf550cbf44de65ae76797a93943bbedf22a13",
-        "domain-modeling/SKILL.md": "327a2b50620e2fd70abc6893cd6965e76b20f8d0adb0dc2c8d5eb3845efb643e",
-        "domain-modeling/agents/openai.yaml": "f6bf2aa996c6e6f53fdd0708e18a0d16a56aed8322cca59fedbe3c0d2c75f06b",
         "find-code-simplifications/SKILL.md": "c2c01d88b1498df0f5f7782f8069c02fa2dfce4927228ba614a65b5fd8dd1a89",
         "find-code-simplifications/agents/openai.yaml": "065b31274e6f89abf10ad2cf1edf12baa79fb1893ef3bbb28c104279d48f282c",
         "grill-with-docs/SKILL.md": "7de372c13488f1ee96cc11cd8907b56b6809cc93eef776eeddd37de6b6cbe3fe",
@@ -78,15 +74,6 @@
         "guided-grilling/SKILL.md": "6e165e3d814d52a7cc511525b9db049eef4493dd0c5284a3b66e8105f414a75a",
         "handoff/SKILL.md": "7c62de979fdc7ac32fb5ddb2146156c917f80ee070d30fadc9d40343c4b6ed25",
         "handoff/agents/openai.yaml": "5c479fd562c691851690e8b18c8501045bef0943c10743d636b2fae26add1d28",
-        "humanizer/.claude-plugin/marketplace.json": "24261fcfead5f536e0a6f0c3fd27fa809c69393217d67d617adb6c83a2715eb7",
-        "humanizer/.claude-plugin/plugin.json": "ce4f3dd0397c9ca71fe9a089dd00cd132436cfeba4513c53cc6c486f537de43c",
-        "humanizer/.github/workflows/validate.yml": "f2d6a8780fb0b3cf6fa7d2ffccd72d0fc8bee29b4e63ea0fd65924712c9055fd",
-        "humanizer/AGENTS.md": "8f5069d68622bc956e2d492f26879d2a06508e2ef16d2e573ab13f7a92a0607a",
-        "humanizer/LICENSE": "4ac4810254ab36d45419141aeb8e69bf50652cfafe5b2dab947d06d44e5cbf96",
-        "humanizer/README.md": "d546538831ce8423587208d4a86dbe2be1f1f63445505d284dc558e6de86dac0",
-        "humanizer/SKILL.md": "e8269e236bed06ed0fe4824c274112e54950b0cb46b0bafe5e1576ef7c9f93d5",
-        "humanizer/agents/openai.yaml": "9d87ff83149a04f86a372948b8ee35fa249de20923867bbc2a49304290aad736",
-        "humanizer/scripts/validate-package.py": "750e5f50561b8a5285bd1a20ed8b127af65b1b25d50e88c2ce5fe8522943c8fd",
         "setup-matt-pocock-skills/SKILL.md": "2bcd89e97777cdb705914424e39c97d5db524c8eb4eafac8120778a07774f0ec",
         "setup-matt-pocock-skills/agents/openai.yaml": "9527de0110541c45712319025155aeab8dc7d77c6ed6e5e83271bab1851ab939",
         "setup-matt-pocock-skills/domain.md": "edc6d6131fdffc4b7135704f5262124fc43355c95f61b7399dc5a4db643e28ca",
@@ -99,7 +86,7 @@
         "wait-what/SKILL.md": "e3f44e3ccbc0e7b62f20ba70b295fc9c9f4aa3f96c77168faee1c71bacbf4215",
         "wait-what/agents/openai.yaml": "b41faadf741d51e4ea184148b2d1854d93f947aaf754c7844f70a00f04194999"
       },
-      "role": "Personal-only installation tree: 11 skills, 34 files with preserved bytes and modes. All eight OMO bundled names are excluded, including the retired codemap/deepwork/oh-my-opencode-slim overrides. The executing-plans and writing-plans skills (7+1 files) were deliberately removed 2026-10-11 (owner decision) from both the maintained sources and this tree; eli5 (2 files) was retired the same day in a separate bounded pass. v1 obtains bundled resources from artifact-relative links and installs original-byte managed copies; v2 inherits in-process. Same-name personal inputs are refused. The historical generated/ directory name is retained; the mixed stock-patching generator and its manifest no longer maintain this tree.",
+      "role": "Personal-only installation tree: 9 skills, 21 files with preserved bytes and modes. All eight OMO bundled names are excluded, including the retired codemap/deepwork/oh-my-opencode-slim overrides. The executing-plans and writing-plans skills (7+1 files) were deliberately removed 2026-10-11 (owner decision) from both the maintained sources and this tree; eli5 (2 files) was retired the same day in a separate bounded pass. domain-modeling and humanizer (4+9 files) moved to the omo-coworkers OpenChamber extension on 2026-11-20 (owner decision) and were removed from both the maintained sources and this tree. v1 obtains bundled resources from artifact-relative links and installs original-byte managed copies; v2 inherits in-process. Same-name personal inputs are refused. The historical generated/ directory name is retained; the mixed stock-patching generator and its manifest no longer maintain this tree.",
       "source": "/home/littlekey/github/dotfiles/opencode/runtime/generated/skills"
     },
     "vibeguardConfig": {

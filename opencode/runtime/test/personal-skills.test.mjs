@@ -3,7 +3,9 @@
 // The executing-plans and writing-plans personal skills were removed
 // 2026-10-11; the relocation/install/rollback contract now runs against the
 // remaining personal skills, and executable-helper coverage is preserved via
-// a synthetic skill fixture instead of the removed plan helpers.
+// a synthetic skill fixture instead of the removed plan helpers (extended to
+// cover the humanizer helper when humanizer moved to the omo-coworkers
+// OpenChamber extension on 2026-11-20).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, readdirSync, statSync, renameSync, existsSync, rmSync, chmodSync, copyFileSync, cpSync } from 'node:fs';
@@ -20,10 +22,9 @@ const runtime = join(import.meta.dirname, '..');
 // sources (opencode/skills) and the pinned generated tree.
 const names = ['grilling-companion', 'guided-grilling', 'handoff'];
 // Deliberately removed personal skills: they must never appear in any stage.
-const REMOVED_SKILLS = ['executing-plans', 'writing-plans', 'eli5'];
-// A remaining personal skill whose script carries an executable bit — real
-// (non-synthetic) exec-mode preservation evidence.
-const REAL_EXECUTABLE = 'skills/humanizer/scripts/validate-package.py';
+// domain-modeling and humanizer moved to the omo-coworkers OpenChamber
+// extension on 2026-11-20; maintaining local copies would duplicate it.
+const REMOVED_SKILLS = ['executing-plans', 'writing-plans', 'eli5', 'domain-modeling', 'humanizer'];
 function inventory(root, prefix = '') {
   return Object.fromEntries(readdirSync(join(root, prefix), { withFileTypes: true }).flatMap((entry) => {
     const rel = prefix + entry.name;
@@ -101,11 +102,8 @@ for (const flavor of ['v1', 'v2']) {
         }
         for (const name of names) assert.deepEqual(inventory(join(root, 'skills', name)), expected[name], `${name}: complete bytes and modes`);
         for (const removed of REMOVED_SKILLS) assert.equal(existsSync(join(root, 'skills', removed)), false, `${removed}: removed skill is never staged`);
-        assert.equal(statSync(join(root, REAL_EXECUTABLE)).mode & 0o777, 0o755, 'remaining personal executable mode retained');
       };
       checkTrees(candidate);
-      const helperRec = result.manifest.files.find((file) => file.path === REAL_EXECUTABLE);
-      assert.equal(helperRec.mode, '0755', 'manifest records the remaining personal executable mode');
       const live = join(temp, 'installed');
       mkdirSync(live);
       activate({ candidateDir: candidate, liveRoot: live });
@@ -137,7 +135,7 @@ for (const flavor of ['v1', 'v2']) {
       const skillsRoot = join(result.candidateDir, 'skills');
       const tops = readdirSync(skillsRoot).sort();
       const expectedPersonalTops = [...new Set(Object.keys(pinned.profile.inputs.skillsDir.files).map((rel) => rel.split('/')[0]))].sort();
-      assert.equal(expectedPersonalTops.length, 11, 'profile pins exactly 11 remaining personal skills');
+      assert.equal(expectedPersonalTops.length, 9, 'profile pins exactly 9 remaining personal skills');
       for (const removed of REMOVED_SKILLS) {
         assert.ok(!tops.includes(removed), `${removed}: not among staged skills/ entries`);
         assert.equal(result.manifest.files.some((f) => f.path.startsWith(`skills/${removed}/`)), false, `${removed}: no manifest record`);
