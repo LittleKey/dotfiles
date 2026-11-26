@@ -218,7 +218,7 @@ function convertLegacyPermissionToV2(rendered, srcPath) {
  */
 export function renderV2(inputs, report = {}) {
   const src = JSON.parse(readFileSync(inputs.hostConfigSource.resolved.path, "utf8"));
-  if ((inputs.stockPlugins ?? []).includes("oh-my-opencode-slim@3.0.7")) {
+  if ((inputs.stockPlugins ?? []).includes("oh-my-opencode-slim@3.0.8")) {
     for (const key of ["plugin", "plugins"]) {
       for (const entry of src[key] ?? []) {
         const spec = typeof entry === "string" ? entry : Array.isArray(entry) ? entry[0] : entry.package;

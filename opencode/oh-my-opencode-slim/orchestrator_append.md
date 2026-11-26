@@ -6,6 +6,16 @@
 - Require independent Oracle review for user-requested review, security/privacy/permission changes, breaking contracts, irreversible/high-loss actions, formal approval and legal/commercial/SLA commitments. Otherwise follow upstream risk guidance; ordinary plans need no blanket gate.
 
 # Audience and dispatch
-- Default audience: software developer; avoid teaching familiar basics.
+
+- For the current conversation only, default to a software-developer reader and avoid teaching familiar basics unless context says otherwise. Do not carry this default into artifacts for other readers.
 - Dispatch in the recipient's working language with readable sources, constraints and expected output; send only missing context/deltas to continuing sessions. Claude's dedicated routing specifies its transport and output contract.
-- Use document-writer for formal-document wording.
+- Use document-writer for substantial reader-facing synthesis, audience adaptation, requested explanation/wording work and formal documents. Handle simple answers, status updates, clarifications and internal plans/state directly; do not make every reply pass through a writer.
+- For writer work, supply MODE, PROFILE, reader and reading purpose, known background or explicit unknowns, output constraints, sources, protected meaning and authorization limits. Resolve reader/purpose from clear context or ask when unclear; label low-risk presentation assumptions, never invent reader traits. Keep the audience brief in task/handoff metadata, not the business body.
+- Reuse a suitable author for revisions with current evidence and audience changes; use a fresh non-author session for independent review. COMMUNICATION is reply-only; maintained-document creation/body edits, replacement body and formal acceptance require FORMAL. An omitted profile means FORMAL; neither profile waives review, disclosure or publication gates.
+
+# Search tools
+
+- In shell commands, always use `rg` instead of `grep`/`grep -r` for file-content or recursive searches (common flags map directly: -i/-v/-n; recursion is rg's default behavior).
+- Prefer the built-in `grep` tool when making tool calls (it is ripgrep itself); this rule only constrains shell commands.
+- `rg` exits with code 1 on no match: add `|| true` or an explicit check inside `&&` chains or `set -e` scripts to avoid breaking the chain.
+- Prefer `rg` when filtering piped output too (e.g. `cmd | rg foo`); plain GNU grep is acceptable but not recommended in pure pipe scenarios.

@@ -239,7 +239,7 @@ test("GOAL1 v2 stage: stock skills vendor as the same link farm; supervisor keep
   const outDir = join(S, "v2-out");
   mkdirSync(outDir, { recursive: true });
   // Official V2 OMO is an npm selection; only sibling plugins are fixtures.
-  // The stock skill bytes come from the profile's pinned 3.0.7 resource tree.
+  // The stock skill bytes come from the profile's pinned 3.0.8 resource tree.
   const vg2 = join(S, "vg2-fake");
   mkdirSync(vg2, { recursive: true });
   writeFileSync(join(vg2, "index.js"), 'export default { id: "vibeguard-privacy-v2" };\n');
@@ -279,7 +279,7 @@ test("GOAL1 v2 stage: stock skills vendor as the same link farm; supervisor keep
   );
   const { manifest } = readStageManifest(cand);
   assert.equal(manifest.files.filter((f) => f.path.startsWith("skills/") && f.link).length,
-    Object.keys(profile.inputs.omoStockSkills307.files).filter(f => STOCK_INHERITED_SKILLS.includes(f.split("/")[0])).length,
+    Object.keys(profile.inputs.omoStockSkills308.files).filter(f => STOCK_INHERITED_SKILLS.includes(f.split("/")[0])).length,
     "v2 manifest records every pinned stock-skill resource link");
 });
 

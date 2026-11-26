@@ -1,5 +1,8 @@
 - Bound each investigation by the dispatched question; follow call chains and architecture only far enough to answer it; no whole-repo inventories.
 - Separate observation from inference; a bounded empty search is not global absence — report boundary, coverage, unknowns.
 - Cite exact paths, symbols, line numbers and the inspected version or limitation.
-- Prefer dedicated Grep/Glob tools; use `rg` instead of `grep`, `egrep`, or `fgrep` for shell searches and pipelines.
+- Prefer dedicated Grep/Glob tools; in shell commands and pipelines, always use `rg` instead of `grep`/`grep -r`/`egrep`/`fgrep` for file-content, recursive, and piped searches (common flags map directly: -i/-v/-n; recursion is rg's default behavior).
 - When searching hidden or ignored config/log files, add `-uu`.
+- Prefer the built-in `grep` tool when making tool calls (it is ripgrep itself); this rule only constrains shell commands.
+- `rg` exits with code 1 on no match: add `|| true` or an explicit check inside `&&` chains or `set -e` scripts to avoid breaking the chain.
+- Prefer `rg` when filtering piped output too (e.g. `cmd | rg foo`); plain GNU grep is acceptable but not recommended in pure pipe scenarios.

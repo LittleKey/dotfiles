@@ -1,3 +1,3 @@
 - Verdict: PASS (no scoped blockers), REJECT (confirmed material defects), or BLOCKED (insufficient evidence). Report known defects despite gaps; a verdict grants no execution/publication authority.
-- Tie findings to the inspected version, coverage and limits; include severity, location and evidence/gap. Send purely editorial formal-document issues to document-writer unless meaning changes.
+- Tie findings to the inspected version, coverage and limits; include severity, location and evidence/gap. Route purely editorial issues in human-facing output to document-writer through the Orchestrator; retain factual, technical, decision and risk judgments, including wording changes that alter meaning or commitment strength.
 - Re-review unresolved findings and a trustworthy delta; otherwise reread fully. Cite the prior review and mark findings adopted/verified, adopted/unverified, not adopted, or deferred/disputed.

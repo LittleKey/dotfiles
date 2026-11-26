@@ -2,35 +2,63 @@
 
 ## Current V2 lane
 
-- Select **`oh-my-opencode-slim@3.0.7`** directly in `plugins` through
+- Select **`oh-my-opencode-slim@3.0.8`** directly in `plugins` through
   `runtime/profile.json`. The host resolves the official, unpatched npm package.
   Do not run the OMO installer afterward: that could change config or add another source.
 - No `--omo-plugin` or `--bcp-plugin` on V2. The old patched V2 component is
   retained under `rollbacks.patchedV2OMO` only. V1 is explicitly legacy (patched
-  3.0.5 artifact); official 3.0.7 compatibility on V1 is not established here.
-- Same-release `src/skills` bytes are vendored unchanged under
-  `runtime/resources/omo-3.0.7/skills`, with upstream LICENSE and pinned input
-  hashes. These are offline resources, not a second executable plugin.
+  3.0.5 artifact) and is not upgraded to 3.0.8; official 3.0.8 (or 3.0.7) compatibility
+  on V1 is not established here.
+- Same-release `src/skills` bytes (20 skill files) and upstream `LICENSE` are vendored
+  unchanged under `runtime/resources/omo-3.0.8/skills` and `runtime/resources/omo-3.0.8/LICENSE`
+  (pinned by `inputs.omoStockSkills308`; see `runtime/resources/omo-3.0.8/PROVENANCE.md`).
+  The earlier `runtime/resources/omo-3.0.7/` directory is retained as historical resource
+  inventory. These are offline resources, not a second executable plugin.
 - Preserve role presets, append prompts, ACP Claude routing and the separate
   Claude guard component. Stage still requires the other declared component flags.
-  Dotfiles `opencode/oh-my-opencode-slim/` alone owns the Document Writer and
-  Lark Operator bodies: staging copies those pinned local bytes unchanged,
-  without sibling coworkers prompts or native-agent shadows. The existing
-  `opencode/oh-my-opencode-slim.json` remains the personal OMO config; never
-  overwrite it with a generic coworkers overlay. Existing global skills/guard
-  migration collisions require explicit resolution, not automatic deactivation.
+  While `omo-coworkers` (`openchamber/plugin/roles/{document-writer.md,routing.json,audience.md,oracle-line.txt}`)
+  is the upstream semantic source for the four reader-aware `document-writer` payloads,
+  dotfiles `opencode/oh-my-opencode-slim/` and `opencode/oh-my-opencode-slim.json` own
+  the complete static Document Writer and Lark Operator bodies, routing, models, skills
+  and permissions: staging copies those pinned local bytes unchanged, without sibling
+  coworkers prompts or native-agent shadows. Static OMO routing for `document-writer`
+  lives **only** in `opencode/oh-my-opencode-slim.json` (`agents["document-writer"].orchestratorPrompt`)
+  and is never duplicated in `orchestrator_append.md`. Do **not** enable the `omo-coworkers`
+  extension's legacy `OMO_COWORKERS_ENABLE_WRITER_ROLE=1` runtime transform alongside
+  static dotfiles delivery (both extension plugin hooks default off, and uninstalling the
+  extension does not remove dotfiles files).
+- Future upstream `document-writer` payload updates are applied explicitly and offline
+  from a committed local `omo-coworkers` Git revision (after reviewing and updating any
+  changed payload SHA-256 pins in `runtime/lib/writer-role-update.mjs`) by running
+  `node opencode/runtime/bin/update-writer-role.mjs /path/to/local/omo-coworkers <FULL_40_HEX_COMMIT>`
+  from the dotfiles root, then staging and activating through `oprofile`. Source commits
+  and `runtime/resources/writer-role/SOURCE.json` binding (`deployable: true` once bound to
+  immutable Git objects; initially `sourceCommit: null`, `deployable: false` while pending
+  the reviewed source commit) record provenance readiness only—they do not automatically
+  stage, install, or activate changes in `~/.config/opencode`, and `deployable: false` is
+  descriptive provenance status rather than an enforced programmatic `oprofile stage` gate.
+- Existing `opencode/oh-my-opencode-slim.json` and `opencode/opencode.json` remain the
+  personal configuration sources; never overwrite them with a generic coworkers overlay
+  or auto-import live credentials/settings. Existing global skills/guard migration collisions
+  require explicit resolution, not automatic deactivation.
 - Before activation, back up and explicitly retire old OMO/BCP config entries
   and discovered artifacts under **both** `plugin/` and `plugins/`. Migration
   preflight refuses old/duplicate sources even with `--replace`; it never
   silently deletes them. JSONC requiring reconciliation also refuses.
 - Run stage into a disk-backed candidate directory. Review `plan-activation` before
-  any separately authorized activation. No real deployment is performed by this change.
+  any separately authorized activation. No real deployment is performed by repository commits
+  or snapshot updates.
 - Required real acceptance: isolated V2 host with dedicated HOME/config/data/state/cache
   and no production DB, official package resolution/version evidence, exactly one
   OMO load and no BCP, preserved role models/prompts/modes, Claude ACP and guard
-  routing, skill listing and relocation checks. Metadata/fixture success is not
-  runtime, ACP, model, compression or privacy acceptance. Installing/resolving packages,
-  restarting production and paid calls require separate authorization.
+  routing, skill listing and relocation checks. Static assembly determinism and
+  metadata/fixture checks (`systemBytes: 9985`, expected model) do not guarantee
+  upstream LLM provider prompt-cache hit rates and are not runtime, ACP, model,
+  compression or privacy acceptance. After authorized deployment, verify the actual
+  served `system` body, `description`, `orchestrator`/`oracle` routing, `model`, and
+  `permissions` on the running server (a process restart alone is insufficient).
+  Installing/resolving packages, restarting production and paid calls require separate
+  authorization.
 
 ## Historical bootstrap snapshot (not current install instructions)
 

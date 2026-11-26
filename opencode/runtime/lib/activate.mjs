@@ -186,7 +186,7 @@ export function planActivation({ candidateDir, liveRoot, replace = false }) {
   const plan = { manifestPath, flavor: manifest.flavor, actions: [], conflicts: [], notes: [] };
   const candidateConfigPath = join(candidateDir, "opencode.json");
   const candidateConfig = existsSync(candidateConfigPath) ? JSON.parse(readFileSync(candidateConfigPath, "utf8")) : {};
-  if (manifest.flavor === "v2" && candidateConfig.plugins?.includes("oh-my-opencode-slim@3.0.7")) {
+  if (manifest.flavor === "v2" && candidateConfig.plugins?.includes("oh-my-opencode-slim@3.0.8")) {
     const refuse = (path) => plan.conflicts.push(`OMO migration preflight: ${path} may load an old/duplicate OMO or BCP source — owner must back up and retire it explicitly; nothing deleted (including with --replace)`);
     for (const name of ["opencode.json", "opencode.jsonc"]) {
       const path = join(liveRoot, name);
@@ -197,7 +197,7 @@ export function planActivation({ candidateDir, liveRoot, replace = false }) {
         const entries = [...(config.plugin ?? []), ...(config.plugins ?? [])];
         const omo = entries.map(e => typeof e === "string" ? e : Array.isArray(e) ? e[0] : e.package)
           .filter(s => /oh-my-opencode|omoPlugin|omo-delivery|blackboard|opencode-bcp/i.test(s ?? ""));
-        if (omo.length && !(name === "opencode.json" && omo.length === 1 && omo[0] === "oh-my-opencode-slim@3.0.7")) refuse(path);
+        if (omo.length && !(name === "opencode.json" && omo.length === 1 && omo[0] === "oh-my-opencode-slim@3.0.8")) refuse(path);
       } catch { refuse(path); }
     }
     for (const root of ["plugin", "plugins"]) {

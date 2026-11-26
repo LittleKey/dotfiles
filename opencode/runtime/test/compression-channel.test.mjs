@@ -17,7 +17,7 @@ test("personal compression channel uses official npm latest without a frozen com
   const inputs = verifyAllInputs(profile);
   const entries = ["vibeguardV1", "omoPluginV1", "bcpPlugin"].map(component => ({component, relPath: `plugins/${component}/index.js`}));
   for (const flavor of ["v1", "v2"]) {
-    const stock = ["billion-context@latest", ...(flavor === "v2" ? ["oh-my-opencode-slim@3.0.7"] : [])];
+    const stock = ["billion-context@latest", ...(flavor === "v2" ? ["oh-my-opencode-slim@3.0.8"] : [])];
     assert.deepEqual(profile.flavors[flavor].stockPlugins, stock);
     const args = {...inputs, stockPlugins: profile.flavors[flavor].stockPlugins};
     const rendered = flavor === "v1" ? renderV1(args, entries) : renderV2(args);

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "repository": "git@github.com:LittleKey/omo-coworkers.git",
+  "sourceCommit": "5cd8fe1dd22e6e96a2255becf695e1158e75d7a3",
+  "deployable": true,
+  "status": "bound to immutable git objects; activation unverified",
+  "files": {
+    "document-writer.md": {
+      "path": "openchamber/plugin/roles/document-writer.md",
+      "sha256": "36ef44de293053e5fbeb743851d63ba5c9965a85c78147e2b40dacc50f71fd9d"
+    },
+    "routing.json": {
+      "path": "openchamber/plugin/roles/routing.json",
+      "sha256": "9de5fb6d0ee5244e6398424326620ef557bfc478beef8a793d36d5f1186da115"
+    },
+    "audience.md": {
+      "path": "openchamber/plugin/roles/audience.md",
+      "sha256": "0e5c2d7a7ad22309dab93659b43224f7000143219813356712179c532f5c67a3"
+    },
+    "oracle-line.txt": {
+      "path": "openchamber/plugin/roles/oracle-line.txt",
+      "sha256": "1cbc333a6b9d0b6a2c868fa1bb3191d369f9c8a4b68f18b2e83c202aa58b0c28"
+    }
+  },
+  "outputs": {
+    "oh-my-opencode-slim/document-writer.md": "36ef44de293053e5fbeb743851d63ba5c9965a85c78147e2b40dacc50f71fd9d",
+    "oh-my-opencode-slim.json": "630124f0c909fe409e991645bea2cd14fb4b061bf3cc64c758d232ba06cd73f2",
+    "oh-my-opencode-slim/orchestrator_append.md": "6e597a5ff764bce909772a82ad3f4588a4e228613e6ee18e10d18002653edd08",
+    "oh-my-opencode-slim/oracle_append.md": "3e8387bf74dcbdefbb259e573f611b7876ee18cc4be2932263cc97427801df27",
+    "runtime/profile.json": "1c24015f8154e6bd77677669c0e838ebd8ea43b0d9cc7bd52d9f12a02741ced5"
+  }
+}

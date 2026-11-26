@@ -51,10 +51,10 @@ test("stock V2 stages offline resources without executable OMO/BCP artifacts; mi
     }
     const config = JSON.parse(readFileSync(join(result.candidateDir, "opencode.json")));
     assert.deepEqual(config.plugins.filter(x => typeof x === "string"),
-      ["billion-context@latest", "oh-my-opencode-slim@3.0.7"]);
+      ["billion-context@latest", "oh-my-opencode-slim@3.0.8"]);
     assert.equal(existsSync(join(result.candidateDir, "plugins/omoPlugin")), false);
     assert.equal(readFileSync(join(result.candidateDir, "skills/deepwork/SKILL.md"), "utf8"),
-      readFileSync(join(inputs.omoStockSkills307.resolved.path, "deepwork/SKILL.md"), "utf8"));
+      readFileSync(join(inputs.omoStockSkills308.resolved.path, "deepwork/SKILL.md"), "utf8"));
     // Real filesystem activation in an isolated fixture is not a host/plugin
     // runtime proof: the sibling entries here are deliberately synthetic.
     const cleanLive = join(root, "clean-live");
@@ -65,7 +65,7 @@ test("stock V2 stages offline resources without executable OMO/BCP artifacts; mi
     const installed = JSON.parse(readFileSync(join(cleanLive, "opencode.json"), "utf8"));
     assert.deepEqual(installed.plugins, config.plugins);
     assert.equal(readFileSync(join(cleanLive, "skills/deepwork/SKILL.md"), "utf8"),
-      readFileSync(join(inputs.omoStockSkills307.resolved.path, "deepwork/SKILL.md"), "utf8"));
+      readFileSync(join(inputs.omoStockSkills308.resolved.path, "deepwork/SKILL.md"), "utf8"));
     assert.equal(existsSync(join(cleanLive, "plugins/omoPlugin")), false);
     assert.equal(readFileSync(join(cleanLive, "owner-unrelated.txt"), "utf8"), "keep me\n");
     assert.equal(planActivation({ candidateDir: result.candidateDir, liveRoot: cleanLive }).ok, true);
@@ -134,8 +134,8 @@ test("stock V2 stages offline resources without executable OMO/BCP artifacts; mi
     rmSync(join(liveRoot, "plugins"), { recursive: true });
     for (const entries of [
       ["oh-my-opencode-slim@3.0.6"],
-      ["oh-my-opencode-slim@3.0.7", "oh-my-opencode-slim@3.0.7"],
-      ["oh-my-opencode-slim@3.0.7", "./plugins/blackboard.ts"],
+      ["oh-my-opencode-slim@3.0.8", "oh-my-opencode-slim@3.0.8"],
+      ["oh-my-opencode-slim@3.0.8", "./plugins/blackboard.ts"],
     ]) {
       const bytes = JSON.stringify({ plugins: entries, unrelated: "preserve" });
       writeFileSync(join(liveRoot, "opencode.json"), bytes);
@@ -147,6 +147,6 @@ test("stock V2 stages offline resources without executable OMO/BCP artifacts; mi
     writeFileSync(join(liveRoot, "opencode.jsonc"), "// owner reconciliation required\n{}");
     assert.throws(() => activate({ candidateDir: result.candidateDir, liveRoot, replace: true }), /OMO migration preflight/);
     assert.equal(readFileSync(join(liveRoot, "opencode.jsonc"), "utf8"), "// owner reconciliation required\n{}");
-    assert.equal(profile.flavors.v1.stockPlugins.includes("oh-my-opencode-slim@3.0.7"), false);
+    assert.equal(profile.flavors.v1.stockPlugins.includes("oh-my-opencode-slim@3.0.8"), false);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });

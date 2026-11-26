@@ -9,7 +9,7 @@
       "dotfilesPrompts": "The selected dotfiles checkout's opencode/oh-my-opencode-slim is the sole role-body and builtin-role append source, including document-writer and lark-operator. Input paths below use the main checkout, not an old worktree. Other machines relocate paths to the same approved revision without changing content hashes; prompt and raw config sources are read-only during staging.",
       "liveGlobalRoot": "/home/littlekey/.config/opencode supplies vibeguard.config.json only; personal skills are pinned under runtime/generated/skills."
     },
-    "convergence": "V2 selects official unpatched oh-my-opencode-slim@3.0.7 directly through the host package manager; no patched OMO or BCP artifact accepted. Same-release stock skills are pinned offline resources. V1 remains an explicitly legacy patched lane; no stock V1 support asserted. Personal prompts and role/Claude guard configuration remain separate preserved inputs."
+    "convergence": "V2 selects official unpatched oh-my-opencode-slim@3.0.8 directly through the host package manager; no patched OMO or BCP artifact accepted. Same-release stock skills are pinned offline resources. V1 remains an explicitly legacy patched lane; no stock V1 support asserted. Personal prompts and role/Claude guard configuration remain separate preserved inputs."
   },
   "hosts": {
     "floors": {
@@ -35,7 +35,7 @@
     "omoConfig": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/oh-my-opencode-slim.json",
-      "sha256": "f1e960c8b6bde7bffb622c3981df8b4c22dee533a1355e3184d1e82933d2c141"
+      "sha256": "630124f0c909fe409e991645bea2cd14fb4b061bf3cc64c758d232ba06cd73f2"
     },
     "omoPromptDir": {
       "kind": "dir",
@@ -43,23 +43,23 @@
       "files": {
         "council_append.md.bak-promptopt": "ff832d25e5f99ab97f7dafa1f97875020f0ddd1d0a8052b56bd277da50912731",
         "designer_append.md": "fb9ec7703bcfb6edf01a906bae40b8d33c0e2b521fe74dfca54846c738b5dc9c",
-        "document-writer.md": "4c636c7c4ba7f27421e0fcaec7150672e09f1ddbe7825c33ab9906a954526502",
+        "document-writer.md": "36ef44de293053e5fbeb743851d63ba5c9965a85c78147e2b40dacc50f71fd9d",
         "document-writer.md.bak-promptopt": "9c191381d7b965edff6f59411521933589e695c74b2f1351dcc7864ce7d22842",
-        "explorer_append.md": "5857366e643d3d6d07ec02c05eda70529a0ad1110fc1885cf160886f4c34f4f8",
-        "fixer_append.md": "d7ffbb77f60c0bb9e5639b482e3fb219eb083b32a0f4146a6c823536f1c54f1d",
+        "explorer_append.md": "c6d4e92a0552809f7dc6721b0a119765a55d1d9b6070c5cafa4d84093567d173",
+        "fixer_append.md": "7a0e0126b772351048d6f587cc43a88ffe65ceec85d15a255a51c0c18d30a477",
         "lark-operator.md": "b6e2bee850cf8ff2a5d9ab6ebea03f6c1695aae34eda6beea6aac11f88b31abb",
         "lark-operator.md.bak-promptopt": "7edad9038f8fd2f538e6eea7d68ef052b6cc10e26c488c3a5e2bdab3877dda8e",
-        "oracle_append.md": "85dab1a38b2b45f37909e066c3328d984ae970fd477039527310319a30ac3577",
+        "oracle_append.md": "3e8387bf74dcbdefbb259e573f611b7876ee18cc4be2932263cc97427801df27",
         "oracle_append.md.bak-promptopt": "c189e97905f0b6697d4bd5610747e5998f41675f4666cb70645e08eff92e6e14",
-        "orchestrator_append.md": "4772d4a1ba5159411a2baac6f7739748bd62ddf48f3e8d54db7daaff52f8add9",
+        "orchestrator_append.md": "6e597a5ff764bce909772a82ad3f4588a4e228613e6ee18e10d18002653edd08",
         "orchestrator_append.md.bak-promptopt": "b3be33cb747af1308fae4684615c948a6cc2d7662107ba861f8fede3d2d434ab"
       }
     },
     "hostConfigSource": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/opencode.json",
-      "sha256": "e93c491422563074bd3bbea08b3ad04ebce70f9162fc344bedc6772b536d3839",
-      "role": "Raw host settings from the dotfiles source. Plugin selection is maintained only in this profile's components and flavors sections, together with explicitly supplied artifacts; the raw source has no plugin list. The obsolete three-entry list was removed without changing v1/v2 rendered settings. Do not feed rendered production agent permissions back into the raw-source renderer. Credentials are scrubbed unless explicit private production staging is requested."
+      "sha256": "beb61e99257f48e6c204f0f1db51d1f18ae0b03a22dc89c6402631746446add8",
+      "role": "Raw host settings from the dotfiles source, including its preserved legacy plugins list. The profile renderer ignores that raw list: effective plugin selection comes only from this profile's components and flavors sections, together with explicitly supplied artifacts. Raw v1/v2 schema is normalized by the renderer, not migrated in this source. Do not feed rendered production agent permissions back into the raw-source renderer. Credentials are scrubbed unless explicit private production staging is requested."
     },
     "skillsDir": {
       "kind": "dir",
@@ -95,32 +95,32 @@
       "sha256": "647dbe7f4412ee4ad8b11bf73f21c96a14ad0861f97d7497de87c989805067a8",
       "role": "v1+v2 copyExtra (vibeguard.config.json) — canonical repo copy, deployed to live root by activate"
     },
-    "omoStockSkills307": {
+    "omoStockSkills308": {
       "kind": "dir",
-      "source": "/home/littlekey/github/dotfiles/opencode/runtime/resources/omo-3.0.7/skills",
+      "source": "/home/littlekey/github/dotfiles/opencode/runtime/resources/omo-3.0.8/skills",
       "files": {
         "ai-estimates/SKILL.md": "84d821eefb21f2291edc68e39666778d87fe83d5ff80258e1ae879bc57b80111",
         "clonedeps/README.md": "40fef0d08b95211d69819475d1617e613230ced3cc125c272d439bf58343b99a",
-        "clonedeps/SKILL.md": "e6f7e3e6717f6d3a22a824eacb2988b5e6cf4758f4b69b9d326c8d325690f205",
-        "clonedeps/codemap.md": "852d7e1b556f1ae43b696b4fcef1ff8b797830cf97e4e8567ecc850b035fe83b",
+        "clonedeps/SKILL.md": "8b958a9766572e238443a8c20f761f5dadeeb3929075e04c41d77ae348c26784",
+        "clonedeps/codemap.md": "6adee9fe40e8847d46d9bf7bc5dec505a0bcc5c33b8e4687582c91abf6eed322",
         "codemap.md": "3120ed092fc8d06766037ac031a9e5d170376d7e7febb9db3a559bdb0a986381",
         "codemap/README.md": "fab8e2159592b290b5615f2b234082f5c1d4283a538df9f9542afa841c76fa0b",
         "codemap/SKILL.md": "d03151f3243902c1624a7353cb47db93f7dc59f21122982d79539483eda5f1ee",
-        "codemap/codemap.md": "eb16c36c04ef8a927b7391565ac5e18c210ac2e3bbff2b803159f9c71cd55f6b",
+        "codemap/codemap.md": "798fb690cfa74cbcf850588304dc332d56c18bc8418d0b2ee6ddf2516963edc4",
         "codemap/scripts/codemap.mjs": "a6e59ec16f7b7e5de185a9cf35933c23e94dfaab3389a99eed66a7ece3c1fdb5",
         "codemap/scripts/codemap.test.ts": "bd94813c7545a1fe0fa46f2c8967cb7b3d8531b78e7ff313d923cabad996d569",
         "deanchor/SKILL.md": "3eef2b5c116848ea84272b78d9fc6e90757b2f31f93187ac6c021a82eb751667",
-        "deepwork/SKILL.md": "e03abf772c6c5fa44bddc34ff1db2da857983122f3c3cfa267b4571463da33ab",
-        "oh-my-opencode-slim/SKILL.md": "423d9104dbd0cb85def94cec4fffb644ea99fda5d43450fb387c581a47846a08",
+        "deepwork/SKILL.md": "305aa89f81c60c7868e5e38574fb7aa8403f5a189685dc2126a7819f6480b308",
+        "oh-my-opencode-slim/SKILL.md": "cc9586ed77a0065ffe9c08a5fef7a51bad4bc2d3fccf31e7a032511445c1fcc1",
         "reflect/SKILL.md": "cf4730ba9345b508ebac3f8f2422b3a1e08a00845423eb5afe1d352056cbf877",
         "simplify/README.md": "30e479208ff37a348388284f434fde6b9ca9cbf704c56f21781b6175021cc7ad",
         "simplify/SKILL.md": "29e126c20e8310fad21bd0db5fe4225c88538aa8585b1efbc9726a684643cf10",
-        "simplify/codemap.md": "e8659ed4db1cbbf5b814d172db35306c172f88ef24c34abbe8c53ae62cc75281",
+        "simplify/codemap.md": "e9ecd0194d2a938cfa390e854be7f61efb2f85dfcb47e9b158fd9c6d9e602ed5",
         "step-back/SKILL.md": "a27b861ced691f0d05d77fd46d6c1abea1826ddcfcc3a6acc78913887d5308c7",
         "verification-planning/SKILL.md": "993a20c2eb6393a832dacdf473937663846c581262d8abddbe23f0268d928236",
-        "worktrees/SKILL.md": "09c9b694ff3450e96d078ff687f25dae6238202972fdc62a6769605531bc22f6"
+        "worktrees/SKILL.md": "7d1cabe9164a584c99c6aa2de96848360d9c17311bcd57cf125f5a251a53488a"
       },
-      "role": "Unmodified src/skills from official npm oh-my-opencode-slim@3.0.7; offline resources only, not an executable plugin. LICENSE adjacent. Runtime discovery still requires isolated host evidence."
+      "role": "Unmodified src/skills from official npm oh-my-opencode-slim@3.0.8; offline resources only, not an executable plugin. LICENSE adjacent. Runtime discovery still requires isolated host evidence."
     }
   },
   "components": {
@@ -286,7 +286,7 @@
     "v2": {
       "stockPlugins": [
         "billion-context@latest",
-        "oh-my-opencode-slim@3.0.7"
+        "oh-my-opencode-slim@3.0.8"
       ],
       "copyExtras": [
         {
@@ -294,7 +294,7 @@
           "as": "vibeguard.config.json"
         }
       ],
-      "stockSkillsInput": "omoStockSkills307"
+      "stockSkillsInput": "omoStockSkills308"
     }
   },
   "expected": {
@@ -316,7 +316,9 @@
           "systemBytesNote": "UTF-8 bytes of the preserved body; JavaScript string length is not a byte count."
         },
         "document-writer": {
-          "model": "deepseek-flash"
+          "model": "gemini-4-hydrogen",
+          "systemBytes": 9985,
+          "systemBytesNote": "UTF-8 bytes of the reviewed static writer body; metadata expectation only, not evidence of actual activation."
         },
         "oracle": {
           "model": "gpt-6-astra"
@@ -339,5 +341,5 @@
       }
     }
   },
-  "pinnedAt": "2026-11-18T16:43:07.721Z"
+  "pinnedAt": "2026-11-25T17:11:36Z"
 }

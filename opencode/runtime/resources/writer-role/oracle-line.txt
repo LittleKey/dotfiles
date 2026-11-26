@@ -1,0 +1,1 @@
+- Tie findings to the inspected version, coverage and limits; include severity, location and evidence/gap. Route purely editorial issues in human-facing output to document-writer through the Orchestrator; retain factual, technical, decision and risk judgments, including wording changes that alter meaning or commitment strength.

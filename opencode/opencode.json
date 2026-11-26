@@ -549,7 +549,56 @@
                 "reasoningEffort": "xhigh"
               }
             }
-          ]
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0
+          }
+        },
+        "gemini-4-neon": {
+          "name": "Gemini 4 Neon",
+          "limit": {
+            "context": 1048576,
+            "output": 65536
+          },
+          "capabilities": {
+            "reasoning": {
+              "supported": true
+            },
+            "tools": true,
+            "input": ["text", "image"],
+            "output": ["text"]
+          },
+          "variants": [
+            {
+              "id": "low",
+              "settings": {
+                "reasoningEffort": "low"
+              }
+            },
+            {
+              "id": "medium",
+              "settings": {
+                "reasoningEffort": "medium"
+              }
+            },
+            {
+              "id": "high",
+              "settings": {
+                "reasoningEffort": "high"
+              }
+            },
+            {
+              "id": "xhigh",
+              "settings": {
+                "reasoningEffort": "xhigh"
+              }
+            }
+          ],
+          "cost": {
+            "input": 0,
+            "output": 0
+          }
         },
         "glm-5.3": {
           "name": "GLM-5.3",

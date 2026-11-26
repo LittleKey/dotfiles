@@ -55,21 +55,103 @@ It is not a second collection of builtin-role append prompts.
 
 | Content | Maintenance source | Runtime responsibility |
 | --- | --- | --- |
-| Five builtin appends: designer, explorer, fixer, oracle, orchestrator | [`../oh-my-opencode-slim/*_append.md`](../oh-my-opencode-slim/) | Check `inputs.omoPromptDir.files` hashes and stage accepted files byte-identically. The shadowed librarian alias append is retired. |
-| Document Writer and Lark Operator bodies | Local `opencode/oh-my-opencode-slim/`, pinned by `inputs.omoPromptDir` | Stage both bodies byte-identically through the ordinary prompt loop. No sibling prompt dependency, native markdown or inline system duplicates; Lark's `mode: all` is host metadata. |
+| Five builtin appends: designer, explorer, fixer, oracle, orchestrator | [`../oh-my-opencode-slim/*_append.md`](../oh-my-opencode-slim/) | Check `inputs.omoPromptDir.files` hashes and stage accepted files byte-identically. The shadowed librarian alias append is retired. (`orchestrator_append.md` `# Audience and dispatch` and `oracle_append.md` editorial routing line are composed from the pinned `runtime/resources/writer-role/` snapshot via `bin/update-writer-role.mjs`.) |
+| Document Writer and Lark Operator bodies | Local `opencode/oh-my-opencode-slim/`, pinned by `inputs.omoPromptDir` (`document-writer.md` composed from `runtime/resources/writer-role/document-writer.md`) | Stage both bodies byte-identically through the ordinary prompt loop. No sibling prompt dependency at stage/runtime, and no native markdown or inline system duplicates; Lark's `mode: all` is host metadata. |
+| Document Writer OMO routing (`description` and `orchestratorPrompt`) | `../oh-my-opencode-slim.json` (`agents["document-writer"]`), updated from `runtime/resources/writer-role/routing.json` | Pinned by `inputs.omoConfig.sha256` and staged as the single static routing authority; `orchestratorPrompt` is never duplicated in `orchestrator_append.md`. |
 | Installable skills and companion files | `generated/skills/` | Package the pinned skill inputs, preserving bytes and executable modes. These are skill files, not role appends. |
 | Prompt filtering | `lib/prompts.mjs` | Exclude retired Council overrides and backup files; no append body is embedded here. |
 
-The `document-writer` package no longer mirrors the builtin appends. Edit them only
-in this dotfiles checkout. Candidate and installed copies are outputs, and their
-hash inventories are verification metadata, not independently maintained prose.
-The repository-owned `profile.json` inputs point at the main checkout rather
-than the former phase-1 worktree.
+The `omo-coworkers` package does not mirror the full builtin appends or personal OMO
+overlay. Instead, `omo-coworkers` (`openchamber/plugin/roles/{document-writer.md,routing.json,audience.md,oracle-line.txt}`)
+is the upstream semantic source for only the four fixed reader-aware `document-writer`
+payloads, while this `dotfiles/opencode` checkout owns the complete static OMO files,
+personal role `model`/`skills`/`permissions`, and deployment authority. Candidate and
+installed copies are outputs, and their hash inventories are verification metadata,
+not independently maintained prose. The repository-owned `profile.json` inputs point
+at the main checkout rather than the former phase-1 worktree.
 
 There is no managed global `AGENTS.md`: the owner removed it on 2026-10-21
-and the runtime stages no machine-global instruction file. Shell-search
-guidance is scoped to the Explorer and Fixer appends; there is no global
-language policy.
+and the runtime stages no machine-global instruction file. Shell-search (`rg`)
+guidance lives in the Explorer, Fixer and Orchestrator (`# Search tools`) appends;
+there is no global language policy.
+
+### Explicit offline writer-role snapshot updater (`bin/update-writer-role.mjs`)
+
+Upstream `document-writer` payload changes in `omo-coworkers` are never automatically
+fetched, copied at runtime, or installed into `~/.config/opencode`. Dotfiles consumes
+them only through an explicit offline update step:
+
+```bash
+# From the dotfiles repository root:
+node opencode/runtime/bin/update-writer-role.mjs /path/to/local/omo-coworkers <FULL_40_HEX_COMMIT>
+
+# Or from dotfiles/opencode/:
+node runtime/bin/update-writer-role.mjs /path/to/local/omo-coworkers <FULL_40_HEX_COMMIT>
+```
+
+- **Immutable local Git-object input (Git `>=2.45`, no automatic fetch, dirty worktree ignored)**:
+  The local `omo-coworkers` Git repository must already contain `<FULL_40_HEX_COMMIT>`
+  (running `git fetch` is a separate operator action; the updater performs no network
+  access and executes no upstream code). Every updater `git` invocation passes explicit
+  global `--no-replace-objects --no-lazy-fetch` flags (`git --no-replace-objects --no-lazy-fetch -C <sourceRepo> ...`)
+  to disable `refs/replace/*` substitution and implicit promisor/partial-clone lazy
+  fetching. This requires **Git `>=2.45`** (which introduced `--no-lazy-fetch`; verified
+  locally on Git `2.47.3`); older Git versions without those flags error and fail closed
+  with no fallback to ordinary `git` object reads. The revision argument must be a
+  lowercase full 40-hex commit hash resolving to `<revision>^{commit}` (branch names,
+  tags, `HEAD`, abbreviated hashes, and `null` are refused). The updater reads
+  regular-file (`100644`) Git blobs at
+  `openchamber/plugin/roles/{document-writer.md,routing.json,audience.md,oracle-line.txt}`
+  via `git ls-tree` / `git show`—uncommitted working-tree edits in the source repository
+  are ignored—and verifies that `remote.origin.url` matches `runtime/resources/writer-role/SOURCE.json`
+  without embedded HTTP credentials.
+- **Reviewed code pins (`PAYLOAD_HASHES`)**:
+  `runtime/lib/writer-role-update.mjs` pins the four reviewed payload SHA-256 digests in
+  `PAYLOAD_HASHES` (`document-writer.md` `36ef44de293053e5fbeb743851d63ba5c9965a85c78147e2b40dacc50f71fd9d`,
+  `routing.json` `9de5fb6d0ee5244e6398424326620ef557bfc478beef8a793d36d5f1186da115`,
+  `audience.md` `0e5c2d7a7ad22309dab93659b43224f7000143219813356712179c532f5c67a3`,
+  `oracle-line.txt` `1cbc333a6b9d0b6a2c868fa1bb3191d369f9c8a4b68f18b2e83c202aa58b0c28`).
+  Arbitrary new commits with different payload bytes are refused until the new payload
+  semantics are reviewed and `PAYLOAD_HASHES` is explicitly updated in code.
+- **Static composition & single routing slot**:
+  The updater writes the four snapshot files under `runtime/resources/writer-role/`,
+  replaces `oh-my-opencode-slim/document-writer.md`, updates only
+  `agents["document-writer"].description` and `agents["document-writer"].orchestratorPrompt`
+  in `oh-my-opencode-slim.json` via byte-local JSON token-span replacement (`replaceJsonValues`,
+  preserving all dirty personal model/skill/permission fields and whitespace), updates
+  the `# Audience and dispatch` top-level section in `oh-my-opencode-slim/orchestrator_append.md`
+  (preserving `# Handoff` and `# Search tools`, and refusing any `document-writer`
+  routing paragraph outside `# Audience and dispatch`), replaces the single editorial
+  routing line in `oh-my-opencode-slim/oracle_append.md`, and refreshes only the
+  corresponding `inputs.omoConfig.sha256`, three `inputs.omoPromptDir.files` hashes, and
+  `expected.v2.agents["document-writer"].{model,systemBytes}` in `runtime/profile.json`.
+- **Drift, conflict, symlink, and non-transactional write boundaries**:
+  Before writing, the updater verifies every existing snapshot file and all five composed
+  outputs against `runtime/resources/writer-role/SOURCE.json`, rejects symlinks (including
+  parent-directory symlinks via `realpathSync`), refuses any unknown/custom/duplicate anchor,
+  and rechecks all target files immediately before the write loop. The write loop is
+  **not** a cross-file atomic transaction or crash-safe rollback: if an OS write error
+  occurs mid-batch, the manifest/output hash guards fail closed on subsequent runs until
+  the operator restores or reconciles the files. Because `SOURCE.json` pins the full
+  hashes of the five composed output files (including `oh-my-opencode-slim.json` and
+  `runtime/profile.json`), ordinary personal edits to those files require explicit
+  reviewed baseline reconciliation rather than a force-overwrite flag.
+- **Provenance readiness (`SOURCE.json`) vs. stage and live installation**:
+  While awaiting the reviewed source commit in `omo-coworkers`, `SOURCE.json` carries
+  `sourceCommit: null`, `deployable: false`, and `status: "pending reviewed source commit; NOT deployable"`.
+  Once `omo-coworkers` is committed and `update-writer-role.mjs` is run with that 40-hex
+  commit, only `SOURCE.json` changes to bind `sourceCommit` and set `deployable: true`
+  (`status: "bound to immutable git objects; activation unverified"`). Both fields are
+  declarative provenance records: `deployable: false` is not an enforced programmatic gate
+  in `oprofile stage`, and `deployable: true` is **not** live host activation. Staging
+  (`oprofile stage`), verification (`oprofile verify`), and live installation
+  (`oprofile activate`) remain separate explicit steps, and the updater never overwrites
+  or auto-adopts unmanaged live configuration in `~/.config/opencode`.
+- **Do not enable the extension's legacy writer transform alongside static dotfiles**:
+  In `omo-coworkers`, `OMO_COWORKERS_ENABLE_WRITER_ROLE=1` is a default-off legacy
+  runtime `ctx.agent.transform` opt-in. Keep `OMO_COWORKERS_ENABLE_WRITER_ROLE` unset
+  (off) when using static dotfiles delivery; uninstalling the OpenChamber extension
+  never deletes dotfiles-managed files.
 
 OMO role models, skills and MCP selections are maintained only in
 `../oh-my-opencode-slim.json`. Role boundaries are expressed in the prompts;
@@ -110,8 +192,10 @@ platform-specific handling described above.
 
 ## Plugin ownership and generated configuration
 
-`../opencode.json` is the raw host-settings input. It intentionally has no
-`plugin` or `plugins` list. Maintain plugin selection in `profile.json`:
+`../opencode.json` is the raw host-settings input (including its preserved legacy
+`plugins` list and raw host schema in the owner's baseline). The profile renderer
+ignores that raw plugin list; maintain effective plugin selection solely in
+`profile.json`:
 
 - `components` defines the artifact requirements and stock-spec replacements.
 - `flavors.v1.stockPlugins` and `flavors.v1.pluginOrder` define v1 selection
@@ -119,18 +203,20 @@ platform-specific handling described above.
 - Explicit CLI artifact inputs supply the actual plugin files and directories.
 
 The renderer discards plugin roots from raw host settings and derives them
-from those inputs. For v1 it writes `plugin` entries relative to the generated
-configuration file, such as `./plugins/omoPluginV1/index.js`, alongside the
-host-managed `billion-context@latest` npm spec. For v2 it writes the native
-`plugins` list and stages local artifacts for host discovery. The selected
+from those inputs, normalizing the per-host v1/v2 schema during rendering rather
+than migrating the raw source in place. For v1 it writes `plugin` entries relative
+to the generated configuration file, such as `./plugins/omoPluginV1/index.js`,
+alongside the host-managed `billion-context@latest` npm spec. For v2 it writes the
+native `plugins` list and stages local artifacts for host discovery. The selected
 artifact bytes and their manifest identities remain part of verification.
 
-The three legacy absolute entries formerly in `../opencode.json` were ignored
-by this process and have been removed. Do not maintain a second plugin list
-there or copy the rendered global configuration back into the raw source.
-After an intentional raw-settings change, review it and update only the
-corresponding `inputs.hostConfigSource.sha256` pin. The installed configuration
-is an output of the deployment process, not another maintenance source.
+Any legacy plugin entries present in `../opencode.json` are ignored by the
+renderer (`inputs.hostConfigSource.role` in `profile.json`). Do not treat raw
+`../opencode.json` as the active plugin selection authority or copy the rendered
+global configuration back into the raw source. After an intentional raw-settings
+change, review it and update only the corresponding `inputs.hostConfigSource.sha256`
+pin. The installed configuration is an output of the deployment process, not
+another maintenance source.
 
 ### Billion Context update ownership
 
@@ -170,9 +256,9 @@ version, not a compatibility pin or a requirement for future installs.
 The maintained configuration is `profile.json`: both flavors select
 `billion-context@latest`; v1 then adds Vibeguard, OMO and BCP in `pluginOrder`,
 with `compaction.auto=false`. The raw `../opencode.json` remains a host-settings
-input without a second plugin list. The v2 channel declaration is source
-configuration, not new v2 runtime acceptance. These startup checks do not
-certify full compressed-session recovery.
+input whose preserved legacy `plugins` list is ignored by the renderer. The v2
+channel declaration is source configuration, not new v2 runtime acceptance. These
+startup checks do not certify full compressed-session recovery.
 
 ## Host discovery facts (verified, metadata-only probes)
 
@@ -472,13 +558,29 @@ Reports, never silently resolves:
 - `generated/skills/` — personal skill installation tree, pinned by
   `profile.json`; the historical directory name is retained. OMO bundled
   skills come from the plugin artifact, not this tree.
+- `resources/omo-3.0.8/` — current V2 offline stock skill resources (`skills/`,
+  20 files) plus upstream `LICENSE` and `PROVENANCE.md`, pinned by
+  `inputs.omoStockSkills308` in `profile.json`. Historical `resources/omo-3.0.7/`
+  is retained unchanged.
+- `resources/writer-role/` — pinned offline snapshot of the four upstream
+  `omo-coworkers` writer payloads (`document-writer.md`, `routing.json`,
+  `audience.md`, `oracle-line.txt`) plus `SOURCE.json` provenance and composed-output
+  hash manifest.
 - `lib/*.mjs` — hash/atomic/inputs/render/prompts/hostenv/spawn/stage/verify/
-  activate/manifest/dwbridge (`lib/spawn.mjs` is the one validated spawn
-  boundary; `lib/prompts.mjs` keeps the staging exclusions — the anchored
-  staged-copy transforms were retired in phase 1; `lib/stage.mjs` carries the
-  `STOCK_INHERITED_SKILLS` shadow guard).
-- `bin/oprofile.mjs` — CLI.
-- `test/profile.test.mjs` — unit tests (`node --test test/profile.test.mjs`). The skill checks no longer import a companion repository's mixed stock/personal generator. Run the complete suite from this directory with `node --test --experimental-test-module-mocks test/*.test.mjs`.
+  activate/manifest/dwbridge/writer-role-update (`lib/spawn.mjs` is the one
+  validated spawn boundary; `lib/prompts.mjs` keeps the staging exclusions — the
+  anchored staged-copy transforms were retired in phase 1; `lib/stage.mjs` carries
+  the `STOCK_INHERITED_SKILLS` shadow guard; `lib/writer-role-update.mjs` implements
+  the explicit offline git-object updater and static composition guards).
+- `bin/oprofile.mjs` — profile stage/verify/activate CLI.
+- `bin/update-writer-role.mjs` — explicit offline CLI for updating the static
+  `document-writer` snapshot and composed dotfiles outputs from a committed
+  local `omo-coworkers` 40-hex Git commit.
+- `test/profile.test.mjs`, `test/writer-role-update.test.mjs`, `test/*.test.mjs` —
+  unit tests (`node --test test/profile.test.mjs`, `node --test test/writer-role-update.test.mjs`).
+  The skill checks no longer import a companion repository's mixed stock/personal
+  generator. Run the complete suite from this directory with
+  `node --test --experimental-test-module-mocks test/*.test.mjs`.
 
 ## Skills follow upstream (2026-10-09)
 
@@ -501,11 +603,13 @@ an old mixed generated tree cannot silently restore the overrides.
   skill resources refuse staging.
 - **v2:** the plugin registers bundled skills in-process. No same-name skill
   files are staged outside its artifact.
-- **Personal skills:** `runtime/generated/skills/` contains 11 personal
-  skills / 34 files. Their existing bytes and modes are retained, including
-  the guided-grilling composition. `profile.json` inventories this complete
-  installation input; the two plan skills and `eli5` were retired from it on
-  2026-10-11 (see below).
+- **Personal skills:** at the 2026-10-09 cutover `runtime/generated/skills/`
+  contained 11 personal skills / 34 files (after `domain-modeling` and
+  `humanizer` moved to the `omo-coworkers` OpenChamber extension on 2026-11-20,
+  `profile.json` pins 9 personal skills / 21 files). Their existing bytes and
+  modes are retained, including the guided-grilling composition. `profile.json`
+  inventories this complete installation input; the two plan skills and `eli5`
+  were retired from it on 2026-10-11 (see below).
 - `loop-engineering` remains an unregistered legacy resource and is not part
   of the selected skill inventory.
 
@@ -637,13 +741,18 @@ skill inheritance or instruction priority.
   refuses without it rather than fabricating a release.
 - No v1 host DB migration, no dual compression engines, no edits to
   hard-linked core/OMO JSON or prompt sources.
-# Current V2 selection: official OMO 3.0.7
+# Current V2 selection: official OMO 3.0.8
 
-The personal profile now renders `oh-my-opencode-slim@3.0.7` as a direct
-host-managed npm spec. Do not supply `--omo-plugin` or `--bcp-plugin` on V2.
-Same-release pinned offline skills live in `runtime/resources/omo-3.0.7`;
-they are resources, not a plugin artifact. V1 stays explicitly legacy and
-requires its old patched artifact; no official V1 support is asserted.
+The personal profile now renders `oh-my-opencode-slim@3.0.8` as a direct
+host-managed npm spec on V2 (`flavors.v2.stockPlugins`), preserving unrelated
+component pins, role models, skills, permissions and defaults. Do not supply
+`--omo-plugin` or `--bcp-plugin` on V2. Same-release pinned offline skills
+(20 skill files plus `LICENSE`, copied from the existing local npm cache extraction)
+live in `runtime/resources/omo-3.0.8` (`inputs.omoStockSkills308`; see
+`runtime/resources/omo-3.0.8/PROVENANCE.md`); they are offline resources, not an
+executable plugin artifact, and `runtime/resources/omo-3.0.7` is retained as
+historical resource inventory. V1 stays explicitly legacy (`omoPluginV1` patched
+3.0.5 artifact) and is not upgraded to 3.0.8; no official V1 stock support is asserted.
 
 Before migration the owner must back up and explicitly retire old OMO/BCP
 entries and discovered artifacts from both `plugin/` and `plugins/`.
@@ -651,5 +760,14 @@ entries and discovered artifacts from both `plugin/` and `plugins/`.
 `--replace`, without deleting anything. Source config OMO/BCP entries also
 refuse instead of being silently dropped by rendering.
 
+Deterministic static prompt composition, `SOURCE.json` binding (`deployable: true`
+after binding to a committed `omo-coworkers` 40-hex revision), and `oprofile`
+metadata expectations (`expected.v2.agents["document-writer"].systemBytes: 9985`
+and `model: "gemini-4-hydrogen"`) do not guarantee upstream LLM provider
+prompt-cache hit rates and do not prove live host activation. After any separately
+authorized live deployment, verify the actual served `system` body, `description`,
+`orchestrator`/`oracle` routing, `model` and `permissions` on the running server
+(a process restart alone is insufficient).
+
 See `../BOOTSTRAP.md` for current isolated-host acceptance requirements.
-Historical artifact examples below are not the normal V2 installation path.
+Historical artifact examples above are not the normal V2 installation path.

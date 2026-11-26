@@ -13,16 +13,12 @@
           "!managing-lark-project-folder",
           "!yogo-products"
         ],
-        "mcps": [
-          "gh_grep"
-        ]
+        "mcps": ["gh_grep"]
       },
       "oracle": {
         "model": "openai/gpt-6.2-astra",
         "variant": "xhigh",
-        "skills": [
-          "find-code-simplifications"
-        ],
+        "skills": ["find-code-simplifications"],
         "mcps": []
       },
       "explorer": {
@@ -40,9 +36,7 @@
       "fixer": {
         "model": "openai/gpt-6.2-sol",
         "variant": "low",
-        "skills": [
-          "use-modern-go"
-        ],
+        "skills": ["use-modern-go"],
         "mcps": []
       },
       "observer": {
@@ -61,7 +55,7 @@
   },
   "agents": {
     "document-writer": {
-      "model": "newapi/gemini-4-argon",
+      "model": "newapi/gemini-4-hydrogen",
       "variant": "high",
       "skills": [
         "maintaining-product-engineering-docs",
@@ -78,8 +72,8 @@
         "yogo-products"
       ],
       "mcps": [],
-      "description": "Create, edit and review formal product, technical and management documents; exclude internal agent plans/state.",
-      "orchestratorPrompt": "Use document-writer for formal documents: MODE: WRITE for creation/body edits; MODE: REVIEW for document review. Reuse a suitable writer for revisions, never to independently review its own output. Keep internal plans/state in the main session; independent platform work goes to lark-operator. Follow the main-session review policy."
+      "description": "Draft, adapt and review human-facing explanations, summaries, messages, guidance and formal documents for specified readers; exclude internal agent state, factual/technical decisions and independent platform operations.",
+      "orchestratorPrompt": "Use document-writer for substantial reader-facing synthesis, audience adaptation, requested explanation/wording work and formal documents; answer simple questions, status updates and clarifications directly. Dispatch MODE: WRITE or MODE: REVIEW and PROFILE: COMMUNICATION or PROFILE: FORMAL (default FORMAL), reader and reading purpose, known background or explicit unknowns, readable sources, protected meaning and authorization limits. COMMUNICATION returns text only; maintained-document creation/body edits, replacement body and formal acceptance require FORMAL. Reuse a suitable writer for revisions with current sources/deltas and audience changes; use a fresh non-author session for independent review. Keep internal plans/state in the main session and independent platform work with lark-operator. Follow the main-session review and publication policy; no profile waives risk gates."
     },
     "lark-operator": {
       "model": "newapi/glm-5.3-flash",
@@ -138,6 +132,16 @@
     }
   },
   "acpAgents": {
+    "antigravity": {
+      "command": "/home/littlekey/.local/share/mise/shims/agy",
+      "args": ["acp"],
+      "description": "External Antigravity CLI agent with per-call Hydrogen, Neon or Argon model selection.",
+      "wrapperModel": "newapi/glm-5.3-flash",
+      "permissionMode": "reject",
+      "timeoutMs": 3600000,
+      "prompt": "You are the transport wrapper for the external Antigravity CLI agent. Call acp_run exactly once with agent \"antigravity\" and prompt equal to the complete user task, preserving its text exactly. If the task explicitly requests an inner ACP model selector, also pass that exact selector as model. Supported selectors include gemini-4-hydrogen, gemini-4-neon and gemini-4-argon. If no inner model is explicitly requested, omit model and use the external agent's default. Never infer the inner model from wrapperModel or append CLI effort suffixes to ACP selectors. The external agent reads referenced project files itself. Return its answer faithfully and surface tool failures clearly.",
+      "orchestratorPrompt": "Use @antigravity when the user requests Antigravity CLI or an independent Gemini perspective; do not replace existing specialist routing by default. A single agent supports per-call model selection through acp_run.model (OMO slim >=3.0.5). For an explicit Hydrogen, Neon or Argon request, include the exact inner ACP selector gemini-4-hydrogen, gemini-4-neon or gemini-4-argon in the delegated task. Otherwise leave the inner model unspecified so agy uses its own default; wrapperModel is only the transport wrapper. Do not add effort suffixes or claim an unsupported selector works. Provide the complete task, scope, validation owner and readable evidence paths; ask for cited evidence and disclosed limits."
+    },
     "claude": {
       "command": "/home/littlekey/.local/share/pnpm/claude-agent-acp",
       "args": [],

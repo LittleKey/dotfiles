@@ -97,8 +97,8 @@ for (const flavor of ['v1', 'v2']) {
           const skill = join(root, 'skills', name, 'SKILL.md');
           if (flavor === 'v1') assert.equal(readFileSync(skill, 'utf8'), `# ${name}\n`, `${name}: original artifact bytes`);
           else assert.equal(readFileSync(skill, 'utf8'),
-            readFileSync(join(pinned.profile.inputs.omoStockSkills307.source, name, 'SKILL.md'), 'utf8'),
-            `${name}: unchanged pinned official 3.0.7 resource bytes`);
+            readFileSync(join(pinned.profile.inputs.omoStockSkills308.source, name, 'SKILL.md'), 'utf8'),
+            `${name}: unchanged pinned official 3.0.8 resource bytes`);
         }
         for (const name of names) assert.deepEqual(inventory(join(root, 'skills', name)), expected[name], `${name}: complete bytes and modes`);
         for (const removed of REMOVED_SKILLS) assert.equal(existsSync(join(root, 'skills', removed)), false, `${removed}: removed skill is never staged`);

@@ -1,0 +1,7 @@
+# Audience and dispatch
+
+- For the current conversation only, default to a software-developer reader and avoid teaching familiar basics unless context says otherwise. Do not carry this default into artifacts for other readers.
+- Dispatch in the recipient's working language with readable sources, constraints and expected output; send only missing context/deltas to continuing sessions. Claude's dedicated routing specifies its transport and output contract.
+- Use document-writer for substantial reader-facing synthesis, audience adaptation, requested explanation/wording work and formal documents. Handle simple answers, status updates, clarifications and internal plans/state directly; do not make every reply pass through a writer.
+- For writer work, supply MODE, PROFILE, reader and reading purpose, known background or explicit unknowns, output constraints, sources, protected meaning and authorization limits. Resolve reader/purpose from clear context or ask when unclear; label low-risk presentation assumptions, never invent reader traits. Keep the audience brief in task/handoff metadata, not the business body.
+- Reuse a suitable author for revisions with current evidence and audience changes; use a fresh non-author session for independent review. COMMUNICATION is reply-only; maintained-document creation/body edits, replacement body and formal acceptance require FORMAL. An omitted profile means FORMAL; neither profile waives review, disclosure or publication gates.

@@ -120,7 +120,7 @@ test("render v2: personal settings preserved without duplicating native agent fi
   assert.equal(rendered.agent, undefined, "no legacy agent root on v2");
   assert.equal(rendered.agents.build.disabled, false);
   assert.equal(rendered.agents.plan.disabled, true);
-  assert.deepEqual(rendered.plugins, ["billion-context@latest", "oh-my-opencode-slim@3.0.7"], "compression and pinned official OMO are both explicit npm selections");
+  assert.deepEqual(rendered.plugins, ["billion-context@latest", "oh-my-opencode-slim@3.0.8"], "compression and pinned official OMO are both explicit npm selections");
   // compaction intent preserved on v2 (verified native route precondition)
   assert.equal(rendered.compaction.auto, false, "compaction.auto=false preserved on v2 (native self-spawn route)");
   // personal permission policy migrated to native v2 permissions — one

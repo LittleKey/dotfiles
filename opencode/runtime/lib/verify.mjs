@@ -446,7 +446,7 @@ export async function verify({ candidateDir, opencodeExe, flavor, projectDir, pr
       for (const id of expectedActiveIds) {
         check(`plugin-active:${id}`, statuses[id] === "active", `status=${JSON.stringify(statuses[id] ?? "absent")}`);
       }
-      if (profile.flavors.v2.stockPlugins.includes("oh-my-opencode-slim@3.0.7")) {
+      if (profile.flavors.v2.stockPlugins.includes("oh-my-opencode-slim@3.0.8")) {
         check("stock-omo-single-registration", omoRegistrations === 1,
           `${omoRegistrations} OMO registration(s); status does not establish installed package version or execution provenance`);
       }
