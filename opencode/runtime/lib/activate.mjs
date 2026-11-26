@@ -47,6 +47,7 @@ import { fileURLToPath } from "node:url";
 import { readStageManifest, readActiveAuthority, writeActiveAuthority, removeActiveAuthority } from "./manifest.mjs";
 import { atomicWriteFileSync, isSymlinkPath } from "./atomic.mjs";
 import { sha256, sha256File } from "./hash.mjs";
+import { assertLegacyOwnership } from "./ownership.mjs";
 
 function managedFiles(manifest) {
   return manifest.files.filter((f) => f.path !== ".oprofile/profile-manifest.json");
@@ -184,6 +185,11 @@ export function planActivation({ candidateDir, liveRoot, replace = false }) {
   const { manifest, path: manifestPath } = readStageManifest(candidateDir);
   const existing = readActiveAuthority(liveRoot);
   const plan = { manifestPath, flavor: manifest.flavor, actions: [], conflicts: [], notes: [] };
+  try {
+    assertLegacyOwnership([...manifest.files, ...(existing?.record.files ?? [])].map(f => f.path));
+  } catch (error) {
+    return { ...plan, ok: false, conflicts: [error.message] };
+  }
   const candidateConfigPath = join(candidateDir, "opencode.json");
   const candidateConfig = existsSync(candidateConfigPath) ? JSON.parse(readFileSync(candidateConfigPath, "utf8")) : {};
   if (manifest.flavor === "v2" && candidateConfig.plugins?.includes("oh-my-opencode-slim@3.0.8")) {
@@ -279,8 +285,10 @@ function manifestAuthoritySha(manifestPath) {
  */
 export function activate({ candidateDir, liveRoot, replace = false }) {
   const { manifest, path: manifestPath } = readStageManifest(candidateDir);
+  assertLegacyOwnership(manifest.files.map(f => f.path));
   const manifestSha = manifestAuthoritySha(manifestPath);
   const existing = readActiveAuthority(liveRoot);
+  assertLegacyOwnership((existing?.record.files ?? []).map(f => f.path));
   if (existing && !replace && !existing.record.adopted) {
     if (existing.record.stage.manifestSha256 !== manifestSha) {
       const err = new Error(`live root is managed by a different stage (${existing.record.stage.candidateDir}); roll back first or pass --replace`);
@@ -398,6 +406,7 @@ export function activate({ candidateDir, liveRoot, replace = false }) {
  * these exact bytes.
  */
 export function adopt({ liveRoot, managedPaths }) {
+  assertLegacyOwnership(managedPaths);
   if (readActiveAuthority(liveRoot)) {
     const err = new Error("live root is already managed — adopt is only for unmanaged roots");
     err.code = 2;
@@ -456,6 +465,7 @@ export function rollback({ liveRoot }) {
     throw err;
   }
   const rec = existing.record;
+  assertLegacyOwnership(rec.files.map(f => f.path));
   const restored = [];
   const blocked = [];
   for (const entry of rec.files.slice().reverse()) {

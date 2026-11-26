@@ -33,6 +33,20 @@ function inventory(root, prefix = '') {
   }));
 }
 
+// Independent skills-only library fixture, NOT a filtered personal deployment
+// manifest. Materialize links so it has no plugin/resource-root dependency.
+function skillCandidate(temp, staged) {
+  const candidateDir = join(temp, 'independent-skills');
+  mkdirSync(candidateDir);
+  cpSync(join(staged, 'skills'), join(candidateDir, 'skills'), { recursive: true, dereference: true });
+  const files = Object.entries(inventory(candidateDir)).map(([path, file]) => ({
+    path, sha256: file.sha256, mode: file.mode.toString(8).padStart(4, '0'),
+  }));
+  mkdirSync(join(candidateDir, '.oprofile'));
+  writeFileSync(join(candidateDir, '.oprofile/profile-manifest.json'), JSON.stringify({ flavor: 'fixture', files }));
+  return candidateDir;
+}
+
 /** Host/plugin/bcp fixtures for stage(); returns the explicit-components object. */
 function buildExplicit(temp, flavor) {
   const omo = join(temp, 'omo');
@@ -106,10 +120,13 @@ for (const flavor of ['v1', 'v2']) {
       checkTrees(candidate);
       const live = join(temp, 'installed');
       mkdirSync(live);
-      activate({ candidateDir: candidate, liveRoot: live });
+      assert.throws(() => activate({ candidateDir: candidate, liveRoot: live }), /ownership moved/);
+      assert.deepEqual(readdirSync(live), [], 'retired personal stage writes nothing');
+      const independent = skillCandidate(temp, candidate);
+      activate({ candidateDir: independent, liveRoot: live });
       checkTrees(live);
       const firstAuthority = readFileSync(join(live, '.oprofile/active.json'));
-      const again = activate({ candidateDir: candidate, liveRoot: live });
+      const again = activate({ candidateDir: independent, liveRoot: live });
       assert.ok(again.files.every((file) => file.sha256Before === file.sha256After));
       checkTrees(live);
 
@@ -191,7 +208,10 @@ for (const flavor of ['v1', 'v2']) {
 
       const live = join(temp, 'installed');
       mkdirSync(live);
-      activate({ candidateDir: candidate, liveRoot: live });
+      assert.throws(() => activate({ candidateDir: candidate, liveRoot: live }), /ownership moved/);
+      assert.deepEqual(readdirSync(live), [], 'retired personal stage writes nothing');
+      const independent = skillCandidate(temp, candidate);
+      activate({ candidateDir: independent, liveRoot: live });
       assert.equal(statSync(join(live, helperRel)).mode & 0o777, 0o755, 'activation installs the executable bit');
       // Direct execution exercises the shebang, permission bits and sibling
       // file lookup after installation into an unrelated directory.

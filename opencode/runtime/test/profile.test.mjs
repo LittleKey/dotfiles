@@ -1173,14 +1173,16 @@ test("relocatable candidate: moved stage + removed old staging dir; relative shi
 
   // CLI activation — captured console output must carry NO credential value
   const cli = join(RUNTIME, "bin", "oprofile.mjs");
-  const out = execFileSync(process.execPath, [cli, "activate", "--stage", moved, "--into", live], { encoding: "utf8" });
-  assert.ok(out.includes("activated"), "CLI activation succeeded");
+  let out;
+  assert.throws(() => execFileSync(process.execPath, [cli, "activate", "--stage", moved, "--into", live], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }), error => {
+    out = String(error.stderr);
+    return error.status === 2 && /ownership moved/.test(out);
+  });
   assert.ok(!out.includes(SYNTH_API_KEY) && !out.includes(SYNTH_TOKEN), "console output carries no credential values");
   const liveCfg = join(live, "opencode.json");
-  assert.ok(readFileSync(liveCfg, "utf8").includes(SYNTH_API_KEY), "private config bytes activated");
-  assert.equal(statSync(liveCfg).mode & 0o777, 0o600, "live private config is 0600");
+  assert.equal(readFileSync(liveCfg, "utf8"), '{"old":"production-bytes"}\n', "retired stage leaves live bytes unchanged");
   assert.equal(readFileSync(twin, "utf8"), '{"old":"production-bytes"}\n', "hard-link twin keeps pre-activation bytes");
-  assert.equal(statSync(liveCfg).nlink, 1, "managed write replaced the inode (twin untouched)");
+  assert.equal(statSync(liveCfg).nlink, 2, "refusal preserves link topology");
 
   // rollback from the moved stage restores the pre-activation bytes
   const rb = rollback({ liveRoot: live });

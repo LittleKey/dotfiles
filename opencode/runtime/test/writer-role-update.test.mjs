@@ -35,7 +35,13 @@ function fixture(run) {
     const revision = commit();
     const outputs = Object.fromEntries(OUTPUTS.map(path => {
       mkdirSync(join(root, path, ".."), { recursive: true });
-      const bytes = readFileSync(join(maintained, path));
+      let bytes = readFileSync(join(maintained, path));
+      // Independent historical updater fixture, not the retired personal profile.
+      if (path === "runtime/profile.json") {
+        const profile = JSON.parse(bytes);
+        delete profile.ownership;
+        bytes = Buffer.from(JSON.stringify(profile, null, 2) + "\n");
+      }
       writeFileSync(join(root, path), bytes);
       return [path, bytes];
     }));

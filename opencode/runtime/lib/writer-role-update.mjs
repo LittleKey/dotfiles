@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync, lstatSync, readdirSync, realpathSync } from "node:fs";
 import { join } from "node:path";
+import { OWNERSHIP_MOVED } from "./ownership.mjs";
 
 export const PAYLOAD_HASHES = Object.freeze({
   "document-writer.md": "36ef44de293053e5fbeb743851d63ba5c9965a85c78147e2b40dacc50f71fd9d",
@@ -151,6 +152,8 @@ export function sourceManifest({ origin, sourceCommit, payloads, outputs }) {
 }
 
 export function updateWriterRole({ root, sourceRepo, revision, beforeWrite = () => {} }) {
+  const profile = JSON.parse(readFileSync(join(root, "runtime/profile.json"), "utf8"));
+  if (profile.ownership?.status === "retired") fail(OWNERSHIP_MOVED);
   if (!/^[0-9a-f]{40}$/.test(revision ?? "")) fail("required full immutable 40-hex commit");
   // Git >=2.45: fail closed on unsupported flags. Global flags override
   // inherited environment, suppress replacement refs and implicit promisor IO.

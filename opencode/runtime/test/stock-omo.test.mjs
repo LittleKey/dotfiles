@@ -7,6 +7,7 @@ import { loadProfile, verifyAllInputs } from "../lib/inputs.mjs";
 import { stage } from "../lib/stage.mjs";
 import { renderV2 } from "../lib/render.mjs";
 import { activate, rollback, planActivation } from "../lib/activate.mjs";
+import { sha256File } from "../lib/hash.mjs";
 
 const profilePath = fileURLToPath(new URL("../profile.json", import.meta.url));
 test("stock V2 stages offline resources without executable OMO/BCP artifacts; migration fails closed", () => {
@@ -60,6 +61,29 @@ test("stock V2 stages offline resources without executable OMO/BCP artifacts; mi
     const cleanLive = join(root, "clean-live");
     mkdirSync(cleanLive);
     writeFileSync(join(cleanLive, "owner-unrelated.txt"), "keep me\n");
+    assert.equal(planActivation({ candidateDir: result.candidateDir, liveRoot: cleanLive }).ok, false);
+    assert.throws(() => activate({ candidateDir: result.candidateDir, liveRoot: cleanLive }), /ownership moved/);
+    assert.equal(existsSync(join(cleanLive, ".oprofile")), false, "retired stage writes no authority or backups");
+    assert.equal(existsSync(join(cleanLive, "opencode.json")), false);
+    assert.equal(readFileSync(join(cleanLive, "owner-unrelated.txt"), "utf8"), "keep me\n");
+
+    // Keep migration-preflight and generic lifecycle coverage independent of
+    // the retired profile: a new minimal host-config/skill fixture, with no
+    // transferred prompt/config records or executable plugin payload.
+    const historicalCandidate = join(root, "independent-migration-fixture");
+    mkdirSync(join(historicalCandidate, ".oprofile"), { recursive: true });
+    mkdirSync(join(historicalCandidate, "skills/deepwork"), { recursive: true });
+    writeFileSync(join(historicalCandidate, "opencode.json"), JSON.stringify(config));
+    writeFileSync(join(historicalCandidate, "skills/deepwork/SKILL.md"),
+      readFileSync(join(inputs.omoStockSkills308.resolved.path, "deepwork/SKILL.md")));
+    writeFileSync(join(historicalCandidate, ".oprofile/profile-manifest.json"), JSON.stringify({
+      flavor: "v2",
+      files: ["opencode.json", "skills/deepwork/SKILL.md"].map(path => ({
+        path, sha256: sha256File(join(historicalCandidate, path)),
+      })),
+    }));
+    // All following activation checks concern only this independent fixture.
+    result.candidateDir = historicalCandidate;
     assert.equal(planActivation({ candidateDir: result.candidateDir, liveRoot: cleanLive }).ok, true);
     activate({ candidateDir: result.candidateDir, liveRoot: cleanLive });
     const installed = JSON.parse(readFileSync(join(cleanLive, "opencode.json"), "utf8"));

@@ -1,6 +1,12 @@
 {
   "schemaVersion": 1,
   "lane": "personal-profile",
+  "ownership": {
+    "status": "retired",
+    "owner": "omo-coworkers OpenChamber extension",
+    "paths": ["oh-my-opencode-slim.json", "oh-my-opencode-slim.jsonc", "oh-my-opencode-slim/**"],
+    "historicalInputsOnly": true
+  },
   "authority": {
     "role": "Sole input authority for the personal-profile runtime lane. Every staged byte is either a pinned source-of-record file (this inputs section) or an explicit command-line artifact (components section). Missing/invalid inputs refuse staging; nothing is fabricated.",
     "pinProtocol": "oprofile pin re-reads every pinned source and rewrites the sha256/files fields. Deliberate owner action — stage refuses drifted inputs otherwise.",

@@ -176,11 +176,9 @@ test("stage records every copied file's own mode in the manifest, and activation
   const live = join(S, "live-t1");
   mkdirSync(live, { recursive: true });
   const plan = libs.activate.planActivation({ candidateDir: cand, liveRoot: live });
-  assert.deepEqual(plan.conflicts, [], JSON.stringify(plan.conflicts));
-  const rec = libs.activate.activate({ candidateDir: cand, liveRoot: live });
-  assert.equal(modeOf(join(live, ...toolRel.split("/"))), "0755", "created exec payload must land executable — never a silent 0755→0644");
-  assert.equal(modeOf(join(live, "opencode.json")), "0600", "created private config lands 0600");
-  assert.equal(rec.files.find((f) => f.path === toolRel).mode, "0755");
+  assert.match(plan.conflicts.join(), /ownership moved/);
+  assert.throws(() => libs.activate.activate({ candidateDir: cand, liveRoot: live }), /ownership moved/);
+  assert.deepEqual(fs.readdirSync(live), [], "retired personal stage cannot deploy even unrelated files");
 });
 
 test("activation verifies candidate MODE against the manifest — a drifted stage refuses before any write; modeless records stay bytes-only", () => {

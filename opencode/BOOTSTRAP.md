@@ -1,5 +1,25 @@
 # opencode v2 fresh-machine bootstrap (stock OMO migration)
 
+## 2026-11-26 OMO 原生配置所有权移交与旧写入链退役（Ownership Handoff to `omo-coworkers` v6.0.0+ / v6.1.0 Config Manager）
+
+- **OMO 原生提示词与受管配置已移交 `omo-coworkers` OpenChamber 扩展（`v6.0.0` 迁入，`v6.1.0` 升级为 OMO 配置管理器）**：
+  - `oh-my-opencode-slim.json`、`oh-my-opencode-slim.jsonc` 及 `oh-my-opencode-slim/**`（7 份提示词文件与内置角色/ACP 指导文本配置叶节点）的实际部署与日常更新所有权已自 `v6.0.0` 起移交至 [`omo-coworkers`](https://github.com/LittleKey/omo-coworkers) OpenChamber 扩展，并在 **`v6.1.0`** 升级为直接管理原生 OMO 文件的 **OMO 配置管理器（Config Manager，API v2）**（支持自动读取受保护结构快照、普通模型/预设/ACP 字段差量编辑、提示词按需显式揭露、5 族独立内置增强模板与用户模板、真实 `before`/`after` 差异预览、条件撤销与中断恢复，取代了 `v6.0.0` 的七项声明与仅 10 个叶节点捆绑审批面板，不再经由本仓库安装器写入）。
+  - `runtime/profile.json` 已记录退役所有权元数据：
+    ```json
+    "ownership": {
+      "status": "retired",
+      "owner": "omo-coworkers OpenChamber extension",
+      "paths": ["oh-my-opencode-slim.json", "oh-my-opencode-slim.jsonc", "oh-my-opencode-slim/**"],
+      "historicalInputsOnly": true
+    }
+    ```
+- **代码层整条工作流写入前拒绝（无绕过参数）**：
+  - `runtime/lib/ownership.mjs`（`assertLegacyOwnership`）与 `runtime/lib/activate.mjs` 实施独立于候选清单和 authority 记录的代码级保留路径围栏：凡候选清单（`manifest.files`）、现有活动 authority 记录（`.oprofile/active.json`）、`adopt` 路径集或 `rollback` 记录包含 `oh-my-opencode-slim.json`、`oh-my-opencode-slim.jsonc` 或 `oh-my-opencode-slim/**`（含归一化后的相对路径别名），`oprofile plan-activation`、`oprofile activate`（即使传入 `--replace`）、`oprofile adopt` 与 `oprofile rollback` **均在任何文件写入前拒绝整条工作流**（退出码 `2`）。
+  - `node opencode/runtime/bin/update-writer-role.mjs`（`runtime/lib/writer-role-update.mjs` `updateWriterRole`）在检测到 `profile.ownership.status === "retired"` 时，会在访问源 Git 仓库或执行任何回调/文件写入前立即拒绝退出。
+- **历史输入与实时配置漂移注意（`historicalInputsOnly: true`）**：
+  - 本仓库保留的 `opencode/oh-my-opencode-slim.json`、`opencode/oh-my-opencode-slim/*.md`、`opencode/runtime/resources/writer-role/` 及 `oprofile stage` 仅作为**离线历史暂存（staging）与个人模型/技能/权限/ACP 传输配置参考**，不再是受支持的实时配置部署通道。
+  - **切勿用本仓库历史 `oh-my-opencode-slim.json` 覆盖本机实时配置**：本仓库历史文件中 `acpAgents.antigravity.permissionMode` 仍为旧值 `"reject"`，而实际运行环境（live `~/.config/opencode/oh-my-opencode-slim.json`）已改为 `"ask"`。`omo-coworkers`（`v6.0.0+` / `v6.1.0` 配置管理器与 5 族独立内置模板）通过 JSONC AST 局部差量编辑保留用户未改动的 `model`、`permissions`、`skills`、ACP `command`、JSONC 注释与实时 `permissionMode`（`"ask"`），绝不将 `"reject"` 导入为默认值。
+
 ## Current V2 lane
 
 - Select **`oh-my-opencode-slim@3.0.8`** directly in `plugins` through
@@ -14,31 +34,26 @@
   (pinned by `inputs.omoStockSkills308`; see `runtime/resources/omo-3.0.8/PROVENANCE.md`).
   The earlier `runtime/resources/omo-3.0.7/` directory is retained as historical resource
   inventory. These are offline resources, not a second executable plugin.
-- Preserve role presets, append prompts, ACP Claude routing and the separate
-  Claude guard component. Stage still requires the other declared component flags.
-  While `omo-coworkers` (`openchamber/plugin/roles/{document-writer.md,routing.json,audience.md,oracle-line.txt}`)
-  is the upstream semantic source for the four reader-aware `document-writer` payloads,
-  dotfiles `opencode/oh-my-opencode-slim/` and `opencode/oh-my-opencode-slim.json` own
-  the complete static Document Writer and Lark Operator bodies, routing, models, skills
-  and permissions: staging copies those pinned local bytes unchanged, without sibling
-  coworkers prompts or native-agent shadows. Static OMO routing for `document-writer`
-  lives **only** in `opencode/oh-my-opencode-slim.json` (`agents["document-writer"].orchestratorPrompt`)
-  and is never duplicated in `orchestrator_append.md`. Do **not** enable the `omo-coworkers`
-  extension's legacy `OMO_COWORKERS_ENABLE_WRITER_ROLE=1` runtime transform alongside
-  static dotfiles delivery (both extension plugin hooks default off, and uninstalling the
-  extension does not remove dotfiles files).
-- Future upstream `document-writer` payload updates are applied explicitly and offline
-  from a committed local `omo-coworkers` Git revision (after reviewing and updating any
-  changed payload SHA-256 pins in `runtime/lib/writer-role-update.mjs`) by running
-  `node opencode/runtime/bin/update-writer-role.mjs /path/to/local/omo-coworkers <FULL_40_HEX_COMMIT>`
-  from the dotfiles root, then staging and activating through `oprofile`. Source commits
-  and `runtime/resources/writer-role/SOURCE.json` binding (`deployable: true` once bound to
-  immutable Git objects; initially `sourceCommit: null`, `deployable: false` while pending
-  the reviewed source commit) record provenance readiness only—they do not automatically
-  stage, install, or activate changes in `~/.config/opencode`, and `deployable: false` is
-  descriptive provenance status rather than an enforced programmatic `oprofile stage` gate.
+- **OMO prompt & config ownership retired to `omo-coworkers` (`v6.0.0+` / `v6.1.0` Config Manager)**:
+  While `opencode/oh-my-opencode-slim/` and `opencode/oh-my-opencode-slim.json` remain
+  pinned in `runtime/profile.json` as historical staging inputs (`historicalInputsOnly: true`)
+  for personal role models, skills, permissions, and ACP transport definitions, live deployment
+  and updates of `oh-my-opencode-slim.json(c)` and `oh-my-opencode-slim/**` now belong exclusively
+  to the `omo-coworkers` OpenChamber extension (`v6.0.0+`; upgraded in `v6.1.0` to the OMO Config Manager
+  with differential ordinary-field editing, 5 independent bundled template families, real before/after diff preview,
+  conditional undo, explicit recovery, and `.omo-coworkers/behavior.json` plugin settings).
+  `oprofile plan-activation`, `activate` (even with `--replace`), `adopt`, `rollback`,
+  and `node opencode/runtime/bin/update-writer-role.mjs` refuse any operation touching those transferred
+  paths before writing. Keep `OMO_COWORKERS_ENABLE_WRITER_ROLE` unset (off) when using native OMO configuration.
+- **Historical `update-writer-role.mjs` & `SOURCE.json` record (retired for active updates)**:
+  Prior to the `v6.0.0` ownership handoff, upstream `document-writer` payload updates were pulled
+  offline via `node opencode/runtime/bin/update-writer-role.mjs /path/to/local/omo-coworkers <FULL_40_HEX_COMMIT>`.
+  Because `runtime/profile.json` now has `ownership.status: "retired"`, `updateWriterRole` refuses active
+  execution before any Git read or file write; `runtime/resources/writer-role/` and pure composition helpers
+  remain in the repository solely as historical reference and isolated fixture test coverage.
 - Existing `opencode/oh-my-opencode-slim.json` and `opencode/opencode.json` remain the
-  personal configuration sources; never overwrite them with a generic coworkers overlay
+  historical personal configuration reference in this checkout; never overwrite live `~/.config/opencode/oh-my-opencode-slim.json(c)`
+  with the historical dotfiles copy (which would revert live `acpAgents.antigravity.permissionMode: "ask"` to `"reject"`)
   or auto-import live credentials/settings. Existing global skills/guard migration collisions
   require explicit resolution, not automatic deactivation.
 - Before activation, back up and explicitly retire old OMO/BCP config entries
