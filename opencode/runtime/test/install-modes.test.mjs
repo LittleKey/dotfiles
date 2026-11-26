@@ -123,7 +123,7 @@ const V2_HOST = { flavor: "v2", version: "2.0.20", executable: "test://exe", run
 // Sibling components with both flavor entries (v1 index.v1.mjs, v2 index.js).
 function fakeSiblings() {
   const out = {};
-  for (const [key, dirName] of [["claudeAdvisor", "ca-fixture"], ["supervisor", "sup-fixture"]]) {
+  for (const [key, dirName] of [["claudeAdvisor", "ca-fixture"]]) {
     const dir = join(S, dirName);
     mkdirSync(join(dir, "lib"), { recursive: true });
     writeFileSync(join(dir, "index.v1.mjs"), 'export default {};\n');

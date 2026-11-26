@@ -252,9 +252,8 @@ export function stage(opts) {
     for (const [name, comp] of Object.entries(components)) {
       if (!comp.staged) continue;
       if (comp.kind === "dir") {
-        // Component definitions may pin the staged location (e.g. supervisor
-        // lives at managed-plugins/supervisor, outside the plugins/ discovery
-        // root); the default keeps every other component under plugins/<name>.
+        // Component definitions may pin a location outside the plugins/ discovery
+        // root; the default keeps components under plugins/<name>.
         // Read from the pinned definition — verifyExplicit's record is narrow.
         const relBase = profile.components?.[name]?.stagingDir ?? `plugins/${name}`;
         cpSync(comp.source, join(tmp, relBase), { recursive: true });
@@ -453,7 +452,7 @@ export function stage(opts) {
           .map((name) => {
             const entry = stagedPlugins.find((p) => p.component === name);
             // v1Options renders the entry as the tuple [path, options]
-            // (per-plugin options form; supervisor's {"mode":"inject"}).
+            // (per-plugin options form).
             return entry ? { ...entry, options: profile.components?.[name]?.v1Options ?? null } : null;
           })
           .filter(Boolean),

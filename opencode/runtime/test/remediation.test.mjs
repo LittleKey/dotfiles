@@ -87,16 +87,11 @@ function stageV1(omoV1Dir, pinned = loadProfile(join(RUNTIME, "profile.json"))) 
     mkdirSync(caDir, { recursive: true });
     writeFileSync(join(caDir, "index.v1.mjs"), 'export default { id: "claude-advisor" };\n');
   }
-  const supDir = join(S, "supervisor-fake");
-  if (!existsSync(supDir)) {
-    mkdirSync(supDir, { recursive: true });
-    writeFileSync(join(supDir, "index.v1.mjs"), 'export default { id: "supervisor" };\n');
-  }
   const bcpFile = join(S, "blackboard-fake.ts");
   if (!existsSync(bcpFile)) writeFileSync(bcpFile, "export default {};\n");
   return stage({
     flavor: "v1", profile, profilePath, profileSha256, host: HOST_V1, outDir,
-    explicit: { vibeguardV1: vgDir, omoPluginV1: omoV1Dir, bcpPlugin: bcpFile, claudeAdvisor: caDir, supervisor: supDir },
+    explicit: { vibeguardV1: vgDir, omoPluginV1: omoV1Dir, bcpPlugin: bcpFile, claudeAdvisor: caDir },
   });
 }
 
@@ -155,16 +150,8 @@ test("GOAL1 v1 stage: stock skills and nested resources follow the staged artifa
     assert.ok(!isLink(join(cand, "skills", name, "SKILL.md")), `${name}: personal skill stays a regular copy`);
   }
 
-  // sibling components: claude-advisor gets a discovery shim for its nested
-  // v1 entry; supervisor keeps its managed location and renders as the
-  // [path, options] tuple so v1Options reaches the plugin
+  // claude-advisor gets a discovery shim for its nested v1 entry.
   assert.equal(readFileSync(join(cand, "plugins", "claude-advisor", "index.js"), "utf8"), 'export {default} from "./index.v1.mjs";\n');
-  assert.ok(statSync(join(cand, "managed-plugins", "supervisor", "index.v1.mjs")).isFile());
-  assert.equal(readFileSync(join(cand, "managed-plugins", "supervisor", "index.js"), "utf8"), 'export {default} from "./index.v1.mjs";\n');
-  const renderedV1 = JSON.parse(readFileSync(join(cand, "opencode.json"), "utf8"));
-  const supTuple = (renderedV1.plugin ?? []).find((e) => Array.isArray(e) && String(e[0]).includes("managed-plugins/supervisor"));
-  assert.ok(supTuple, "v1 renders the supervisor entry at its managed location");
-  assert.deepEqual(supTuple[1], { mode: "inject" }, "v1Options renders as the tuple's second element");
 
   // manifest honesty: one record per linked file with the RELATIVE link target
   // and the read-through sha256 (which verify then re-checks against bytes)
@@ -234,7 +221,7 @@ test("GOAL1 refusals: missing skill directory, missing SKILL.md, missing whole s
   assert.equal(refused.report.filter((l) => l.includes("required stock skill resource directory")).length, STOCK_INHERITED_SKILLS.length, "every required skill is named");
 });
 
-test("GOAL1 v2 stage: stock skills vendor as the same link farm; supervisor keeps its managed location and options entry", () => {
+test("GOAL1 v2 stage: stock skills vendor as the same link farm", () => {
   const { profile, profilePath, profileSha256 } = loadProfile(join(RUNTIME, "profile.json"));
   const outDir = join(S, "v2-out");
   mkdirSync(outDir, { recursive: true });
@@ -246,12 +233,9 @@ test("GOAL1 v2 stage: stock skills vendor as the same link farm; supervisor keep
   const ca2 = join(S, "ca2-fake");
   mkdirSync(ca2, { recursive: true });
   writeFileSync(join(ca2, "index.js"), 'export default { id: "claude-advisor" };\n');
-  const sup2 = join(S, "sup2-fake");
-  mkdirSync(sup2, { recursive: true });
-  writeFileSync(join(sup2, "index.js"), 'export default { id: "supervisor" };\n');
   const result = stage({
     flavor: "v2", profile, profilePath, profileSha256, host: HOST_V2, outDir,
-    explicit: { staleReasoning: vg2, vibeguardV2: vg2, claudeAdvisor: ca2, supervisor: sup2 },
+    explicit: { staleReasoning: vg2, vibeguardV2: vg2, claudeAdvisor: ca2 },
   });
   const cand = result.candidateDir;
   for (const skill of STOCK_INHERITED_SKILLS) {
@@ -263,14 +247,7 @@ test("GOAL1 v2 stage: stock skills vendor as the same link farm; supervisor keep
   }
   // No patched OMO executable or shim may enter a new V2 stage.
   assert.equal(existsSync(join(cand, "plugins", "omoPlugin")), false);
-  // supervisor: managed location (outside the plugins/ discovery root), v2
-  // entry directly at index.js, config entry in the v2 object form so
-  // v2Options reaches setup() via ctx.options
-  assert.ok(statSync(join(cand, "managed-plugins", "supervisor", "index.js")).isFile(), "supervisor staged at its managed location");
   const rendered = JSON.parse(readFileSync(join(cand, "opencode.json"), "utf8"));
-  const supEntry = (rendered.plugins ?? []).find((p) => typeof p === "object" && p.package === "./managed-plugins/supervisor");
-  assert.ok(supEntry, "v2 renders the supervisor config entry");
-  assert.deepEqual(supEntry.options, profile.components.supervisor.v2Options, "v2 object-form entry carries all pinned plugin options");
   // components without v2Options (claude-advisor) stay discovery-only: no
   // twin config entry is invented
   assert.ok(

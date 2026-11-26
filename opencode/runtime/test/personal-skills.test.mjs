@@ -50,12 +50,12 @@ function buildExplicit(temp, flavor) {
   mkdirSync(vg);
   writeFileSync(join(vg, 'index.js'), 'export default {};\n');
   const siblings = {};
-  for (const name of ['claude-advisor-fixture', 'supervisor-fixture']) {
+  for (const name of ['claude-advisor-fixture']) {
     const dir = join(temp, name);
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, 'index.v1.mjs'), 'export default {};\n');
     writeFileSync(join(dir, 'index.js'), 'export default {};\n');
-    siblings[name === 'claude-advisor-fixture' ? 'claudeAdvisor' : 'supervisor'] = dir;
+    siblings.claudeAdvisor = dir;
   }
   const bcp = join(temp, 'bcp.ts');
   writeFileSync(bcp, 'export default {};\n');

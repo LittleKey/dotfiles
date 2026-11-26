@@ -433,11 +433,11 @@ test("inputs: drift, missing and unpinned-extra inputs refuse with precise reaso
   assert.equal(resolved.ok.resolved.sha256, sha256File(srcFile));
 });
 
-// Sibling components (claude-advisor, supervisor) with both flavor entries —
+// Sibling components (claude-advisor) with both flavor entries —
 // v1 index.v1.mjs (nested entry → discovery shim) and v2 index.js.
 function fakeSiblingComponents(flavor = "v2") {
   const out = {};
-  for (const [key, dirName] of [["claudeAdvisor", "ca-artifact"], ["supervisor", "sup-artifact"]]) {
+  for (const [key, dirName] of [["claudeAdvisor", "ca-artifact"]]) {
     const dir = join(S, dirName);
     mkdirSync(join(dir, "lib"), { recursive: true });
     writeFileSync(join(dir, "index.v1.mjs"), 'export default {};\n');
@@ -619,7 +619,6 @@ test("stage v1 composition: vibeguard directory entry is NOT shimmed (no self-re
     "./plugins/omoPluginV1/index.js",
     "./plugins/fake-blackboard-v1.ts",
     "./plugins/claude-advisor/index.js",
-    ["./managed-plugins/supervisor/index.js", { mode: "inject" }],
   ]);
   for (const entry of rendered.plugin.filter((p) => typeof p === "string" && p.startsWith("./"))) {
     assert.ok(existsSync(join(cand, entry)), `relative plugin entry ${entry} resolves inside its own config root`);
@@ -1215,7 +1214,7 @@ test("compression component (owner-frozen wrapper dir): staged copy replaces the
   mkdirSync(outV2, { recursive: true });
   const resV2 = stage({ flavor: "v2", profile: withCompression(), profilePath, profileSha256, host: PRIVATE_TEST_HOST_V2, outDir: outV2, explicit: { compressionPlugin: frozenDir, ...fakeSiblingComponents() } });
   const renderedV2 = JSON.parse(readFileSync(join(resV2.candidateDir, "opencode.json"), "utf8"));
-  assert.deepEqual(renderedV2.plugins, [{ package: "./managed-plugins/supervisor", options: baseProfile.components.supervisor.v2Options }], "stock npm spec removed — the host resolves only the staged frozen copy; all supervisor options survive");
+  assert.deepEqual(renderedV2.plugins, [], "stock npm spec removed — the host resolves only the staged frozen copy");
   const wrapperStaged = join(resV2.candidateDir, "plugins", "compressionPlugin", "index.js");
   assert.equal(readFileSync(wrapperStaged, "utf8"), readFileSync(join(frozenDir, "index.js"), "utf8"), "entry index.js staged as-is — no shim over the wrapper's own relative re-export");
   assert.ok(existsSync(join(resV2.candidateDir, "plugins", "compressionPlugin", "node_modules", "billion-context", "dist", "agent", "opencode-native.js")), "full dist + node_modules closure travels with the copy");
@@ -1246,7 +1245,6 @@ test("compression component (owner-frozen wrapper dir): staged copy replaces the
     "./plugins/omoPluginV1/index.js",
     "./plugins/comp-blackboard-v1.ts",
     "./plugins/claude-advisor/index.js",
-    ["./managed-plugins/supervisor/index.js", { mode: "inject" }],
   ], "staged frozen copy replaces the npm spec in its first position; profile ordering preserved");
   assert.ok(!JSON.stringify(renderedV1).includes("billion-context@0.1.175"), "npm spec gone — no package resolution at cutover");
 

@@ -40,7 +40,7 @@ commands:
   stage --flavor v1|v2 --opencode <exe>   build a candidate (refuses on any invalid input)
         [--out <dir>] [--omo-plugin <dir>] [--omo-v1-plugin <dir>] [--bcp-plugin <file>]
         [--vibeguard-plugin <dir>] [--vibeguard-v1 <dir>] [--claude-advisor <dir>]
-        [--supervisor-plugin <dir>] [--stale-reasoning <dir>] [--compression-plugin <dir>]
+        [--stale-reasoning <dir>] [--compression-plugin <dir>]
         [--production-private]           private production staging: keep credential-named
                                          provider keys in opencode.json (written 0600; key
                                          NAMES recorded only, never values). Default off —
@@ -75,7 +75,6 @@ function collectComponents(args) {
     "--vibeguard-plugin": "vibeguardV2",
     "--vibeguard-v1": "vibeguardV1",
     "--claude-advisor": "claudeAdvisor",
-    "--supervisor-plugin": "supervisor",
     "--stale-reasoning": "staleReasoning",
     // Owner-pinned frozen compression wrapper dir (kind dir, entry index.js,
     // full package dist + node_modules closure; e.g. billion-frozen-*). The

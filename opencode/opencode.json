@@ -965,17 +965,7 @@
     }
   },
   "plugins": [
-    "billion-context@latest",
-    {
-      "package": "./managed-plugins/supervisor",
-      "options": {
-        "mode": "inject",
-        "memory": {
-          "enable": true,
-          "delivery": "inject"
-        }
-      }
-    }
+    "billion-context@latest"
   ],
   "disabled_providers": ["minimax-coding-plan", "minimax-cn-coding-plan"]
 }

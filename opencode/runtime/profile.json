@@ -58,7 +58,7 @@
     "hostConfigSource": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/opencode.json",
-      "sha256": "beb61e99257f48e6c204f0f1db51d1f18ae0b03a22dc89c6402631746446add8",
+      "sha256": "bd657536b620a42ae39c74d94443110bc90b3a00a43a62b76d1799aa53fe923e",
       "role": "Raw host settings from the dotfiles source, including its preserved legacy plugins list. The profile renderer ignores that raw list: effective plugin selection comes only from this profile's components and flavors sections, together with explicitly supplied artifacts. Raw v1/v2 schema is normalized by the renderer, not migrated in this source. Do not feed rendered production agent permissions back into the raw-source renderer. Credentials are scrubbed unless explicit private production staging is requested."
     },
     "skillsDir": {
@@ -207,37 +207,6 @@
       "expectActivePluginId": "stale-reasoning",
       "testedIdentity": "dotfiles source tree opencode/plugins/stale-reasoning — index.js ({id:'stale-reasoning'} setup entry; upstream index.mjs renamed to index.js for the v2 discovery path, package.json exports updated), FORK.md, package.json, LICENSE. Local fork of Raindrops-dev/opencode-stale-reasoning.",
       "note": "v2-only recovery plugin for invalid_encrypted_content session poisoning (v2.1.x full-replay drain + upstream account-affinity switch; root-cause evidence 2026-10-23). Discovery-only under plugins/ (no v2Options → no config entry; omoPlugin/vibeguardV2/claude-advisor precedent — an array entry plus discovery would twin). Upstream v2.0.24 design (http.request/http.response hooks) is inert on v2.1.2: drain replay bypasses those hooks and the retry-hook error shape lost .status — see FORK.md for the three-path rewrite (retry-hook marking + context-hook request-side stripping + fetch wrapper) and the verified end-to-end revival (ses_e9b804e0affeT2aXsqlY4m4Ghg, 26 encrypted parts stripped, 2026-10-23). Entry named index.js at the staged root: index.mjs-vs-index.js discovery precedence is unresolved and refused by stage.mjs. Debug log /tmp/opencode/stale-debug.log when the plugin's dbg() fires."
-    },
-    "supervisor": {
-      "kind": "artifact-dir",
-      "entry": {
-        "v1": "index.v1.mjs",
-        "v2": "index.js"
-      },
-      "flavors": [
-        "v1",
-        "v2"
-      ],
-      "required": "always",
-      "provideFlag": "--supervisor-plugin <dir>",
-      "stagingDir": "managed-plugins/supervisor",
-      "testedEntrySha256": {
-        "v1": "590967f09b886eeeff4e56ff4c1ca4fff3c894b6c82f86c0f32889d6144a41ae",
-        "v2": "067785346a588cd66d6a62ce4fe704f87aae727c8673997b33a5734cd586da4e"
-      },
-      "v1Options": {
-        "mode": "inject"
-      },
-      "v2Options": {
-        "mode": "inject",
-        "memory": {
-          "enable": true,
-          "delivery": "inject"
-        }
-      },
-      "expectActivePluginId": "supervisor",
-      "testedIdentity": "omo-coworkers source tree /home/littlekey/github/omo-coworkers/plugins/supervisor — index.v1.mjs (v1 factory SupervisorNudge; upstream renamed index.mjs → index.v1.mjs on 2026-10-20, bytes unchanged) and index.js (v2 {id:'supervisor'} setup entry) sharing lib/runtime.mjs verbatim; lib/, test/ and README.md staged with the tree.",
-      "note": "Real deployed layout (2026-10-20): managed-plugins/supervisor — OUTSIDE the plugins/ discovery root, registered by config entry ONLY (stagingDir override places the staged copy there; config entry plus a discovered index.js inside plugins/ would twin). Mode default in lib/config.mjs is 'observe' — only the exact string 'inject' is honored. Both flavors pin {\"mode\":\"inject\"}: v1 renders the explicit entry as the tuple [\"./managed-plugins/supervisor/index.js\", {\"mode\":\"inject\"}] (path is the lane shim re-exporting ./index.v1.mjs); v2 renders {\"package\":\"./managed-plugins/supervisor\",\"options\":{\"mode\":\"inject\"}} via v2Options (options reach setup() through ctx.options) — byte-for-byte the live config's entry form. Staging REAL COPIES de-symlinks the live managed-plugins/supervisor symlink on activation (desired). Same entry-pinning rule as claudeAdvisor: index.mjs discovery precedence unresolved — staged dir must not expose index.mjs at its config/discovery root (enforced by stage.mjs)."
     }
   },
   "rollbacks": {
@@ -268,8 +237,7 @@
         "vibeguardV1",
         "omoPluginV1",
         "bcpPlugin",
-        "claudeAdvisor",
-        "supervisor"
+        "claudeAdvisor"
       ],
       "stockPlugins": [
         "billion-context@latest"
@@ -331,7 +299,6 @@
           "vibeguard-privacy-v2",
           "billion-context-opencode-native",
           "claude-advisor",
-          "supervisor",
           "stale-reasoning"
         ],
         "forbidIds": [

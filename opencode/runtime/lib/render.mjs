@@ -338,7 +338,7 @@ function applyLegacyAliasPins(legacy) {
  * rendered RELATIVE to the declaring config file (owner-verified: stock v1
  * config supports relative plugin paths, resolved against the config's
  * directory). An entry with options renders as the v1 tuple form
- * [path, options] (per-plugin options, e.g. supervisor's {"mode":"inject"}). The same staged bytes therefore resolve whether the config root
+ * [path, options] (per-plugin options). The same staged bytes therefore resolve whether the config root
  * is the staging candidate, a moved candidate, or the activated live root —
  * no staging path, production path, or /tmp path is ever baked in.
  * inputs.pluginReplacements: [{spec, relEntry}] — a staged component override

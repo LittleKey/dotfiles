@@ -254,8 +254,10 @@ was absent from the live configuration root. This is an observed deployment
 version, not a compatibility pin or a requirement for future installs.
 
 The maintained configuration is `profile.json`: both flavors select
-`billion-context@latest`; v1 then adds Vibeguard, OMO and BCP in `pluginOrder`,
-with `compaction.auto=false`. The raw `../opencode.json` remains a host-settings
+`billion-context@latest`; v1 then adds Vibeguard, OMO, BCP and `claudeAdvisor` in
+`pluginOrder`, with `compaction.auto=false` (while V2 expects 5 active plugins:
+`oh-my-opencode-slim`, `vibeguard-privacy-v2`, `billion-context-opencode-native`,
+`claude-advisor` and `stale-reasoning`). The raw `../opencode.json` remains a host-settings
 input whose preserved legacy `plugins` list is ignored by the renderer. The v2
 channel declaration is source configuration, not new v2 runtime acceptance. These
 startup checks do not certify full compressed-session recovery.
@@ -337,8 +339,8 @@ this lane:
 oprofile pin                                   re-pin input hashes (deliberate owner action)
 oprofile stage  --flavor v1|v2 --opencode <exe> [--out <dir>]
                 [--omo-plugin <dir>] [--omo-v1-plugin <dir>] [--bcp-plugin <file>]
-                [--vibeguard-plugin <dir>] [--vibeguard-v1 <dir>]
-                [--stale-reasoning <dir>]
+                [--vibeguard-plugin <dir>] [--vibeguard-v1 <dir>] [--claude-advisor <dir>]
+                [--stale-reasoning <dir>] [--production-private]
 oprofile verify --stage <dir> --opencode <exe> [--project <dir>] [--cache-dir <dir>]
 oprofile plan-activation --stage <dir> --into <root>
 oprofile activate --stage <dir> --into <root> [--replace]
