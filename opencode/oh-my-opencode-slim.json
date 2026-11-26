@@ -16,7 +16,7 @@
         "mcps": ["gh_grep"]
       },
       "oracle": {
-        "model": "openai/gpt-6.2-astra",
+        "model": "openai/gpt-6-astra",
         "variant": "xhigh",
         "skills": ["find-code-simplifications"],
         "mcps": []
@@ -28,13 +28,13 @@
         "mcps": []
       },
       "designer": {
-        "model": "openai/gpt-6.2-astra",
+        "model": "openai/gpt-6-astra",
         "variant": "medium",
         "skills": [],
         "mcps": []
       },
       "fixer": {
-        "model": "openai/gpt-6.2-sol",
+        "model": "openai/gpt-6.1-sol",
         "variant": "low",
         "skills": ["use-modern-go"],
         "mcps": []
@@ -46,7 +46,7 @@
         "mcps": []
       },
       "council": {
-        "model": "openai/gpt-6.2-sol",
+        "model": "openai/gpt-6.1-sol",
         "variant": "xhigh",
         "skills": [],
         "mcps": []

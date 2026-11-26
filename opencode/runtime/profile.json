@@ -35,7 +35,7 @@
     "omoConfig": {
       "kind": "file",
       "source": "/home/littlekey/github/dotfiles/opencode/oh-my-opencode-slim.json",
-      "sha256": "630124f0c909fe409e991645bea2cd14fb4b061bf3cc64c758d232ba06cd73f2"
+      "sha256": "b906ee8215f49ddfe87aeea6155f985f2faa228641d79fe76b2e72e670e7ae0a"
     },
     "omoPromptDir": {
       "kind": "dir",
